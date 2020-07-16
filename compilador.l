@@ -99,6 +99,160 @@ end { simbolo = simb_end;
           return FECHA_PARENTESES;
  }
 
+ //====================== Minhas Modificações ======================
+    // necessário implementar: 
+        // label, type, array|of, procedure, function, goto, if|then|else, while|do, =|<>|<|>|<=|>=, -|+|or, *|div|and, not
+label { simbolo  = simb_label;  
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME("label ");
+        return LABEL;
+    }
+
+type { simbolo  = simb_type;  
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME("type ");
+        return TYPE;
+    }
+
+array { simbolo  = simb_array;  
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME("array ");
+        return ARRAY;
+    }
+
+of { simbolo  = simb_of;  
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME("of ");
+        return OF;
+    }
+
+procedure { simbolo  = simb_procedure;  
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME("procedure ");
+        return PROCEDURE;
+    }
+
+function { simbolo  = simb_function;  
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME("function ");
+        return FUNCTION;
+    }
+
+goto { simbolo  = simb_goto;  
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME("goto ");
+        return GOTO;
+    }
+
+if { simbolo  = simb_if;  
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME("if ");
+        return IF;
+    }
+
+then { simbolo  = simb_then;  
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME("then ");
+        return THEN;
+    }
+
+else { simbolo  = simb_else;  
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME("else ");
+        return ELSE;
+    }
+
+while { simbolo  = simb_while;  
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME("while ");
+        return WHILE;
+    }
+
+do { simbolo  = simb_do;  
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME("do ");
+        return DO;
+    }
+
+\=  { simbolo = simb_igual;  
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME(" igual ");
+          return IGUAL;
+    }
+<>  { simbolo = simb_diferente;  
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME(" diferente ");
+          return DIFERENTE;
+    }
+
+\<  { simbolo = simb_menor_que;  
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME(" menor_que ");
+          return MENOR_QUE;
+    }
+
+\>  { simbolo = simb_maior_que;  
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME(" maior_que ");
+          return MAIOR_QUE;
+    }
+
+<=  { simbolo = simb_menor_ou_igual;  
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME(" menor_ou_igual ");
+          return MENOR_OU_IGUAL;
+    }
+
+>=  { simbolo = simb_maior_ou_igual;  
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME(" maior_ou_igual ");
+          return MAIOR_OU_IGUAL;
+    }
+
+\-  { simbolo = simb_subtracao;  
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME(" subtracao ");
+          return SUBTRACAO;
+    }
+
+\+  { simbolo = simb_soma;  
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME(" soma ");
+          return SOMA;
+    }
+
+or  { simbolo = simb_or;  
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME(" or ");
+          return OR;
+    }
+
+\*  { simbolo = simb_produto;  
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME(" produto ");
+          return PRODUTO;
+    }
+
+div  { simbolo = simb_divisao;  
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME(" divisao ");
+          return DIVISAO;
+    }
+
+and  { simbolo = simb_and;  
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME(" and ");
+          return AND;
+    }
+
+not  { simbolo = simb_not;  
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME(" not ");
+          return NOT;
+    }
+
+ //====================== Fim das minhas modificações ======================
+
 {ident} { simbolo = simb_identificador; 
           strncpy (token, yytext, TAM_TOKEN);
           IMPRIME(" ident  ");
