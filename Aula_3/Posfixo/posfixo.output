@@ -1,0 +1,280 @@
+Terminals unused in grammar
+
+   ABRE_PARENTESES
+   FECHA_PARENTESES
+
+
+Grammar
+
+    0 $accept: start $end
+
+    1 start: expr_a
+    2      | expr_b
+
+    3 expr_a: expr_a MAIS termo_a
+    4       | expr_a MENOS termo_a
+    5       | termo_a
+
+    6 termo_a: termo_a ASTERISCO fator_a
+    7        | termo_a DIV fator_a
+    8        | fator_a
+
+    9 fator_a: IDENT_A
+
+   10 expr_b: expr_b OR termo_b
+   11       | termo_b
+
+   12 termo_b: termo_b AND fator_b
+   13        | fator_b
+
+   14 fator_b: IDENT_B
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+IDENT_A (258) 9
+MAIS (259) 3
+MENOS (260) 4
+ASTERISCO (261) 6
+DIV (262) 7
+ABRE_PARENTESES (263)
+FECHA_PARENTESES (264)
+IDENT_B (265) 14
+OR (266) 10
+AND (267) 12
+
+
+Nonterminals, with rules where they appear
+
+$accept (13)
+    on left: 0
+start (14)
+    on left: 1 2, on right: 0
+expr_a (15)
+    on left: 3 4 5, on right: 1 3 4
+termo_a (16)
+    on left: 6 7 8, on right: 3 4 5 6 7
+fator_a (17)
+    on left: 9, on right: 6 7 8
+expr_b (18)
+    on left: 10 11, on right: 2 10
+termo_b (19)
+    on left: 12 13, on right: 10 11 12
+fator_b (20)
+    on left: 14, on right: 12 13
+
+
+State 0
+
+    0 $accept: . start $end
+
+    IDENT_A  shift, and go to state 1
+    IDENT_B  shift, and go to state 2
+
+    start    go to state 3
+    expr_a   go to state 4
+    termo_a  go to state 5
+    fator_a  go to state 6
+    expr_b   go to state 7
+    termo_b  go to state 8
+    fator_b  go to state 9
+
+
+State 1
+
+    9 fator_a: IDENT_A .
+
+    $default  reduce using rule 9 (fator_a)
+
+
+State 2
+
+   14 fator_b: IDENT_B .
+
+    $default  reduce using rule 14 (fator_b)
+
+
+State 3
+
+    0 $accept: start . $end
+
+    $end  shift, and go to state 10
+
+
+State 4
+
+    1 start: expr_a .
+    3 expr_a: expr_a . MAIS termo_a
+    4       | expr_a . MENOS termo_a
+
+    MAIS   shift, and go to state 11
+    MENOS  shift, and go to state 12
+
+    $default  reduce using rule 1 (start)
+
+
+State 5
+
+    5 expr_a: termo_a .
+    6 termo_a: termo_a . ASTERISCO fator_a
+    7        | termo_a . DIV fator_a
+
+    ASTERISCO  shift, and go to state 13
+    DIV        shift, and go to state 14
+
+    $default  reduce using rule 5 (expr_a)
+
+
+State 6
+
+    8 termo_a: fator_a .
+
+    $default  reduce using rule 8 (termo_a)
+
+
+State 7
+
+    2 start: expr_b .
+   10 expr_b: expr_b . OR termo_b
+
+    OR  shift, and go to state 15
+
+    $default  reduce using rule 2 (start)
+
+
+State 8
+
+   11 expr_b: termo_b .
+   12 termo_b: termo_b . AND fator_b
+
+    AND  shift, and go to state 16
+
+    $default  reduce using rule 11 (expr_b)
+
+
+State 9
+
+   13 termo_b: fator_b .
+
+    $default  reduce using rule 13 (termo_b)
+
+
+State 10
+
+    0 $accept: start $end .
+
+    $default  accept
+
+
+State 11
+
+    3 expr_a: expr_a MAIS . termo_a
+
+    IDENT_A  shift, and go to state 1
+
+    termo_a  go to state 17
+    fator_a  go to state 6
+
+
+State 12
+
+    4 expr_a: expr_a MENOS . termo_a
+
+    IDENT_A  shift, and go to state 1
+
+    termo_a  go to state 18
+    fator_a  go to state 6
+
+
+State 13
+
+    6 termo_a: termo_a ASTERISCO . fator_a
+
+    IDENT_A  shift, and go to state 1
+
+    fator_a  go to state 19
+
+
+State 14
+
+    7 termo_a: termo_a DIV . fator_a
+
+    IDENT_A  shift, and go to state 1
+
+    fator_a  go to state 20
+
+
+State 15
+
+   10 expr_b: expr_b OR . termo_b
+
+    IDENT_B  shift, and go to state 2
+
+    termo_b  go to state 21
+    fator_b  go to state 9
+
+
+State 16
+
+   12 termo_b: termo_b AND . fator_b
+
+    IDENT_B  shift, and go to state 2
+
+    fator_b  go to state 22
+
+
+State 17
+
+    3 expr_a: expr_a MAIS termo_a .
+    6 termo_a: termo_a . ASTERISCO fator_a
+    7        | termo_a . DIV fator_a
+
+    ASTERISCO  shift, and go to state 13
+    DIV        shift, and go to state 14
+
+    $default  reduce using rule 3 (expr_a)
+
+
+State 18
+
+    4 expr_a: expr_a MENOS termo_a .
+    6 termo_a: termo_a . ASTERISCO fator_a
+    7        | termo_a . DIV fator_a
+
+    ASTERISCO  shift, and go to state 13
+    DIV        shift, and go to state 14
+
+    $default  reduce using rule 4 (expr_a)
+
+
+State 19
+
+    6 termo_a: termo_a ASTERISCO fator_a .
+
+    $default  reduce using rule 6 (termo_a)
+
+
+State 20
+
+    7 termo_a: termo_a DIV fator_a .
+
+    $default  reduce using rule 7 (termo_a)
+
+
+State 21
+
+   10 expr_b: expr_b OR termo_b .
+   12 termo_b: termo_b . AND fator_b
+
+    AND  shift, and go to state 16
+
+    $default  reduce using rule 10 (expr_b)
+
+
+State 22
+
+   12 termo_b: termo_b AND fator_b .
+
+    $default  reduce using rule 12 (termo_b)
