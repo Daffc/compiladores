@@ -21,6 +21,60 @@ typedef enum simbolos {
 } simbolos;
 
 
+/*	
+	--------------------------------------
+	| 	INICIO --- TABELA DE SIMBOLOS    |
+	--------------------------------------
+*/
+
+/*
+	Definindo categoria de simbolos.
+*/
+typedef enum categoria_simbolos_t{
+	variavel_simples,
+	parametro_formal,
+	procedimento
+} CategoriaSimbolos;
+
+/*
+	Definindo entrada para atributos de cada categoria.
+*/
+
+typedef struct atributos_vs_t{
+	char tipo[20];
+	unsigned char deslocamento;
+}Atributos_VS;
+
+typedef struct atributos_pf_t{
+	/*Completar posteriormente*/
+}Atributos_PF;
+
+typedef struct atributos_proc_t{
+	/*Completar Posteriormente*/
+}Atributos_PROC;
+
+
+/* Definindo entrada de tabela de simbolos*/
+typedef struct entrada_tabela_simbolos_t{
+	char 				identificador[128];
+	CategoriaSimbolos 	categoria;
+	unsigned char 		nivel;
+	void				*ponteiro_atributos;	
+} EntradaTabelaSimbolos;
+
+
+/*	Definindo estrutura para Tabela de simbolos.*/
+typedef struct tabela_simbolos_t{
+	int 					topo;
+	int 					tamanho;
+	EntradaTabelaSimbolos 	*entrada; 
+} Tabela_Simbolos;
+
+/*
+    -----------------------------------
+    |   FIM --- TABELA DE SIMBOLOS    |
+    -----------------------------------
+*/
 
 /* -------------------------------------------------------------------
  * variáveis globais
