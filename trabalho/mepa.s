@@ -9,9 +9,9 @@
 # -----------------------------------------------------------------
 
 .macro INPP
-   movl %esp, %eax
-   movl $0, %edi
-   movl %eax, D(,%edi,4)
+   movq %esp, %eax
+   movq $0, %edi
+   movq %eax, D(,%edi,4)
 .endm
 
 # -----------------------------------------------------------------
@@ -19,7 +19,7 @@
 # -----------------------------------------------------------------
 
 .macro PARA
-   movl $FIM_PGMA, %eax
+   movq $FIM_PGMA, %eax
    int  $SYSCALL
 .endm
 
@@ -28,8 +28,8 @@
 # -----------------------------------------------------------------
 
 .macro AMEM mem
-   movl $\mem, %eax
-   movl $4, %ebx
+   movq $\mem, %eax
+   movq $4, %ebx
    imull %ebx, %eax
    subl %eax, %esp
 .endm
@@ -39,8 +39,8 @@
 # -----------------------------------------------------------------
 
 .macro DMEM mem
-   movl $\mem, %eax
-   movl $4, %ebx
+   movq $\mem, %eax
+   movq $4, %ebx
    imull %ebx, %eax
    addl %eax, %esp
 .endm
@@ -61,12 +61,12 @@
 # -----------------------------------------------------------------
 
 .macro CRVL m n
-   movl $\m, %edi
-   movl D(,%edi,4), %eax
-   movl $\n, %ebx
+   movq $\m, %edi
+   movq D(,%edi,4), %eax
+   movq $\n, %ebx
    imul $4, %ebx
    subl %ebx, %eax
-   movl (%eax), %eax
+   movq (%eax), %eax
    pushl %eax
 .endm
 
@@ -76,12 +76,12 @@
 
 .macro ARMZ m n
    popl %ecx
-   movl $\m, %edi
-   movl D(,%edi,4), %eax
-   movl $\n, %ebx
+   movq $\m, %edi
+   movq D(,%edi,4), %eax
+   movq $\n, %ebx
    imul $4, %ebx
    subl %ebx, %eax
-   movl %ecx, (%eax)
+   movq %ecx, (%eax)
 
 .endm
 
@@ -91,9 +91,9 @@
 # -----------------------------------------------------------------
 
 .macro CREN m n
-   movl $\m, %edi
-   movl D(,%edi,4), %eax
-   movl $\n, %ebx
+   movq $\m, %edi
+   movq D(,%edi,4), %eax
+   movq $\n, %ebx
    imul $4, %ebx
    subl %ebx, %eax
    pushl %eax
@@ -104,13 +104,13 @@
 # -----------------------------------------------------------------
 
 .macro CRVI m n
-   movl $\m, %edi
-   movl D(,%edi,4), %eax
-   movl $\n, %ebx
+   movq $\m, %edi
+   movq D(,%edi,4), %eax
+   movq $\n, %ebx
    imul $4, %ebx
    subl %ebx, %eax
-   movl (%eax), %eax
-   movl (%eax), %eax
+   movq (%eax), %eax
+   movq (%eax), %eax
    pushl %eax
 .endm
 
@@ -120,13 +120,13 @@
 
 .macro ARMI m n
    popl %ecx
-   movl $\m, %edi
-   movl D(,%edi,4), %eax
-   movl $\n, %ebx
+   movq $\m, %edi
+   movq D(,%edi,4), %eax
+   movq $\n, %ebx
    imul $4, %ebx
    subl %ebx, %eax
-   movl (%eax), %eax
-   movl %ecx, (%eax)
+   movq (%eax), %eax
+   movq %ecx, (%eax)
 .endm
 
 # -----------------------------------------------------------------
@@ -134,13 +134,13 @@
 # -----------------------------------------------------------------
 
 .macro ENRT j n
-   movl $\n, %eax
+   movq $\n, %eax
    subl $1, %eax
    imul $4, %eax
-   movl $\j, %edi
-   movl D(,%edi,4), %ebx
+   movq $\j, %edi
+   movq D(,%edi,4), %ebx
    subl %ebx, %eax
-   movl %eax, %esp
+   movq %eax, %esp
 .endm
 
 # -----------------------------------------------------------------
@@ -276,7 +276,7 @@ _dsvf_falso:
 .macro DIVI
    popl %edi     # divisor
    popl %eax     # dividendo
-   movl $0, %edx # não pode esquecer de zerar %edx quando não o usar.
+   movq $0, %edx # não pode esquecer de zerar %edx quando não o usar.
    idiv %edi     #  faz %edx:%eax / %edi
    push %eax     # empilha o resultado
 .endm
@@ -319,9 +319,9 @@ _dsvf_falso:
 
 .macro NEGA
    popl %eax
-   movl $1, %ebx
+   movq $1, %ebx
    subl %eax, %ebx
-   movl %ebx, %eax
+   movq %ebx, %eax
    push %eax
 .endm
 
@@ -339,10 +339,10 @@ _dsvf_falso:
 _cmme:
    cmpl %eax,  %ebx   
    jl _cmme_true
-   movl $0, %ecx
+   movq $0, %ecx
    ret
 _cmme_true:
-   movl $1, %ecx
+   movq $1, %ecx
    ret
 
 
@@ -360,10 +360,10 @@ _cmme_true:
 _cmma:
    cmpl %eax,  %ebx   
    jg _cmma_true
-   movl $0, %ecx
+   movq $0, %ecx
    ret
 _cmma_true:
-   movl $1, %ecx
+   movq $1, %ecx
    ret
 
    
@@ -381,10 +381,10 @@ _cmma_true:
 _cmig:
    cmpl %eax,  %ebx   
    je _cmig_true
-   movl $0, %ecx
+   movq $0, %ecx
    ret
 _cmig_true:
-   movl $1, %ecx
+   movq $1, %ecx
    ret
 
 # -----------------------------------------------------------------
@@ -401,10 +401,10 @@ _cmig_true:
 _cmdg:
    cmpl %eax,  %ebx   
    jne _cmdg_true
-   movl $0, %ecx
+   movq $0, %ecx
    ret
 _cmdg_true:
-   movl $1, %ecx
+   movq $1, %ecx
    ret
 
 # -----------------------------------------------------------------
@@ -421,10 +421,10 @@ _cmdg_true:
 _cmeg:
    cmpl %eax,  %ebx   
    jle _cmle_true
-   movl $0, %ecx
+   movq $0, %ecx
    ret
 _cmle_true:
-   movl $1, %ecx
+   movq $1, %ecx
    ret
 
 
@@ -442,10 +442,10 @@ _cmle_true:
 _cmag:
    cmpl %eax,  %ebx   
    jge _cmge_true
-   movl $0, %ecx
+   movq $0, %ecx
    ret
 _cmge_true:
-   movl $1, %ecx
+   movq $1, %ecx
    ret
 
    
@@ -479,12 +479,12 @@ _cmge_true:
 # -----------------------------------------------------------------
 
 .macro ENPR k
-   movl $\k, %edi
-   movl D(,%edi,4), %eax
+   movq $\k, %edi
+   movq D(,%edi,4), %eax
    pushl %eax
-   movl %esp, %eax
+   movq %esp, %eax
    subl $4, %eax
-   movl %eax, D(,%edi,4)
+   movq %eax, D(,%edi,4)
 .endm
 
 # -----------------------------------------------------------------
@@ -497,10 +497,10 @@ _cmge_true:
    popl %ebx # ER. Tem que salvar enquanto libera o resto da pilha
    popl %ecx # k do chamador (a ser jogado fora)
 
-   movl $\k, %edi
-   movl %eax, D(,%edi,4)
+   movq $\k, %edi
+   movq %eax, D(,%edi,4)
 
-   movl $\n, %eax
+   movq $\n, %eax
    imul $4, %eax
    addl %eax, %esp # esp <- esp - eax
    pushl %ebx      # restaura ER para poder fazer "i=M[s-1]"="ret"
@@ -542,7 +542,7 @@ RT:       pushl $\k
    popl %ecx  # v
    popl %edx  # n
    popl %edi  # k
-   movl D(,%edi,4), %eax
+   movq D(,%edi,4), %eax
    pushl $strIniRA
    call printf
    addl $4, %esp
