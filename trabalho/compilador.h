@@ -36,5 +36,5 @@ extern int nl;
 simbolos simbolo, relacao;
 char token[TAM_TOKEN];
 
-
+void geraCodigo (char* rot, char* comando);
 
