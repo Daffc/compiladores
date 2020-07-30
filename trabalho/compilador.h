@@ -7,7 +7,7 @@
  *
  * -------------------------------------------------------------------
  *
- * Tipos, protótipos e vaiáveis globais do compilador
+ * Tipos, protï¿½tipos e vaiï¿½veis globais do compilador
  *
  * ------------------------------------------------------------------- */
 
@@ -77,7 +77,7 @@ typedef struct tabela_simbolos_t{
 */
 
 /* -------------------------------------------------------------------
- * variáveis globais
+ * variï¿½veis globais
  * ------------------------------------------------------------------- */
 
 extern simbolos simbolo, relacao;
@@ -91,4 +91,13 @@ simbolos simbolo, relacao;
 char token[TAM_TOKEN];
 
 void geraCodigo (char* rot, char* comando);
+
+/*
+    -----------------------------------
+    |   INICIO --- NOVAS FUNÃ‡Ã•ES      |
+    -----------------------------------
+*/
+
+/*Recebe o nÃºmero de variÃ¡veis em num_variaveis e imprime "AMEM num_variaveis" em MEPA*/
+void imprimeAMEM (int *num_variaveis);
 

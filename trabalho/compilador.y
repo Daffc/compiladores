@@ -1,6 +1,6 @@
 
-// Testar se funciona corretamente o empilhamento de parâmetros
-// passados por valor ou por referência.
+// Testar se funciona corretamente o empilhamento de parï¿½metros
+// passados por valor ou por referï¿½ncia.
 
 
 %{
@@ -41,7 +41,7 @@ bloco       :
 
 
 
-parte_declara_vars:  var 
+parte_declara_vars:{num_vars = 0;} var { imprimeAMEM(&num_vars);}
 ;
 
 
@@ -53,24 +53,19 @@ declara_vars: declara_vars declara_var
             | declara_var 
 ;
 
-declara_var : { } 
-              lista_id_var DOIS_PONTOS 
-              tipo 
-              { /* AMEM */
-              }
-              PONTO_E_VIRGULA
+declara_var : { } lista_id_var DOIS_PONTOS tipo PONTO_E_VIRGULA
 ;
 
 tipo        : IDENT
 ;
 
 lista_id_var: lista_id_var VIRGULA IDENT 
-              { /* insere última vars na tabela de símbolos */ }
-            | IDENT { /* insere vars na tabela de símbolos */}
+              { /* insere ï¿½ltima vars na tabela de sï¿½mbolos */ num_vars ++;} 
+            | IDENT { /* insere vars na tabela de sï¿½mbolos */ num_vars ++;}
 ;
 
 lista_idents: lista_idents VIRGULA IDENT  
-            | IDENT
+            | IDENT 
 ;
 
 
@@ -99,7 +94,7 @@ int main (int argc, char** argv) {
 
 
 /* -------------------------------------------------------------------
- *  Inicia a Tabela de Símbolos
+ *  Inicia a Tabela de Sï¿½mbolos
  * ------------------------------------------------------------------- */
 
    yyin=fp;

@@ -8,7 +8,7 @@
  *
  * -------------------------------------------------------------------
  *
- * Funções auxiliares ao compilador
+ * Funï¿½ï¿½es auxiliares ao compilador
  *
  * ------------------------------------------------------------------- */
 
@@ -19,24 +19,37 @@
 
 
 /* -------------------------------------------------------------------
- *  variáveis globais
+ *  variï¿½veis globais
  * ------------------------------------------------------------------- */
 
 FILE* fp=NULL;
 void geraCodigo (char* rot, char* comando) {
 
-  if (fp == NULL) {
-    fp = fopen ("MEPA", "w");
-  }
+	if (fp == NULL) {
+    	fp = fopen ("MEPA", "w");
+  	}
 
-  if ( rot == NULL ) {
-    fprintf(fp, "     %s\n", comando); fflush(fp);
-  } else {
-    fprintf(fp, "%s: %s \n", rot, comando); fflush(fp);
-  }
+	if ( rot == NULL ) {
+		fprintf(fp, "     %s\n", comando); fflush(fp);
+	} else {
+		fprintf(fp, "%s: %s \n", rot, comando); fflush(fp);
+	}
 }
 
 int imprimeErro ( char* erro ) {
-  fprintf (stderr, "Erro na linha %d - %s\n", nl, erro);
-  exit(-1);
+	fprintf (stderr, "Erro na linha %d - %s\n", nl, erro);
+	exit(-1);
+}
+
+/* 
+	-----------------------------
+	|	MINHAS ALTERAÃ‡Ã”ES		|
+	-----------------------------	
+*/
+void imprimeAMEM (int *num_variaveis){
+
+	char str[12];
+
+	sprintf(str, "AMEM %d", *num_variaveis);
+	geraCodigo(NULL, str);
 }
