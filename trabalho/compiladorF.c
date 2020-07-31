@@ -70,7 +70,7 @@ void InsereTabelaSimbolos(char* identificador, CategoriaSimbolos categoria, unsi
 	if (ts.tamanho == 0){
 		ts.tamanho = 1;
 		ts.topo = -1;
-		ts.entrada = malloc(sizeof(ts.entrada));
+		ts.entrada = malloc(sizeof(EntradaTabelaSimbolos));
 	}
 	if (ts.tamanho <= (ts.topo + 1)){
 		ts.tamanho  = ts.tamanho * 2;
@@ -81,6 +81,17 @@ void InsereTabelaSimbolos(char* identificador, CategoriaSimbolos categoria, unsi
 	strcpy(ts.entrada[ts.topo].identificador, identificador);
 	ts.entrada[ts.topo].categoria = categoria;
 	ts.entrada[ts.topo].nivel = nivel;
+
+	switch(categoria){
+		case VariavelSimples:
+			ts.entrada[ts.topo].ponteiro_atributos = malloc(sizeof(Atributos_VS));
+			break;
+		case ParametroFormal:
+			ts.entrada[ts.topo].ponteiro_atributos = malloc(sizeof(Atributos_PF));
+			break;
+		case Procedimento:
+			ts.entrada[ts.topo].ponteiro_atributos = malloc(sizeof(Atributos_PROC));
+	}
 
 	mostraTabelaSimbolos();
 }
