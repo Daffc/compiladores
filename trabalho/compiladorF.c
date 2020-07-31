@@ -19,8 +19,9 @@
 
 
 /* -------------------------------------------------------------------
- *  vari�veis globais
- * ------------------------------------------------------------------- */
+*  vari�veis globais
+* ------------------------------------------------------------------- */
+Tabela_Simbolos ts;
 
 FILE* fp=NULL;
 void geraCodigo (char* rot, char* comando) {
@@ -36,10 +37,10 @@ void geraCodigo (char* rot, char* comando) {
 	}
 }
 
-int imprimeErro ( char* erro ) {
-	fprintf (stderr, "Erro na linha %d - %s\n", nl, erro);
-	exit(-1);
-}
+// int imprimeErro ( char* erro ) {
+// 	fprintf (stderr, "Erro na linha %d - %s\n", nl, erro);
+// 	exit(-1);
+// }
 
 /* 
 	-----------------------------
@@ -52,4 +53,41 @@ void imprimeAMEM (int *num_variaveis){
 
 	sprintf(str, "AMEM %d", *num_variaveis);
 	geraCodigo(NULL, str);
+}
+
+
+void mostraTabelaSimbolos(){
+
+	printf("------------------------------\n");
+	printf("TOPO: %d\tTAMANHO: %d\n", ts.topo, ts.tamanho);
+	printf("------------------------------\n");
+	for (int i = 0; i <= ts.topo; i++)
+		printf("%s\t%d\t%d\t%p\n", ts.entrada[i].identificador, ts.entrada[i].categoria, ts.entrada[i].nivel, ts.entrada[i].ponteiro_atributos);
+	printf("------------------------------\n\n");
+}
+void InsereTabelaSimbolos(char* identificador, CategoriaSimbolos categoria, unsigned char nivel, void *atributos){
+
+	if (ts.tamanho == 0){
+		ts.tamanho = 1;
+		ts.topo = -1;
+		ts.entrada = malloc(sizeof(ts.entrada));
+	}
+	if (ts.tamanho <= (ts.topo + 1)){
+		ts.tamanho  = ts.tamanho * 2;
+		ts.entrada = realloc(ts.entrada, ts.tamanho * sizeof(EntradaTabelaSimbolos));
+	}
+	
+	ts.topo ++;
+	strcpy(ts.entrada[ts.topo].identificador, identificador);
+	ts.entrada[ts.topo].categoria = categoria;
+	ts.entrada[ts.topo].nivel = nivel;
+
+	mostraTabelaSimbolos();
+}
+
+int main (){
+	InsereTabelaSimbolos("a", VariavelSimples, 0, NULL);
+	InsereTabelaSimbolos("x", VariavelSimples, 1, NULL);
+	InsereTabelaSimbolos("c", VariavelSimples, 2, NULL);
+	InsereTabelaSimbolos("d", VariavelSimples, 3, NULL);
 }

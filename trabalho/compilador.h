@@ -31,9 +31,9 @@ typedef enum simbolos {
 	Definindo categoria de simbolos.
 */
 typedef enum categoria_simbolos_t{
-	variavel_simples,
-	parametro_formal,
-	procedimento
+	VariavelSimples,
+	ParametroFormal,
+	Procedimento
 } CategoriaSimbolos;
 
 /*
