@@ -110,6 +110,7 @@ void mostraTabelaSimbolos(){
 	-----------------------------	
 */
 
+/*	Insere novo simbolo em tabela de simbolos de acordo com sua categoria.	*/
 void InsereTabelaSimbolos(char* identificador, CategoriaSimbolos categoria, unsigned char nivel, void *atributos){
 	/*	Inicializando tabela de simbolos */
 	if (ts.tamanho == 0){
@@ -144,10 +145,17 @@ void InsereTabelaSimbolos(char* identificador, CategoriaSimbolos categoria, unsi
 			ts.entrada[ts.topo].ponteiro_atributos = malloc(sizeof(Atributos_PROC));
 			memcpy(ts.entrada[ts.topo].ponteiro_atributos, atributos, sizeof(Atributos_PROC));
 	}
+}
 
-	
-
-	mostraTabelaSimbolos();
+/*	Busca simbolo em tabela de simbolos de acordo com o identificador, retornando ponteiro para atributos caso encontrado e NULL caso contrário.	*/
+void * BuscaTabelaSimbolos(unsigned char nivel, char* identificador){
+	/* Busca em todos os simbolos validos.*/
+	for (int i = 0; i <= ts.topo; i++){
+		/* Compara se entrada corresponde a nível informado e depois compara identificadores */
+		if ((ts.entrada[i].nivel == nivel) && (strcmp(ts.entrada[i].identificador, identificador) == 0 ))
+			return ts.entrada[i].ponteiro_atributos;
+	}
+	return NULL;
 }
 
 int main (){
@@ -158,7 +166,21 @@ int main (){
 	dummy_AVS.deslocamento = 1;
 
 	InsereTabelaSimbolos("a", VariavelSimples, 0, &dummy_AVS);
-	InsereTabelaSimbolos("x", VariavelSimples, 1, &dummy_AVS);
-	InsereTabelaSimbolos("c", VariavelSimples, 2, &dummy_AVS);
-	InsereTabelaSimbolos("d", VariavelSimples, 3, &dummy_AVS);
+
+	strcpy(dummy_AVS.tipo, "Inteiro");
+	dummy_AVS.deslocamento ++;
+	InsereTabelaSimbolos("b", VariavelSimples, 0, &dummy_AVS);
+
+	strcpy(dummy_AVS.tipo, "Inteiro");
+	dummy_AVS.deslocamento ++;
+	InsereTabelaSimbolos("c", VariavelSimples, 1, &dummy_AVS);
+
+	strcpy(dummy_AVS.tipo, "Inteiro");
+	dummy_AVS.deslocamento ++;
+	InsereTabelaSimbolos("d", VariavelSimples, 2, &dummy_AVS);
+
+	printf("%p\n", BuscaTabelaSimbolos(0, "a"));
+	printf("%p\n", BuscaTabelaSimbolos(0, "b"));
+	printf("%p\n", BuscaTabelaSimbolos(0, "c"));
+	printf("%p\n", BuscaTabelaSimbolos(0, "d"));
 }
