@@ -111,7 +111,7 @@ void mostraTabelaSimbolos(){
 */
 
 /*	Insere novo simbolo em tabela de simbolos de acordo com sua categoria.	*/
-void InsereTabelaSimbolos(char* identificador, CategoriaSimbolos categoria, unsigned char nivel, void *atributos){
+void insereTabelaSimbolos(char* identificador, CategoriaSimbolos categoria, unsigned char nivel, void *atributos){
 	/*	Inicializando tabela de simbolos */
 	if (ts.tamanho == 0){
 		ts.tamanho = 1;
@@ -148,9 +148,9 @@ void InsereTabelaSimbolos(char* identificador, CategoriaSimbolos categoria, unsi
 }
 
 /*	Busca simbolo em tabela de simbolos de acordo com o identificador, retornando ponteiro para atributos caso encontrado e NULL caso contrário.	*/
-void * BuscaTabelaSimbolos(unsigned char nivel, char* identificador){
-	/* Busca em todos os simbolos validos.*/
-	for (int i = 0; i <= ts.topo; i++){
+void * buscaTabelaSimbolos(unsigned char nivel, char* identificador){
+	/* Busca em todos os simbolos validos, do topo a base.*/
+	for (int i = ts.topo; i >= 0; i--){
 		/* Compara se entrada corresponde a nível informado e depois compara identificadores */
 		if ((ts.entrada[i].nivel == nivel) && (strcmp(ts.entrada[i].identificador, identificador) == 0 ))
 			return ts.entrada[i].ponteiro_atributos;
@@ -158,29 +158,63 @@ void * BuscaTabelaSimbolos(unsigned char nivel, char* identificador){
 	return NULL;
 }
 
+/*	Removendo "quantidade" elementos da Tabela de simbolos. */
+void retiraEntradasTabelaSimbolos(unsigned char quantidade){
+	for (int i = ts.topo; i > (ts.topo - quantidade); i--){
+		/*	liberando memória de atributos dos elementos	*/
+		free(ts.entrada[i].ponteiro_atributos);
+	}
+
+	/*	Diminuindo pilha	*/
+	ts.topo -= quantidade;
+}
+
+/*	Definindo o "tipo" para todas as "quantidade" variáveis a partir do topo	*/
+void defineTipoVariavel(unsigned char quantidade, char* tipo){
+	for (int i = ts.topo; i > (ts.topo - quantidade); i--){
+		/*	liberando memória de atributos dos elementos	*/
+		strcpy(((Atributos_VS *)ts.entrada[i].ponteiro_atributos)->tipo, tipo);
+	}
+}
+
 int main (){
 
 	Atributos_VS dummy_AVS;
 
-	strcpy(dummy_AVS.tipo, "Inteiro");
+	strcpy(dummy_AVS.tipo, "");
 	dummy_AVS.deslocamento = 1;
+	insereTabelaSimbolos("a", VariavelSimples, 0, &dummy_AVS);
+	mostraTabelaSimbolos();
 
-	InsereTabelaSimbolos("a", VariavelSimples, 0, &dummy_AVS);
-
-	strcpy(dummy_AVS.tipo, "Inteiro");
+	strcpy(dummy_AVS.tipo, "");
 	dummy_AVS.deslocamento ++;
-	InsereTabelaSimbolos("b", VariavelSimples, 0, &dummy_AVS);
+	insereTabelaSimbolos("b", VariavelSimples, 0, &dummy_AVS);
+	mostraTabelaSimbolos();
 
-	strcpy(dummy_AVS.tipo, "Inteiro");
+	defineTipoVariavel(2, "Inteiro");
+	mostraTabelaSimbolos();
+
+	retiraEntradasTabelaSimbolos(2);
+
+	strcpy(dummy_AVS.tipo, "");
 	dummy_AVS.deslocamento ++;
-	InsereTabelaSimbolos("c", VariavelSimples, 1, &dummy_AVS);
+	insereTabelaSimbolos("c", VariavelSimples, 1, &dummy_AVS);
+	mostraTabelaSimbolos();
 
-	strcpy(dummy_AVS.tipo, "Inteiro");
+	strcpy(dummy_AVS.tipo, "");
 	dummy_AVS.deslocamento ++;
-	InsereTabelaSimbolos("d", VariavelSimples, 2, &dummy_AVS);
+	insereTabelaSimbolos("d", VariavelSimples, 2, &dummy_AVS);
+	mostraTabelaSimbolos();
+	
+	defineTipoVariavel(2, "Boolean");
+	mostraTabelaSimbolos();
 
-	printf("%p\n", BuscaTabelaSimbolos(0, "a"));
-	printf("%p\n", BuscaTabelaSimbolos(0, "b"));
-	printf("%p\n", BuscaTabelaSimbolos(0, "c"));
-	printf("%p\n", BuscaTabelaSimbolos(0, "d"));
+	strcpy(dummy_AVS.tipo, "");
+	dummy_AVS.deslocamento ++;
+	insereTabelaSimbolos("e", VariavelSimples, 2, &dummy_AVS);
+	mostraTabelaSimbolos();	
+	
+	defineTipoVariavel(1, "Float");
+	mostraTabelaSimbolos();
+
 }
