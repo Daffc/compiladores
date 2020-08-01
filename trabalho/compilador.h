@@ -71,6 +71,17 @@ typedef struct tabela_simbolos_t{
 } Tabela_Simbolos;
 
 /*
+	Declarando API de tabela de Simbolos.
+*/
+
+void insereTabelaSimbolos(char* identificador, CategoriaSimbolos categoria, unsigned char nivel, void *atributos);
+void * buscaTabelaSimbolos(char* identificador);
+void retiraEntradasTabelaSimbolos(unsigned char quantidade);
+void defineTipoVariavel(unsigned char quantidade, char* tipo);
+void mostraTabelaSimbolos();
+
+
+/*
     -----------------------------------
     |   FIM --- TABELA DE SIMBOLOS    |
     -----------------------------------

@@ -21,6 +21,7 @@
 /* -------------------------------------------------------------------
 *  vari�veis globais
 * ------------------------------------------------------------------- */
+
 Tabela_Simbolos ts;
 
 FILE* fp=NULL;
@@ -41,10 +42,10 @@ void geraCodigo (char* rot, char* comando) {
 	DESCOMENTAR POSTERIORMENTE !!!!
 */
 
-// int imprimeErro ( char* erro ) {
-// 	fprintf (stderr, "Erro na linha %d - %s\n", 1, erro);
-// 	exit(-1);
-// }
+int imprimeErro ( char* erro ) {
+	fprintf (stderr, "Erro na linha %d - %s\n", 1, erro);
+	exit(-1);
+}
 
 /* 
 	-----------------------------
@@ -148,11 +149,11 @@ void insereTabelaSimbolos(char* identificador, CategoriaSimbolos categoria, unsi
 }
 
 /*	Busca simbolo em tabela de simbolos de acordo com o identificador, retornando ponteiro para atributos caso encontrado e NULL caso contrário.	*/
-void * buscaTabelaSimbolos(unsigned char nivel, char* identificador){
+void * buscaTabelaSimbolos(char* identificador){
 	/* Busca em todos os simbolos validos, do topo a base.*/
 	for (int i = ts.topo; i >= 0; i--){
 		/* Compara se entrada corresponde a nível informado e depois compara identificadores */
-		if ((ts.entrada[i].nivel == nivel) && (strcmp(ts.entrada[i].identificador, identificador) == 0 ))
+		if ( strcmp(ts.entrada[i].identificador, identificador) == 0 )
 			return ts.entrada[i].ponteiro_atributos;
 	}
 	return NULL;
@@ -177,44 +178,58 @@ void defineTipoVariavel(unsigned char quantidade, char* tipo){
 	}
 }
 
-int main (){
 
-	Atributos_VS dummy_AVS;
 
-	strcpy(dummy_AVS.tipo, "");
-	dummy_AVS.deslocamento = 1;
-	insereTabelaSimbolos("a", VariavelSimples, 0, &dummy_AVS);
-	mostraTabelaSimbolos();
+/* 
+	-----------------------------
+	|			DEBUG			|
+	-----------------------------	
+*/
 
-	strcpy(dummy_AVS.tipo, "");
-	dummy_AVS.deslocamento ++;
-	insereTabelaSimbolos("b", VariavelSimples, 0, &dummy_AVS);
-	mostraTabelaSimbolos();
+// int main (){
 
-	defineTipoVariavel(2, "Inteiro");
-	mostraTabelaSimbolos();
+// 	Atributos_VS dummy_AVS;
 
-	retiraEntradasTabelaSimbolos(2);
+// 	strcpy(dummy_AVS.tipo, "");
+// 	dummy_AVS.deslocamento = 1;
+// 	insereTabelaSimbolos("a", VariavelSimples, 0, &dummy_AVS);
+// 	mostraTabelaSimbolos();
 
-	strcpy(dummy_AVS.tipo, "");
-	dummy_AVS.deslocamento ++;
-	insereTabelaSimbolos("c", VariavelSimples, 1, &dummy_AVS);
-	mostraTabelaSimbolos();
+// 	strcpy(dummy_AVS.tipo, "");
+// 	dummy_AVS.deslocamento ++;
+// 	insereTabelaSimbolos("b", VariavelSimples, 0, &dummy_AVS);
+// 	mostraTabelaSimbolos();
 
-	strcpy(dummy_AVS.tipo, "");
-	dummy_AVS.deslocamento ++;
-	insereTabelaSimbolos("d", VariavelSimples, 2, &dummy_AVS);
-	mostraTabelaSimbolos();
+// 	defineTipoVariavel(2, "Inteiro");
+// 	mostraTabelaSimbolos();
+
+// 	retiraEntradasTabelaSimbolos(2);
+
+// 	strcpy(dummy_AVS.tipo, "");
+// 	dummy_AVS.deslocamento ++;
+// 	insereTabelaSimbolos("c", VariavelSimples, 1, &dummy_AVS);
+// 	mostraTabelaSimbolos();
+
+// 	strcpy(dummy_AVS.tipo, "");
+// 	dummy_AVS.deslocamento ++;
+// 	insereTabelaSimbolos("d", VariavelSimples, 2, &dummy_AVS);
+// 	mostraTabelaSimbolos();
 	
-	defineTipoVariavel(2, "Boolean");
-	mostraTabelaSimbolos();
+// 	defineTipoVariavel(2, "Boolean");
+// 	mostraTabelaSimbolos();
 
-	strcpy(dummy_AVS.tipo, "");
-	dummy_AVS.deslocamento ++;
-	insereTabelaSimbolos("e", VariavelSimples, 2, &dummy_AVS);
-	mostraTabelaSimbolos();	
+// 	strcpy(dummy_AVS.tipo, "");
+// 	dummy_AVS.deslocamento ++;
+// 	insereTabelaSimbolos("e", VariavelSimples, 2, &dummy_AVS);
+// 	mostraTabelaSimbolos();	
 	
-	defineTipoVariavel(1, "Float");
-	mostraTabelaSimbolos();
+// 	defineTipoVariavel(1, "Float");
+// 	mostraTabelaSimbolos();
 
-}
+// }
+
+/* 
+	-----------------------------
+	|		  FIM DEBUG			|
+	-----------------------------	
+*/
