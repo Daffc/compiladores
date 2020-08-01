@@ -64,6 +64,10 @@ declara_var : { } lista_id_var DOIS_PONTOS tipo PONTO_E_VIRGULA
 ;
 
 tipo        : IDENT
+                {
+                    defineTipoVariavel(num_vars, token);    /* Definindo o tipo das "num-vars" variáveis para "token" */
+                    mostraTabelaSimbolos();
+                }
 ;
 
 lista_id_var: lista_id_var VIRGULA IDENT    
@@ -78,8 +82,8 @@ lista_id_var: lista_id_var VIRGULA IDENT
 
                     /* Adicionando Novo Simbolo a Tabela de Simbolos */
                     insereTabelaSimbolos($3.identificador, $3.categoria, $3.nivel, &avs);
+                    
                     mostraTabelaSimbolos();
-
                     desloc ++;  /* Incrementa deslocamento par aproxima variável.*/
                 } 
             | IDENT 
