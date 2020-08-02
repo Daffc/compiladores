@@ -43,8 +43,13 @@ Atributos_PROC aproc;
 
 /*  TOKEN NUMEROS */
 %token NUMERO
+
 /* TOKEN IDENTIFICADOR */
 %token <entrada_ts> IDENT
+
+
+/*!!!!!! NÃO UTILIZADOS !!!!!!!*/
+%token LABEL TYPE ARRAY OF PROCEDURE FUNCTION GOTO IF THEN ELSE WHILE DO
 
 %%
 
@@ -55,7 +60,11 @@ bloco       : parte_declara_vars comando_composto
 ;
 
 
-
+/*
+    ------------------------------------------
+    |   INICIO --- DECLARAÇÃO DE VARIAVEIS    |
+    ------------------------------------------
+*/
 
 parte_declara_vars: {num_vars = 0;} var { imprimeAMEM(&num_vars); }
 ;
@@ -75,7 +84,6 @@ declara_var : { } lista_id_var DOIS_PONTOS tipo PONTO_E_VIRGULA
 tipo        : IDENT
                 {
                     defineTipoVariavel(num_vars, token);    /* Definindo o tipo das "num-vars" variáveis para "token" */
-                    mostraTabelaSimbolos();
                 }
 
 ;
@@ -92,7 +100,6 @@ lista_id_var: lista_id_var VIRGULA IDENT
 
                     /* Adicionando Novo Simbolo a Tabela de Simbolos */
                     insereTabelaSimbolos($3.identificador, $3.categoria, $3.nivel, &avs);
-                    mostraTabelaSimbolos();
 
                     desloc ++;  /* Incrementa deslocamento par aproxima variável.*/
                 } 
@@ -107,7 +114,6 @@ lista_id_var: lista_id_var VIRGULA IDENT
 
                     /* Adicionando Novo Simbolo a Tabela de Simbolos */
                     insereTabelaSimbolos($1.identificador, $1.categoria, $1.nivel, &avs);
-                    mostraTabelaSimbolos();
 
                     desloc ++;  /* Incrementa deslocamento par aproxima variável.*/
 
@@ -118,24 +124,31 @@ lista_idents: lista_idents VIRGULA IDENT
             | IDENT 
 ;
 
+/*
+    ---------------------------------------
+    |   FIM --- DECLARAÇÃO DE VARIAVEIS    |
+    ---------------------------------------
+*/
 
 comando_composto: T_BEGIN comandos T_END 
 
-comandos:   comando_sem_rotulo
-        |   NUMERO comando_sem_rotulo
+comandos:   comando_sem_rotulo 
+        |   NUMERO DOIS_PONTOS comando_sem_rotulo
+        |   comandos PONTO_E_VIRGULA comandos
+        |   /* VAZIO -> MARS PORQUE NÃO EXISTE EM DEFINIÇÃO? */
 ;
 
 comando_sem_rotulo  :   atribui
 ; 
 
 // LINHA 19
-atribui :   variavel ATRIBUICAO exp
+atribui :   variavel ATRIBUICAO expressao
 ;
 
 
 // LINHA 25
-exp     :   exp_simples
-        |   relacao exp_simples
+expressao:   exp_simples
+        |   exp_simples relacao exp_simples
 ;
 
 //LINHA 26
@@ -149,25 +162,29 @@ relacao :   IGUAL
 
 //LINHA 27
 exp_simples :   sinal termo
-            |   sinal termo SOMA termo
-            |   sinal termo SUBTRACAO termo
-            |   sinal termo OR termo
+            |   exp_simples SOMA termo
+            |   exp_simples SUBTRACAO termo
+            |   exp_simples OR termo
+;
 
 sinal   :   /*VAZIO*/
         |   SOMA    
         |   SUBTRACAO
+;
 
 // LINHA 28
 termo   :   fator 
-        |   fator PRODUTO
-        |   fator DIVISAO
-        |   fator AND
-                  
+        |   termo PRODUTO fator
+        |   termo DIVISAO fator
+        |   termo AND fator
+; 
+              
 // LINHA 29
 fator   :   variavel
         |   NUMERO
         /* ADCIONAR ASSIM QUE FUNÇÕES FOREM APRESENTADAS.*/
         // |   chamada_funcao  
+        | ABRE_PARENTESES expressao FECHA_PARENTESES
         |   NOT fator
 ;
 

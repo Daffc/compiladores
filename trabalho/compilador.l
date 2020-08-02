@@ -99,78 +99,78 @@ end { simbolo = simb_end;
           return FECHA_PARENTESES;
  }
 
- //====================== Minhas Modificações ======================
-    // necessário implementar: 
-        // label, type, array|of, procedure, function, goto, if|then|else, while|do, =|<>|<|>|<=|>=, -|+|or, *|div|and, not
+ /*====================== Minhas Modificações ======================*/
+    /* necessário implementar:*/ 
+    /* label, type, array|of, procedure, function, goto, if|then|else, while|do, =|<>|<|>|<=|>=, -|+|or, *|div|and, not */
 label { simbolo  = simb_label;  
         strncpy (token, yytext, TAM_TOKEN);
-        IMPRIME("label ");
+        IMPRIME(" label ");
         return LABEL;
     }
 
 type { simbolo  = simb_type;  
         strncpy (token, yytext, TAM_TOKEN);
-        IMPRIME("type ");
+        IMPRIME(" type ");
         return TYPE;
     }
 
 array { simbolo  = simb_array;  
         strncpy (token, yytext, TAM_TOKEN);
-        IMPRIME("array ");
+        IMPRIME(" array ");
         return ARRAY;
     }
 
 of { simbolo  = simb_of;  
         strncpy (token, yytext, TAM_TOKEN);
-        IMPRIME("of ");
+        IMPRIME(" of ");
         return OF;
     }
 
 procedure { simbolo  = simb_procedure;  
         strncpy (token, yytext, TAM_TOKEN);
-        IMPRIME("procedure ");
+        IMPRIME(" procedure ");
         return PROCEDURE;
     }
 
 function { simbolo  = simb_function;  
         strncpy (token, yytext, TAM_TOKEN);
-        IMPRIME("function ");
+        IMPRIME(" function ");
         return FUNCTION;
     }
 
 goto { simbolo  = simb_goto;  
         strncpy (token, yytext, TAM_TOKEN);
-        IMPRIME("goto ");
+        IMPRIME(" goto ");
         return GOTO;
     }
 
 if { simbolo  = simb_if;  
         strncpy (token, yytext, TAM_TOKEN);
-        IMPRIME("if ");
+        IMPRIME(" if ");
         return IF;
     }
 
 then { simbolo  = simb_then;  
         strncpy (token, yytext, TAM_TOKEN);
-        IMPRIME("then ");
+        IMPRIME(" then ");
         return THEN;
     }
 
 else { simbolo  = simb_else;  
         strncpy (token, yytext, TAM_TOKEN);
-        IMPRIME("else ");
+        IMPRIME(" else ");
         return ELSE;
     }
 
 while { simbolo  = simb_while;  
         strncpy (token, yytext, TAM_TOKEN);
-        IMPRIME("while ");
+        IMPRIME(" while ");
         return WHILE;
     }
 
 do { simbolo  = simb_do;  
         strncpy (token, yytext, TAM_TOKEN);
-        IMPRIME("do ");
+        IMPRIME(" do ");
         return DO;
     }
 
@@ -179,7 +179,7 @@ do { simbolo  = simb_do;
           IMPRIME(" igual ");
           return IGUAL;
     }
-<>  { simbolo = simb_diferente;  
+\<>  { simbolo = simb_diferente;  
           strncpy (token, yytext, TAM_TOKEN);
           IMPRIME(" diferente ");
           return DIFERENTE;
@@ -197,7 +197,7 @@ do { simbolo  = simb_do;
           return MAIOR_QUE;
     }
 
-\<\=  { simbolo = simb_menor_ou_igual;  
+\<=  { simbolo = simb_menor_ou_igual;  
           strncpy (token, yytext, TAM_TOKEN);
           IMPRIME(" menor_ou_igual ");
           return MENOR_OU_IGUAL;
@@ -251,7 +251,7 @@ not  { simbolo = simb_not;
           return NOT;
     }
 
- //====================== Fim das minhas modificações ======================
+ /*====================== Fim das minhas modificações ======================*/
 
 {numero} { simbolo = simb_numero; 
           strncpy (token, yytext, TAM_TOKEN);
