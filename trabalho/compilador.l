@@ -197,7 +197,7 @@ do { simbolo  = simb_do;
           return MAIOR_QUE;
     }
 
-<=  { simbolo = simb_menor_ou_igual;  
+\<\=  { simbolo = simb_menor_ou_igual;  
           strncpy (token, yytext, TAM_TOKEN);
           IMPRIME(" menor_ou_igual ");
           return MENOR_OU_IGUAL;
@@ -252,6 +252,12 @@ not  { simbolo = simb_not;
     }
 
  //====================== Fim das minhas modificações ======================
+
+{numero} { simbolo = simb_numero; 
+          strncpy (token, yytext, TAM_TOKEN);
+          IMPRIME(" numero  ");
+          return NUMERO;
+        }
 
 {ident} { simbolo = simb_identificador; 
           strncpy (token, yytext, TAM_TOKEN);

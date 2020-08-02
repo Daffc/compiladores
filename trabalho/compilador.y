@@ -35,6 +35,15 @@ Atributos_PROC aproc;
 %token VIRGULA PONTO_E_VIRGULA DOIS_PONTOS PONTO
 %token T_BEGIN T_END VAR  ATRIBUICAO
 
+/* TOKENS RELAÇÃO */
+%token IGUAL DIFERENTE MENOR_QUE MAIOR_QUE MENOR_OU_IGUAL MAIOR_OU_IGUAL
+
+/* TOKENS OPERAÇÕES */
+%token SOMA SUBTRACAO PRODUTO DIVISAO OR AND NOT
+
+/*  TOKEN NUMEROS */
+%token NUMERO
+/* TOKEN IDENTIFICADOR */
 %token <entrada_ts> IDENT
 
 %%
@@ -112,7 +121,58 @@ lista_idents: lista_idents VIRGULA IDENT
 
 comando_composto: T_BEGIN comandos T_END 
 
-comandos:    
+comandos:   comando_sem_rotulo
+        |   NUMERO comando_sem_rotulo
+;
+
+comando_sem_rotulo  :   atribui
+; 
+
+// LINHA 19
+atribui :   variavel ATRIBUICAO exp
+;
+
+
+// LINHA 25
+exp     :   exp_simples
+        |   relacao exp_simples
+;
+
+//LINHA 26
+relacao :   IGUAL
+        |   DIFERENTE
+        |   MENOR_QUE
+        |   MAIOR_QUE
+        |   MENOR_OU_IGUAL
+        |   MAIOR_OU_IGUAL
+;
+
+//LINHA 27
+exp_simples :   sinal termo
+            |   sinal termo SOMA termo
+            |   sinal termo SUBTRACAO termo
+            |   sinal termo OR termo
+
+sinal   :   /*VAZIO*/
+        |   SOMA    
+        |   SUBTRACAO
+
+// LINHA 28
+termo   :   fator 
+        |   fator PRODUTO
+        |   fator DIVISAO
+        |   fator AND
+                  
+// LINHA 29
+fator   :   variavel
+        |   NUMERO
+        /* ADCIONAR ASSIM QUE FUNÇÕES FOREM APRESENTADAS.*/
+        // |   chamada_funcao  
+        |   NOT fator
+;
+
+// LINHA 30
+variavel:   IDENT
 ;
 
 
