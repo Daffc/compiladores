@@ -76,7 +76,7 @@ parte_declara_vars: {num_vars = 0;} var { imprimeAMEM(&num_vars); }
 ;
 
 
-var         :  {desloc = 0;} VAR declara_vars
+var         :  VAR declara_vars
             | /* VAZIO */
 ;
 
@@ -84,12 +84,12 @@ declara_vars: declara_vars declara_var
             | declara_var 
 ;
 
-declara_var : { } lista_id_var DOIS_PONTOS tipo PONTO_E_VIRGULA
+declara_var :   {desloc = 0;} lista_id_var DOIS_PONTOS tipo  PONTO_E_VIRGULA
 ;
 
 tipo        : IDENT
                 {
-                    defineTipoVariavel(num_vars, token);    /* Definindo o tipo das "num-vars" variáveis para "token" */
+                    defineTipoVariavel(desloc, token);    /* Definindo o tipo das "desloc" variáveis para "token" */
                 }
 
 ;
