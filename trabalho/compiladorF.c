@@ -179,6 +179,51 @@ void defineTipoVariavel(unsigned char quantidade, char* tipo){
 }
 
 
+/* 
+	-------------------------
+	|		MISCELÂNEA		|
+	-------------------------	
+*/
+
+char * validaTipos(int linha, char *primeiro, char *segundo){
+
+	// Verifica se "primeiro" e "segundo" NÃO são do mesmo tipo, informando erro caso verdadeiro.
+	if(strcmp(primeiro, segundo)){
+		/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
+		fprintf (stderr,"ERRO LINHA %d: Operação entre '%s' e '%s' inválida.\n", linha, primeiro, segundo);
+		exit(-1);
+	}
+
+	/* Retorna ponteiro para string 'primeiro' */
+	return primeiro;
+}
+
+
+void * validaSimbolo(char *simbolo){
+	
+	/* Recupera atributos da variável */
+	void *ponteiro = buscaTabelaSimbolos(simbolo);
+
+	/* Verifica se 'simbolo' NÃO consta em Tabela de Sombolos, retirnando mensagem. */
+	if (!ponteiro){
+		/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
+		fprintf (stderr,"ERRO LINHA %d: Simbolo '%s' não definido.\n", nl, simbolo);
+		exit(-1);
+	}
+	
+	/* Retorna ponteiro para atributos de 'simbolo' caso ele seja encontrado */
+	return ponteiro;
+}
+
+
+
+
+/* 
+	-----------------------------
+	|		FIM MISCELÂNEA		|
+	-----------------------------	
+*/
+
 
 /* 
 	-----------------------------

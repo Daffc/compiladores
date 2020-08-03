@@ -90,7 +90,9 @@ void defineTipoVariavel(unsigned char quantidade, char* tipo);
 
 /*	Debug */
 void mostraTabelaSimbolos();
-
+void mostra_att_VS(Atributos_VS *ponteiro);
+void mostra_att_PF(Atributos_PF *ponteiro);
+void mostra_att_PROC(Atributos_PROC *ponteiro);
 
 /*
     -----------------------------------
@@ -122,4 +124,16 @@ void geraCodigo (char* rot, char* comando);
 
 /*Recebe o número de variáveis em num_variaveis e imprime "AMEM num_variaveis" em MEPA*/
 void imprimeAMEM (int *num_variaveis);
+
+/*
+	Verifica se "primeiro" e "segundo" São do mesmo tipo, retornando "primeiro" caso verdadeiro 
+	e imprime mensagem de error e para execussão (exit(-1)) caso seja falso.
+*/
+char * validaTipos(int nivel, char *primeiro, char *segundo);
+
+/*
+	Verifica se "primeiro" e "segundo" São do mesmo tipo, retornando "primeiro" caso verdadeiro 
+	e imprime mensagem de error e para execussão (exit(-1)) caso seja falso.
+*/
+void * validaSimbolo(char *simbolo);
 
