@@ -10,6 +10,9 @@
 #include <string.h>
 #include "compilador.h"
 
+/*Armazena o nível  nível léxico*/
+int nivel_lexico = 0;
+
 /* Armazena a quandtidade de variáveis para impressão de "AMEM num_vars */
 int num_vars;
 
@@ -24,6 +27,9 @@ Atributos_PF apf;
 
 /*  Armazena atributos de procedimento */
 Atributos_PROC aproc;
+
+/*  Auxilia na recuperação de Atributos */
+void   *atributos;
 
 %}
 
@@ -94,7 +100,7 @@ lista_id_var: lista_id_var VIRGULA IDENT
 
                     strcpy($3.identificador, token);         /* Resgata nome de variável. */
                     $3.categoria = VariavelSimples;          /* Definindo Categoria de entrada. */
-                    $3.nivel = nl;                           /* Indica o nível lexico da VS atual */
+                    $3.nivel = nivel_lexico;                           /* Indica o nível lexico da VS atual */
                     avs.tipo[1] = '\0';      /* Define o tipo de variável como string vazia. */
                     avs.deslocamento = desloc; /* Deslocamento da variável. */
 
@@ -108,7 +114,7 @@ lista_id_var: lista_id_var VIRGULA IDENT
                     num_vars ++;
                     strcpy($1.identificador, token);         /* Resgata nome de variável. */
                     $1.categoria = VariavelSimples;          /* Definindo Categoria de entrada. */
-                    $1.nivel = nl;                           /* Indica o nível lexico da VS atual */
+                    $1.nivel = nivel_lexico;                           /* Indica o nível lexico da VS atual */
                     avs.tipo[1] = '\0';      /* Define o tipo de variável como string vazia. */
                     avs.deslocamento = desloc; /* Deslocamento da variável. */
 
@@ -149,6 +155,9 @@ atribui :   variavel ATRIBUICAO expressao
 // LINHA 25
 expressao:   exp_simples
         |   exp_simples relacao exp_simples
+                {
+                    // [FAZER] Comparar exp_simples.tipo == exp_simples.tipo.
+                }
 ;
 
 //LINHA 26
@@ -163,8 +172,17 @@ relacao :   IGUAL
 //LINHA 27
 exp_simples :   sinal termo
             |   exp_simples SOMA termo
+                {
+                    // [FAZER] Comparar exp_simples.tipo == fator.tipo.
+                }
             |   exp_simples SUBTRACAO termo
+                {
+                    // [FAZER] Comparar exp_simples.tipo == fator.tipo.
+                }
             |   exp_simples OR termo
+                {
+                    // [FAZER] Comparar exp_simples.tipo == fator.tipo.
+                }
 ;
 
 sinal   :   /*VAZIO*/
@@ -174,14 +192,32 @@ sinal   :   /*VAZIO*/
 
 // LINHA 28
 termo   :   fator 
-        |   termo PRODUTO fator
+                {
+                    // [FAZER] Definir termo.tipo = fator.tipo.
+                }
+        |   termo PRODUTO fator                 
+                {
+                    // [FAZER] Comparar termo.tipo == fator.tipo.
+                }
         |   termo DIVISAO fator
+                {
+                    // [FAZER] Comparar termo.tipo == fator.tipo.
+                }
         |   termo AND fator
+                {
+                    // [FAZER] Comparar termo.tipo == fator.tipo.
+                }
 ; 
               
 // LINHA 29
 fator   :   variavel
+                {
+                    // [FAZER] Repassar "tipo" de "variavel" para "fator"
+                }
         |   NUMERO
+                {
+                    // [FAZER] Definir "fator" como tipo inteiro.
+                }
         /* ADCIONAR ASSIM QUE FUNÇÕES FOREM APRESENTADAS.*/
         // |   chamada_funcao  
         | ABRE_PARENTESES expressao FECHA_PARENTESES
@@ -190,6 +226,10 @@ fator   :   variavel
 
 // LINHA 30
 variavel:   IDENT
+                {
+                    // [FAZER] Buscar atributo de variáveis e repassar pra "variavel"
+                    // [FAZER] Verificar existência de IDENT (retorno de buscaTabelaSimbolos).
+                }
 ;
 
 
