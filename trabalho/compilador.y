@@ -35,7 +35,10 @@ void   *atributos;
 
 %union{
     EntradaTabelaSimbolos entrada_ts;
+    char    texto[128];
 }
+
+/* DEFINIÇÃO PARA ESTADOS TERMINAIS */
 
 %token PROGRAM ABRE_PARENTESES FECHA_PARENTESES 
 %token VIRGULA PONTO_E_VIRGULA DOIS_PONTOS PONTO
@@ -57,6 +60,11 @@ void   *atributos;
 /*!!!!!! NÃO UTILIZADOS !!!!!!!*/
 %token LABEL TYPE ARRAY OF PROCEDURE FUNCTION GOTO IF THEN ELSE WHILE DO
 
+
+/* DEFINIÇÃO PARA ESTADOS NÃO-TERMINAIS */
+
+%type <texto> variavel fator termo exp_simples expressao
+
 %%
 
 programa    :{ geraCodigo (NULL, "INPP"); } PROGRAM IDENT ABRE_PARENTESES lista_idents FECHA_PARENTESES PONTO_E_VIRGULA bloco PONTO  {geraCodigo (NULL, "PARA"); }
@@ -76,8 +84,8 @@ parte_declara_vars: {num_vars = 0;} var { imprimeAMEM(&num_vars); }
 ;
 
 
-var         :  VAR declara_vars
-            | /* VAZIO */
+var         :   VAR declara_vars
+            |   /* VAZIO */
 ;
 
 declara_vars: declara_vars declara_var 
@@ -149,14 +157,23 @@ comando_sem_rotulo  :   atribui
 
 // LINHA 19
 atribui :   variavel ATRIBUICAO expressao
+                {
+                    /* Verificando se 'variavel' $1 e 'expressao' $3 possuem o mesmo tipo */
+                    validaTipos(nl,$1, $3);
+                }
 ;
-
 
 // LINHA 25
 expressao:   exp_simples
+                {
+                    /* Repassando tipo de 'exp_simples' ($1) para 'expressao'($$) */
+                    strcpy($$, $1);
+                }
+
         |   exp_simples relacao exp_simples
                 {
-                    // [FAZER] Comparar exp_simples.tipo == exp_simples.tipo.
+                    /* Verificando tipos de $1 e $3 e repassando para 'expressao' */
+                    strcpy($$, validaTipos(nl,$1, $3));
                 }
 ;
 
@@ -171,18 +188,26 @@ relacao :   IGUAL
 
 //LINHA 27
 exp_simples :   sinal termo
+                    {
+                        /* Repassando tipo de 'fator' ($2) para 'termo'($$) */
+                        strcpy($$, $2);
+                    }
+
             |   exp_simples SOMA termo
-                {
-                    // [FAZER] Comparar exp_simples.tipo == fator.tipo.
-                }
+                    {
+                        /* Verificando tipos de $1 e $3 e repassando para 'exp_simples' */
+                        strcpy($$, validaTipos(nl,$1, $3));
+                    }
             |   exp_simples SUBTRACAO termo
-                {
-                    // [FAZER] Comparar exp_simples.tipo == fator.tipo.
-                }
+                    {
+                        /* Verificando tipos de $1 e $3 e repassando para 'exp_simples' */
+                        strcpy($$, validaTipos(nl,$1, $3));
+                    }
             |   exp_simples OR termo
-                {
-                    // [FAZER] Comparar exp_simples.tipo == fator.tipo.
-                }
+                    {
+                        /* Verificando tipos de $1 e $3 e repassando para 'exp_simples' */
+                        strcpy($$, validaTipos(nl,$1, $3));
+                    }
 ;
 
 sinal   :   /*VAZIO*/
@@ -193,35 +218,51 @@ sinal   :   /*VAZIO*/
 // LINHA 28
 termo   :   fator 
                 {
-                    // [FAZER] Definir termo.tipo = fator.tipo.
+                    /* Repassando tipo de 'fator' ($1) para 'termo'($$) */
+                    strcpy($$, $1);
                 }
+
         |   termo PRODUTO fator                 
                 {
-                    // [FAZER] Comparar termo.tipo == fator.tipo.
+                    /* Verificando tipos de $1 e $3 e repassando para 'termo' */
+                    strcpy($$, validaTipos(nl,$1, $3));
+ 
                 }
         |   termo DIVISAO fator
                 {
-                    // [FAZER] Comparar termo.tipo == fator.tipo.
+                    /* Verificando tipos de $1 e $3 e repassando para 'termo' */
+                    strcpy($$, validaTipos(nl,$1, $3));
                 }
         |   termo AND fator
                 {
-                    // [FAZER] Comparar termo.tipo == fator.tipo.
+                    /* Verificando tipos de $1 e $3 e repassando para 'termo' */
+                    strcpy($$, validaTipos(nl,$1, $3));
                 }
 ; 
               
 // LINHA 29
 fator   :   variavel
                 {
-                    // [FAZER] Repassar "tipo" de "variavel" para "fator"
+                    /* Repassando tipo de 'variavel' ($2) para 'fator'($$) */
+                    strcpy($$, $1);
                 }
         |   NUMERO
                 {
-                    // [FAZER] Definir "fator" como tipo inteiro.
+                    /* Definindo tipo de 'fator' para 'integer'. */
+                    strcpy($$, "integer");
                 }
         /* ADCIONAR ASSIM QUE FUNÇÕES FOREM APRESENTADAS.*/
-        // |   chamada_funcao  
-        | ABRE_PARENTESES expressao FECHA_PARENTESES
+//      |   chamada_funcao  
+        |   ABRE_PARENTESES expressao FECHA_PARENTESES
+                {
+                    /* Repassando tipo de 'expressao' ($2) para 'fator'($$) */
+                    strcpy($$, $2);
+                }
         |   NOT fator
+                {
+                    /* Repassando tipo de  $2 para $$ */
+                    strcpy($$, $2);
+                }
 ;
 
 // LINHA 30
@@ -229,6 +270,12 @@ variavel:   IDENT
                 {
                     // [FAZER] Buscar atributo de variáveis e repassar pra "variavel"
                     // [FAZER] Verificar existência de IDENT (retorno de buscaTabelaSimbolos).
+                                            
+                    /* Armazena em 'avs' atributos de 'token' após verificação por validaSimbolo(); */
+                    avs = *( (Atributos_VS *) validaSimbolo(token));
+
+                    /* repassa tipo de IDENT para 'variavel' .*/
+                    strcpy($$,  avs.tipo);
                 }
 ;
 
