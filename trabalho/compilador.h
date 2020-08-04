@@ -100,6 +100,25 @@ void mostra_att_PROC(Atributos_PROC *ponteiro);
     -----------------------------------
 */
 
+/*	
+	--------------------------------------
+	| 	INICIO --- ESTRUTURAS BISON      |
+	--------------------------------------
+*/
+
+typedef struct variavel_simples_t{
+	char token[128];
+	char tipo[20];
+	unsigned char nivel;
+	unsigned char deslocamento;
+}Variavel_Simples;
+
+/*
+    -----------------------------------
+    |   FIM --- ESTRUTURAS BISON      |
+    -----------------------------------
+*/
+
 /* -------------------------------------------------------------------
  * vari�veis globais
  * ------------------------------------------------------------------- */
@@ -122,6 +141,12 @@ void geraCodigo (char* rot, char* comando);
     -----------------------------------
 */
 
+/* 
+		-------------------------
+		|		VALIDAÇÃO		|
+		-------------------------	
+*/
+
 /*Recebe o número de variáveis em num_variaveis e imprime "AMEM num_variaveis" em MEPA*/
 void imprimeAMEM (int *num_variaveis);
 
@@ -136,4 +161,31 @@ char * validaTipos(int nivel, char *primeiro, char *segundo);
 	e imprime mensagem de error e para execussão (exit(-1)) caso seja falso.
 */
 void * validaSimbolo(char *simbolo);
+
+/* 
+		-----------------------------
+		|		FIM VALIDAÇÃO		|
+		-----------------------------	
+*/
+
+
+/* 
+		-----------------------------
+		|		DEFINIÇÕES MEPA		|
+		-----------------------------	
+*/
+
+/* Recebe texto com valor de constante e imprime em arquivo MEPA */
+void carregaConstanteMEPA(char *constante);
+
+/* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de recuperação de variável em arquivo MEPA.*/
+void carregaVariavelSimplesMEPA(int nivel_lexico, int deslocamento);
+
+/* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de armazenamento de valore em variavel MEPA.*/
+void armazenaVariavelSimplesMEPA(int nivel_lexico, int deslocamento);
+/* 
+		---------------------------------
+		|		FIM DEFINIÇÕES MEPA		|
+		---------------------------------	
+*/
 

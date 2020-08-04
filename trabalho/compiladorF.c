@@ -181,7 +181,7 @@ void defineTipoVariavel(unsigned char quantidade, char* tipo){
 
 /* 
 	-------------------------
-	|		MISCELÂNEA		|
+	|		VALIDAÇÃO		|
 	-------------------------	
 */
 
@@ -220,8 +220,57 @@ void * validaSimbolo(char *simbolo){
 
 /* 
 	-----------------------------
-	|		FIM MISCELÂNEA		|
+	|		FIM VALIDAÇÃO		|
 	-----------------------------	
+*/
+
+
+/* 
+	-----------------------------
+	|		DEFINIÇÕES MEPA		|
+	-----------------------------	
+*/
+
+/* Recebe texto com valor de constante e imprime em arquivo MEPA */
+void carregaConstanteMEPA(char *constante){
+
+	char resultado[20];
+
+	/* Armazenando comando 'CRCT constante' em buffer resltado */	
+	sprintf(resultado, "CRCT %s", constante);
+
+	/* Imprimindo resultado em MEPA */
+	geraCodigo(NULL,resultado);
+}
+
+/* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de recuperação de variável em arquivo MEPA.*/
+void carregaVariavelSimplesMEPA(int nivel_lexico, int deslocamento){
+
+	char 	resultado[20];
+
+	/* Armazenando comando 'CRCT nivel_lexico,deslocamento' em buffer resltado */
+	sprintf(resultado, "CRVL %d,%d", nivel_lexico, deslocamento);
+
+	/* Imprimindo resultado em MEPA */
+	geraCodigo(NULL,resultado);
+}
+
+/* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de armazenamento de valore em variavel MEPA.*/
+void armazenaVariavelSimplesMEPA(int nivel_lexico, int deslocamento){
+
+	char 	resultado[20];
+
+	/* Armazenando comando 'ARMZ nivel_lexico,deslocamento' em buffer resltado */
+	sprintf(resultado, "ARMZ %d,%d", nivel_lexico, deslocamento);
+
+	/* Imprimindo resultado em MEPA */
+	geraCodigo(NULL,resultado);
+}
+
+/* 
+	---------------------------------
+	|		FIM DEFINIÇÕES MEPA		|
+	---------------------------------	
 */
 
 
