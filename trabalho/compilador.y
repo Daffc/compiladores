@@ -31,10 +31,12 @@ Atributos_PROC aproc;
 /*  Auxilia na recuperação de Atributos */
 void   *atributos;
 
+/* Auxilia em operções com entrada da tablea de simbolos. */
+EntradaTabelaSimbolos entrada_ts;
 %}
 
 %union{
-    EntradaTabelaSimbolos entrada_ts;
+    Variavel_Simples v_sim;
     char    texto[128];
 }
 
@@ -54,7 +56,7 @@ void   *atributos;
 %token NUMERO
 
 /* TOKEN IDENTIFICADOR */
-%token <entrada_ts> IDENT
+%token IDENT
 
 
 /*!!!!!! NÃO UTILIZADOS !!!!!!!*/
@@ -62,8 +64,8 @@ void   *atributos;
 
 
 /* DEFINIÇÃO PARA ESTADOS NÃO-TERMINAIS */
-
-%type <texto> variavel fator termo exp_simples expressao
+%type <v_sim> variavel
+%type <texto> fator termo exp_simples expressao
 
 %%
 
@@ -106,28 +108,28 @@ lista_id_var: lista_id_var VIRGULA IDENT
                 { 
                     num_vars ++;
 
-                    strcpy($3.identificador, token);         /* Resgata nome de variável. */
-                    $3.categoria = VariavelSimples;          /* Definindo Categoria de entrada. */
-                    $3.nivel = nivel_lexico;                           /* Indica o nível lexico da VS atual */
+                    strcpy(entrada_ts.identificador, token);         /* Resgata nome de variável. */
+                    entrada_ts.categoria = VariavelSimples;          /* Definindo Categoria de entrada. */
+                    entrada_ts.nivel = nivel_lexico;                           /* Indica o nível lexico da VS atual */
                     avs.tipo[1] = '\0';      /* Define o tipo de variável como string vazia. */
                     avs.deslocamento = desloc; /* Deslocamento da variável. */
 
                     /* Adicionando Novo Simbolo a Tabela de Simbolos */
-                    insereTabelaSimbolos($3.identificador, $3.categoria, $3.nivel, &avs);
+                    insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &avs);
 
                     desloc ++;  /* Incrementa deslocamento par aproxima variável.*/
                 } 
             | IDENT 
                 { 
                     num_vars ++;
-                    strcpy($1.identificador, token);         /* Resgata nome de variável. */
-                    $1.categoria = VariavelSimples;          /* Definindo Categoria de entrada. */
-                    $1.nivel = nivel_lexico;                           /* Indica o nível lexico da VS atual */
+                    strcpy(entrada_ts.identificador, token);         /* Resgata nome de variável. */
+                    entrada_ts.categoria = VariavelSimples;          /* Definindo Categoria de entrada. */
+                    entrada_ts.nivel = nivel_lexico;                           /* Indica o nível lexico da VS atual */
                     avs.tipo[1] = '\0';      /* Define o tipo de variável como string vazia. */
                     avs.deslocamento = desloc; /* Deslocamento da variável. */
 
                     /* Adicionando Novo Simbolo a Tabela de Simbolos */
-                    insereTabelaSimbolos($1.identificador, $1.categoria, $1.nivel, &avs);
+                    insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &avs);
 
                     desloc ++;  /* Incrementa deslocamento par aproxima variável.*/
 
@@ -159,7 +161,10 @@ comando_sem_rotulo  :   atribui
 atribui :   variavel ATRIBUICAO expressao
                 {
                     /* Verificando se 'variavel' $1 e 'expressao' $3 possuem o mesmo tipo */
-                    validaTipos(nl,$1, $3);
+                    validaTipos(nl, $1.tipo, $3);
+
+                    /* [FAZER] Definir armazenamento MEPA para operação!!!! */
+                    armazenaVariavelSimplesMEPA($1.nivel, $1.deslocamento);
                 }
 ;
 
@@ -197,22 +202,35 @@ exp_simples :   sinal termo
                     {
                         /* Verificando tipos de $1 e $3 e repassando para 'exp_simples' */
                         strcpy($$, validaTipos(nl,$1, $3));
+
+                        /* Imprime comando MEPA de SOMA. */
+                        geraCodigo(NULL, "SOMA");
                     }
             |   exp_simples SUBTRACAO termo
                     {
                         /* Verificando tipos de $1 e $3 e repassando para 'exp_simples' */
                         strcpy($$, validaTipos(nl,$1, $3));
+
+                        /* Imprime comando MEPA de SUBTRAÇÃO. */
+                        geraCodigo(NULL, "SUBT");
                     }
             |   exp_simples OR termo
                     {
                         /* Verificando tipos de $1 e $3 e repassando para 'exp_simples' */
                         strcpy($$, validaTipos(nl,$1, $3));
+
+                        /* Imprime comando MEPA de DISJUNÇÃO. */
+                        geraCodigo(NULL, "DISJ");
                     }
 ;
 
 sinal   :   /*VAZIO*/
         |   SOMA    
         |   SUBTRACAO
+                {
+                    /* Imprime comando MEPA de INVERSÃO DE SINAL. */
+                    geraCodigo(NULL, "INVER");
+                }
 ;
 
 // LINHA 28
@@ -226,17 +244,26 @@ termo   :   fator
                 {
                     /* Verificando tipos de $1 e $3 e repassando para 'termo' */
                     strcpy($$, validaTipos(nl,$1, $3));
+
+                    /* Imprime comando MEPA de MULTIPLICAÇÃO. */
+                    geraCodigo(NULL, "MULT");
  
                 }
         |   termo DIVISAO fator
                 {
                     /* Verificando tipos de $1 e $3 e repassando para 'termo' */
                     strcpy($$, validaTipos(nl,$1, $3));
+                    
+                    /* Imprime comando MEPA de DIVISÃO. */
+                    geraCodigo(NULL, "DIVI");
                 }
         |   termo AND fator
                 {
                     /* Verificando tipos de $1 e $3 e repassando para 'termo' */
                     strcpy($$, validaTipos(nl,$1, $3));
+
+                    /* Imprime comando MEPA de CONJUNÇÃO. */
+                    geraCodigo(NULL, "CONJ");
                 }
 ; 
               
@@ -244,12 +271,17 @@ termo   :   fator
 fator   :   variavel
                 {
                     /* Repassando tipo de 'variavel' ($2) para 'fator'($$) */
-                    strcpy($$, $1);
+                    strcpy($$, $1.tipo);
+
+                    carregaVariavelSimplesMEPA( nivel_lexico, $1.deslocamento);
                 }
         |   NUMERO
                 {
                     /* Definindo tipo de 'fator' para 'integer'. */
                     strcpy($$, "integer");
+
+                    /* Imprime comando MEPA de definição de constante. */
+                    carregaConstanteMEPA(token);
                 }
         /* ADCIONAR ASSIM QUE FUNÇÕES FOREM APRESENTADAS.*/
 //      |   chamada_funcao  
@@ -262,20 +294,23 @@ fator   :   variavel
                 {
                     /* Repassando tipo de  $2 para $$ */
                     strcpy($$, $2);
+
+                    /* Imprime comando MEPA de negação. */
+                    geraCodigo(NULL, "NEGA");
                 }
 ;
 
 // LINHA 30
 variavel:   IDENT
-                {
-                    // [FAZER] Buscar atributo de variáveis e repassar pra "variavel"
-                    // [FAZER] Verificar existência de IDENT (retorno de buscaTabelaSimbolos).
-                                            
+                {              
                     /* Armazena em 'avs' atributos de 'token' após verificação por validaSimbolo(); */
                     avs = *( (Atributos_VS *) validaSimbolo(token));
 
-                    /* repassa tipo de IDENT para 'variavel' .*/
-                    strcpy($$,  avs.tipo);
+                    /* Populando 'variavel' com atributos recebidos de Tabela de Simbolos. */
+                    strcpy($$.token, token);
+                    strcpy($$.tipo, avs.tipo);
+                    $$.nivel = nivel_lexico;
+                    $$.deslocamento = avs.deslocamento;
                 }
 ;
 
