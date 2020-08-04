@@ -163,7 +163,7 @@ atribui :   variavel ATRIBUICAO expressao
                     /* Verificando se 'variavel' $1 e 'expressao' $3 possuem o mesmo tipo */
                     validaTipos(nl, $1.tipo, $3);
 
-                    /* [FAZER] Definir armazenamento MEPA para operação!!!! */
+                    /* Defindo instrução MEPA para armazenamento em 'variavel' */
                     armazenaVariavelSimplesMEPA($1.nivel, $1.deslocamento);
                 }
 ;
