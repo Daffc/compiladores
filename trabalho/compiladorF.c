@@ -342,6 +342,30 @@ void armazenaVariavelSimplesMEPA(int nivel_lexico, int deslocamento){
 	geraCodigo(NULL,resultado);
 }
 
+/* Recebe 'rotulo' imprime comando MEPA de desvio condicional em arquivo MEPA.*/
+void imprimeDesviaSeFalsoMEPA(char* rotulo){
+	
+	char resultado[20];
+
+	/* Imnprimeindo comando 'DSVF rotulo' em buffer resltado */
+	sprintf(resultado, "DSVF %s", rotulo);
+
+	/* Imprimindo resultado em MEPA */
+	geraCodigo(NULL,resultado);
+}
+
+/* Recebe 'rotulo' imprime comando MEPA de desvio incondicional em arquivo MEPA.*/
+void imprimeDesviaSempre(char* rotulo){
+	
+	char resultado[20];
+
+	/* Imnprimeindo comando 'DSVS rotulo' em buffer resltado */
+	sprintf(resultado, "DSVS %s", rotulo);
+
+	/* Imprimindo resultado em MEPA */
+	geraCodigo(NULL,resultado);
+}
+
 /* 
 	---------------------------------
 	|		FIM DEFINIÇÕES MEPA		|

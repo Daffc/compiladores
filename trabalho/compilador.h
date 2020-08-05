@@ -127,8 +127,6 @@ void empilhaRotulo(char *rotulo);
 /* Retorna rotulo no topo da pilha de rotulos em 'rotulo'.*/
 void desempilhaRotulo(char *rotulo);
 
-
-
 /*
     ---------------------------------
     |   FIM --- PILHA DE ROTULOS    |
@@ -218,6 +216,12 @@ void carregaVariavelSimplesMEPA(int nivel_lexico, int deslocamento);
 
 /* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de armazenamento de valore em variavel MEPA.*/
 void armazenaVariavelSimplesMEPA(int nivel_lexico, int deslocamento);
+
+/* Recebe 'rotulo' imprime comando MEPA de desvio condicional em arquivo MEPA.*/
+void imprimeDesviaSeFalsoMEPA(char* rotulo);
+
+/* Recebe 'rotulo' imprime comando MEPA de desvio incondicional em arquivo MEPA. */
+void imprimeDesviaSempre(char* rotulo);
 /* 
 		---------------------------------
 		|		FIM DEFINIÇÕES MEPA		|

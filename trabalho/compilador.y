@@ -10,15 +10,13 @@
 #include <string.h>
 #include "compilador.h"
 
-/*Armazena o nível  nível léxico*/
-int nivel_lexico = 0;
 
-/* Armazena a quandtidade de variáveis para impressão de "AMEM num_vars */
-int num_vars;
+int nivel_lexico = 0,   /*Armazena o nível  nível léxico*/
+    num_vars,           /* Armazena a quandtidade de variáveis para impressão de "AMEM num_vars */
+    num_tipo_vars;             /* Armazena a quantidade de variáveis a terem sei tipo identificado. */
 
-/* Armazena a quantidade de variáveis a terem sei tipo identificado. */
-int desloc;
-
+char    entrada_while[4],
+        saida_while[4];
 /*  Armazena atributos de variável simples*/
 Atributos_VS avs;
 
@@ -58,14 +56,16 @@ EntradaTabelaSimbolos entrada_ts;
 /* TOKEN IDENTIFICADOR */
 %token IDENT
 
+/* TOKEN WHILE*/
+%token WHILE
 
 /*!!!!!! NÃO UTILIZADOS !!!!!!!*/
-%token LABEL TYPE ARRAY OF PROCEDURE FUNCTION GOTO IF THEN ELSE WHILE DO
+%token LABEL TYPE ARRAY OF PROCEDURE FUNCTION GOTO IF THEN ELSE DO
 
 
 /* DEFINIÇÃO PARA ESTADOS NÃO-TERMINAIS */
 %type <v_sim> variavel
-%type <texto> fator termo exp_simples expressao
+%type <texto> fator termo exp_simples expressao relacao
 
 %%
 
@@ -94,44 +94,50 @@ declara_vars: declara_vars declara_var
             | declara_var 
 ;
 
-declara_var :   {desloc = 0;} lista_id_var DOIS_PONTOS tipo  PONTO_E_VIRGULA
+declara_var :   {num_tipo_vars = 0;} lista_id_var DOIS_PONTOS tipo  PONTO_E_VIRGULA
 ;
 
 tipo        : IDENT
                 {
-                    defineTipoVariavel(desloc, token);    /* Definindo o tipo das "desloc" variáveis para "token" */
+                    defineTipoVariavel(num_tipo_vars, token);    /* Definindo o tipo das "num_tipo_vars" variáveis para "token" */
+                    mostraTabelaSimbolos();
                 }
 
 ;
 
 lista_id_var: lista_id_var VIRGULA IDENT    
                 { 
-                    num_vars ++;
 
                     strcpy(entrada_ts.identificador, token);         /* Resgata nome de variável. */
                     entrada_ts.categoria = VariavelSimples;          /* Definindo Categoria de entrada. */
                     entrada_ts.nivel = nivel_lexico;                           /* Indica o nível lexico da VS atual */
                     avs.tipo[1] = '\0';      /* Define o tipo de variável como string vazia. */
-                    avs.deslocamento = desloc; /* Deslocamento da variável. */
+                    avs.deslocamento = num_vars; /* Deslocamento da variável. */
+
+                    
 
                     /* Adicionando Novo Simbolo a Tabela de Simbolos */
                     insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &avs);
 
-                    desloc ++;  /* Incrementa deslocamento par aproxima variável.*/
+                    num_vars ++;       /* Incrementa 'deslocamento' par aproxima variável.*/
+                    num_tipo_vars ++;  /* Acrecentando a contagem de variáeis a serem tipadas.*/
                 } 
             | IDENT 
                 { 
-                    num_vars ++;
+                    
                     strcpy(entrada_ts.identificador, token);         /* Resgata nome de variável. */
                     entrada_ts.categoria = VariavelSimples;          /* Definindo Categoria de entrada. */
                     entrada_ts.nivel = nivel_lexico;                           /* Indica o nível lexico da VS atual */
                     avs.tipo[1] = '\0';      /* Define o tipo de variável como string vazia. */
-                    avs.deslocamento = desloc; /* Deslocamento da variável. */
+                    avs.deslocamento = num_vars; /* Deslocamento da variável. */
+
+                    
 
                     /* Adicionando Novo Simbolo a Tabela de Simbolos */
                     insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &avs);
 
-                    desloc ++;  /* Incrementa deslocamento par aproxima variável.*/
+                    num_vars ++;       /* Incrementa 'deslocamento' par aproxima variável.*/
+                    num_tipo_vars ++;  /* Acrecentando a contagem de variáeis a serem tipadas.*/
 
                 }
 ;
@@ -154,7 +160,9 @@ comandos:   comando_sem_rotulo
         |   /* VAZIO -> MARS PORQUE NÃO EXISTE EM DEFINIÇÃO? */
 ;
 
+// LINHA 18
 comando_sem_rotulo  :   atribui
+                    |   comando_repetitivo
 ; 
 
 // LINHA 19
@@ -168,6 +176,39 @@ atribui :   variavel ATRIBUICAO expressao
                 }
 ;
 
+
+// LINHA 23
+comando_repetitivo  :   WHILE 
+                            {
+                                /* Gerando os Rótulos de entrada e saida do WHILE*/
+                                empilhaRotulo(entrada_while);
+
+                                /* Imprimendo rótulo de entrada do while em arquivo MEPA */
+                                geraCodigo(entrada_while, "NADA");
+                            } 
+                        expressao 
+                        DO
+                            { 
+                                /* Gerando os Rótulos de entrada e saida do WHILE*/
+                                empilhaRotulo(saida_while);
+
+                                /* Imprime comando para saida de loop caso 'expressao' seja falsa.*/
+                                imprimeDesviaSeFalsoMEPA(saida_while);
+                            } 
+                        T_BEGIN comandos T_END PONTO_E_VIRGULA 
+                            {
+                                
+                                desempilhaRotulo(saida_while);
+                                desempilhaRotulo(entrada_while);
+
+                                /* Imprime comando para retorno ao inícion do while */
+                                imprimeDesviaSempre(entrada_while);
+                                
+                                /* Imprimendo rótulo de saida do while em arquivo MEPA */
+                                geraCodigo(saida_while, "NADA");
+                            }
+;
+
 // LINHA 25
 expressao:   exp_simples
                 {
@@ -179,16 +220,42 @@ expressao:   exp_simples
                 {
                     /* Verificando tipos de $1 e $3 e repassando para 'expressao' */
                     strcpy($$, validaTipos(nl,$1, $3));
+                    /* Imprime comando MEPA de relação  obtido por 'relacao' */
+                    geraCodigo(NULL, $2);
                 }
 ;
 
 //LINHA 26
 relacao :   IGUAL
+                {
+                    /* Imprime comando MEPA de '='. */
+                    strcpy($$, "CMIG");
+                }
         |   DIFERENTE
+                {
+                    /* Imprime comando MEPA de '<>'. */
+                    strcpy($$, "CMDG");
+                }
         |   MENOR_QUE
+                {
+                    /* Imprime comando MEPA de '<'. */
+                    strcpy($$, "CMME");
+                }
         |   MAIOR_QUE
+                {
+                    /* Imprime comando MEPA de '>'. */
+                    strcpy($$, "CMMA");
+                }
         |   MENOR_OU_IGUAL
+                {
+                    /* Imprime comando MEPA de '<='. */
+                    strcpy($$, "CMEG");
+                }
         |   MAIOR_OU_IGUAL
+                {
+                    /* Imprime comando MEPA de '>='. */
+                    strcpy($$, "CMAG");
+                }
 ;
 
 //LINHA 27
