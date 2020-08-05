@@ -23,6 +23,7 @@
 * ------------------------------------------------------------------- */
 
 Tabela_Simbolos ts;
+Pilha_Rotulos pr;
 
 FILE* fp=NULL;
 void geraCodigo (char* rot, char* comando) {
@@ -104,6 +105,18 @@ void mostraTabelaSimbolos(){
 	printf("------------------------------\n\n");
 }
 
+void mostraPilhaRotulos(){
+
+	printf("------------------------------\n");
+	printf("TOPO: %d\tCONTADOR: %d\n", pr.topo, pr.contador);
+	printf("------------------------------\n");
+	for (int i = pr.topo; i >= 0; i--){
+		/*	Imprime elemento da tabela de simbolos	*/
+		printf("%d\t%d", i, pr.rotulos[i]);
+		printf("\n");
+	}
+	printf("------------------------------\n\n");
+}
 
 /* 
 	-----------------------------
@@ -111,14 +124,17 @@ void mostraTabelaSimbolos(){
 	-----------------------------	
 */
 
+/*	Inicializando Tabela de Simbolos*/
+void iniciaTabelaSimbolos(){
+
+	/*	Inicializando tabela de simbolos com uma entrada. */
+	ts.tamanho = 1;
+	ts.topo = -1;
+	ts.entrada = malloc(sizeof(EntradaTabelaSimbolos));
+}
+
 /*	Insere novo simbolo em tabela de simbolos de acordo com sua categoria.	*/
 void insereTabelaSimbolos(char* identificador, CategoriaSimbolos categoria, unsigned char nivel, void *atributos){
-	/*	Inicializando tabela de simbolos */
-	if (ts.tamanho == 0){
-		ts.tamanho = 1;
-		ts.topo = -1;
-		ts.entrada = malloc(sizeof(EntradaTabelaSimbolos));
-	}
 
 	/*	Caso não tenha espaço para novo simbolo, duplicar tamanho de tabela.	*/
 	if (ts.tamanho <= (ts.topo + 1)){
@@ -199,7 +215,7 @@ char * validaTipos(int linha, char *primeiro, char *segundo){
 }
 
 
-void * validaSimbolo(char *simbolo){
+void * validaSimbolo(int linha, char *simbolo){
 	
 	/* Recupera atributos da variável */
 	void *ponteiro = buscaTabelaSimbolos(simbolo);
@@ -207,7 +223,7 @@ void * validaSimbolo(char *simbolo){
 	/* Verifica se 'simbolo' NÃO consta em Tabela de Sombolos, retirnando mensagem. */
 	if (!ponteiro){
 		/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
-		fprintf (stderr,"ERRO LINHA %d: Simbolo '%s' não definido.\n", nl, simbolo);
+		fprintf (stderr,"ERRO LINHA %d: Simbolo '%s' não definido.\n", linha, simbolo);
 		exit(-1);
 	}
 	
@@ -227,6 +243,60 @@ void liberaTabelaSimbolos(){
 	-----------------------------
 	|		FIM VALIDAÇÃO		|
 	-----------------------------	
+*/
+
+/*	
+	------------------------------------
+	| 	INICIO --- PILHA DE ROTULOS    |
+	------------------------------------
+*/
+
+/* Define valores Iniciais para Pilha de Rotulos vazia. */
+void iniciaPilhaRotulos(){
+	pr.topo = -1;
+	pr.contador = -1;
+}
+
+/* Empilha novo elemento na Pilha de Rotulos e retorna seu rótulo. */
+void empilhaRotulo( char *rotulo){
+	
+	/* Ajustando contadores */
+	pr.contador ++;
+	pr.topo++;
+
+	/* Verifica se é possível armazenar novo rótulo */
+	if(pr.topo >= MAX_ROTULOS){
+		fprintf (stderr,"ERRO: Quantidade máxima de Rotulos ativos (%d) excedida.\n", MAX_ROTULOS);
+		exit(-1);
+	}
+
+	/* Armazena contador de rótulo */
+	pr.rotulos[pr.topo] = pr.contador;
+	
+	/*Retorna retorna rótulo em ponteiro 'rotulo'*/
+	sprintf(rotulo, "R%02d", pr.contador);
+
+}
+/* Busca elemento na tabela de simbolos de acordo com o identificador informado.*/
+void desempilhaRotulo(char *rotulo){
+
+	/* Verifica se existe rótulo a ser desempilhado. */
+	if(pr.topo < 0){
+		fprintf (stderr,"ERRO: Não existe rótulo a ser desempilhado.\n");
+		exit(-1);
+	}
+
+	/*Retorna retorna rótulo em ponteiro 'rotulo'*/
+	sprintf(rotulo, "R%02d", pr.rotulos[pr.topo]);
+
+	/* Ajustando contadores */
+	pr.topo --;	
+}
+
+/*
+    ---------------------------------
+    |   FIM --- PILHA DE ROTULOS    |
+    ---------------------------------
 */
 
 
@@ -286,44 +356,35 @@ void armazenaVariavelSimplesMEPA(int nivel_lexico, int deslocamento){
 */
 
 // int main (){
+// 	char rotulo[20];
 
-// 	Atributos_VS dummy_AVS;
-
-// 	strcpy(dummy_AVS.tipo, "");
-// 	dummy_AVS.deslocamento = 1;
-// 	insereTabelaSimbolos("a", VariavelSimples, 0, &dummy_AVS);
-// 	mostraTabelaSimbolos();
-
-// 	strcpy(dummy_AVS.tipo, "");
-// 	dummy_AVS.deslocamento ++;
-// 	insereTabelaSimbolos("b", VariavelSimples, 0, &dummy_AVS);
-// 	mostraTabelaSimbolos();
-
-// 	defineTipoVariavel(2, "Inteiro");
-// 	mostraTabelaSimbolos();
-
-// 	retiraEntradasTabelaSimbolos(2);
-
-// 	strcpy(dummy_AVS.tipo, "");
-// 	dummy_AVS.deslocamento ++;
-// 	insereTabelaSimbolos("c", VariavelSimples, 1, &dummy_AVS);
-// 	mostraTabelaSimbolos();
-
-// 	strcpy(dummy_AVS.tipo, "");
-// 	dummy_AVS.deslocamento ++;
-// 	insereTabelaSimbolos("d", VariavelSimples, 2, &dummy_AVS);
-// 	mostraTabelaSimbolos();
+// 	iniciaPilhaRotulos(rotulo);
+// 	mostraPilhaRotulos();
 	
-// 	defineTipoVariavel(2, "Boolean");
-// 	mostraTabelaSimbolos();
-
-// 	strcpy(dummy_AVS.tipo, "");
-// 	dummy_AVS.deslocamento ++;
-// 	insereTabelaSimbolos("e", VariavelSimples, 2, &dummy_AVS);
-// 	mostraTabelaSimbolos();	
+// 	empilhaRotulo(rotulo);
+// 	mostraPilhaRotulos();
 	
-// 	defineTipoVariavel(1, "Float");
-// 	mostraTabelaSimbolos();
+// 	empilhaRotulo(rotulo);
+// 	mostraPilhaRotulos();
+	
+// 	empilhaRotulo(rotulo);
+// 	mostraPilhaRotulos();
+	
+// 	empilhaRotulo(rotulo);
+// 	mostraPilhaRotulos();
+	
+// 	desempilhaRotulo(rotulo);
+// 	mostraPilhaRotulos();
+
+// 	desempilhaRotulo(rotulo);
+// 	mostraPilhaRotulos();
+
+// 	empilhaRotulo(rotulo);
+// 	mostraPilhaRotulos();
+
+
+// 	desempilhaRotulo(rotulo);
+// 	mostraPilhaRotulos();
 
 // }
 

@@ -304,7 +304,7 @@ fator   :   variavel
 variavel:   IDENT
                 {              
                     /* Armazena em 'avs' atributos de 'token' após verificação por validaSimbolo(); */
-                    avs = *( (Atributos_VS *) validaSimbolo(token));
+                    avs = *( (Atributos_VS *) validaSimbolo(nl, token));
 
                     /* Populando 'variavel' com atributos recebidos de Tabela de Simbolos. */
                     strcpy($$.token, token);
@@ -336,11 +336,13 @@ int main (int argc, char** argv) {
 /* -------------------------------------------------------------------
  *  Inicia a Tabela de S�mbolos
  * ------------------------------------------------------------------- */
-    Tabela_Simbolos ts;
+    iniciaTabelaSimbolos();
+    iniciaPilhaRotulos();
+
     yyin=fp;
     yyparse();
     
     liberaTabelaSimbolos();
-    
+
     return 0;
 }

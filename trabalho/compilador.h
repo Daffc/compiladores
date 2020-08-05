@@ -12,6 +12,7 @@
  * ------------------------------------------------------------------- */
 
 #define TAM_TOKEN 16
+#define MAX_ROTULOS 20
 
 typedef enum simbolos { 
   simb_program, simb_var, simb_begin, simb_end, 
@@ -79,6 +80,8 @@ typedef struct tabela_simbolos_t{
 	Declarando API de tabela de Simbolos.
 */
 
+/* Define valores para Tabela de Simbolos vazia. */
+void iniciaTabelaSimbolos();
 /* Empilha novo elemento na tabela de simbolos. */
 void insereTabelaSimbolos(char* identificador, CategoriaSimbolos categoria, unsigned char nivel, void *atributos);
 /* Busca elemento na tabela de simbolos de acordo com o identificador informado.*/
@@ -100,6 +103,36 @@ void mostra_att_PROC(Atributos_PROC *ponteiro);
     -----------------------------------
     |   FIM --- TABELA DE SIMBOLOS    |
     -----------------------------------
+*/
+
+/*	
+	------------------------------------
+	| 	INICIO --- PILHA DE ROTULOS    |
+	------------------------------------
+*/
+
+/*	Definindo estrutura para Pilha de Rotulos.*/
+typedef struct pilha_rotulos_t{
+	int 					topo;					/* armazena o topo da pilha de rótulos	*/
+	unsigned int			contador;				/* Incrementado sempre que um rótulo é solicitado. */
+	int 					rotulos[MAX_ROTULOS]; 	/* Quantidade máxima de Rótulos "abertos" por vez. */
+} Pilha_Rotulos;
+
+/* Define valores Iniciais para Pilha de Rotulos vazia. */
+void iniciaPilhaRotulos();
+
+/* Empilha novo elemento na Pilha de Rotulos e retorna seu rótulo em 'rotulo'. */
+void empilhaRotulo(char *rotulo);
+
+/* Retorna rotulo no topo da pilha de rotulos em 'rotulo'.*/
+void desempilhaRotulo(char *rotulo);
+
+
+
+/*
+    ---------------------------------
+    |   FIM --- PILHA DE ROTULOS    |
+    ---------------------------------
 */
 
 /*	
@@ -162,7 +195,7 @@ char * validaTipos(int nivel, char *primeiro, char *segundo);
 	Verifica se "primeiro" e "segundo" São do mesmo tipo, retornando "primeiro" caso verdadeiro 
 	e imprime mensagem de error e para execussão (exit(-1)) caso seja falso.
 */
-void * validaSimbolo(char *simbolo);
+void * validaSimbolo(int linha, char *simbolo);
 
 /* 
 		-----------------------------
