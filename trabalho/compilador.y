@@ -339,7 +339,8 @@ int main (int argc, char** argv) {
     Tabela_Simbolos ts;
     yyin=fp;
     yyparse();
-
+    
+    liberaTabelaSimbolos();
+    
     return 0;
 }
-

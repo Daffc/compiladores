@@ -215,6 +215,11 @@ void * validaSimbolo(char *simbolo){
 	return ponteiro;
 }
 
+/* Libera Memória Alocada por Tablea de Simbolos*/
+void liberaTabelaSimbolos(){
+	free(ts.entrada);
+}
+
 
 
 

@@ -87,6 +87,8 @@ void * buscaTabelaSimbolos(char* identificador);
 void retiraEntradasTabelaSimbolos(unsigned char quantidade);
 /* Define para "quantidade" variáveis o tipo "tipo".*/
 void defineTipoVariavel(unsigned char quantidade, char* tipo);
+/* Libera Memória Alocada por Tablea de Simbolos*/
+void liberaTabelaSimbolos();
 
 /*	Debug */
 void mostraTabelaSimbolos();
