@@ -67,6 +67,10 @@ EntradaTabelaSimbolos entrada_ts;
 %type <v_sim> variavel
 %type <texto> fator termo exp_simples expressao relacao
 
+/* Aplicando precedência para IF THEN ELSE */
+%nonassoc LOWER_THAN_ELSE
+%nonassoc ELSE
+
 %%
 
 programa    :{ geraCodigo (NULL, "INPP"); } PROGRAM IDENT ABRE_PARENTESES lista_idents FECHA_PARENTESES PONTO_E_VIRGULA bloco PONTO  {geraCodigo (NULL, "PARA"); }
@@ -178,8 +182,8 @@ atribui :   variavel ATRIBUICAO expressao
 ;
 
 // LINHA 22
-comando_condicional :   IF expressao THEN comandos
-                    |   IF expressao THEN  comandos  ELSE comandos
+comando_condicional :   IF expressao THEN comando_sem_rotulo %prec LOWER_THAN_ELSE      /* IF sem ELSE */
+                    |   IF expressao THEN  comando_sem_rotulo  ELSE comando_sem_rotulo  /* IF com ELSE */
 ;
 
 
