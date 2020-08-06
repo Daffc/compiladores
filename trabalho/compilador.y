@@ -196,11 +196,46 @@ atribui :
 ;
 
 // LINHA 22
-comando_condicional :   
-        IF expressao THEN comando_sem_rotulo %prec LOWER_THAN_ELSE      /* IF sem ELSE */
-    |   IF expressao THEN  comando_sem_rotulo  ELSE comando_sem_rotulo  /* IF com ELSE */
+
+comando_condicional: 
+        if_then cond_else 
+            {
+                /* Desempilha Rótulo de saida de if OU if/else */
+                desempilhaRotulo(saida_while);
+
+                /* Imprime rótulo de saida em MEPA */
+                geraCodigo(saida_while, "NADA");
+            }
+;
+if_then     : 
+        IF expressao 
+            {
+                /* Empilha Rótulo para onde deve-se dirigir quando condição IF for FALSA. */
+                empilhaRotulo(saida_while);
+                
+                /* Imprime comando para saida de if caso 'expressao' seja falso (DSVF).*/
+                imprimeDesviaSeFalsoMEPA(saida_while);
+            }
+        THEN comando_sem_rotulo
 ;
 
+cond_else   : 
+        ELSE 
+            {
+                /* Desemmpilha Rótulo para onde deve-se dirigir quando condição IF for FALSA. */
+                desempilhaRotulo(entrada_while);
+                /* Empilha Rótulo para onde deve-se dirigir ao final de 'comando_sem_rótulo' com IF VERDADEIRO */
+                empilhaRotulo(saida_while);
+                
+                /* Imprime instrução MEPA de desvio incondicional (DSVS) ao final de 'comando_sem_rotulo' de IF*/
+                imprimeDesviaSempre(saida_while);
+
+                /* Imprime rótulo para onde deve-se dirigir quando expressão de IF é FALSA (equivalente ao ELSE). */
+                geraCodigo(entrada_while, "NADA");
+            }
+        comando_sem_rotulo
+    |   %prec LOWER_THAN_ELSE
+;
 
 // LINHA 23
 comando_repetitivo  :   
