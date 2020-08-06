@@ -100,7 +100,6 @@ declara_var :   {num_tipo_vars = 0;} lista_id_var DOIS_PONTOS tipo  PONTO_E_VIRG
 tipo        : IDENT
                 {
                     defineTipoVariavel(num_tipo_vars, token);    /* Definindo o tipo das "num_tipo_vars" variáveis para "token" */
-                    mostraTabelaSimbolos();
                 }
 
 ;
@@ -162,7 +161,9 @@ comandos:   comando_sem_rotulo
 
 // LINHA 18
 comando_sem_rotulo  :   atribui
+                    |   comando_condicional
                     |   comando_repetitivo
+                    
 ; 
 
 // LINHA 19
@@ -174,6 +175,11 @@ atribui :   variavel ATRIBUICAO expressao
                     /* Defindo instrução MEPA para armazenamento em 'variavel' */
                     armazenaVariavelSimplesMEPA($1.nivel, $1.deslocamento);
                 }
+;
+
+// LINHA 22
+comando_condicional :   IF expressao THEN comandos
+                    |   IF expressao THEN  comandos  ELSE comandos
 ;
 
 
@@ -259,12 +265,24 @@ relacao :   IGUAL
 ;
 
 //LINHA 27
-exp_simples :   sinal termo
+exp_simples :   termo
                     {
-                        /* Repassando tipo de 'fator' ($2) para 'termo'($$) */
+                        /* Repassando tipo de 'termo' ($1) para 'exp_simples'($$) */
+                        strcpy($$, $1);
+                    }
+            |   SOMA  termo
+                    {
+                        /* Repassando tipo de 'termo' ($2) para 'exp_simples'($$) */
                         strcpy($$, $2);
                     }
-
+            |   SUBTRACAO termo
+                    {
+                        /* Imprime comando MEPA de INVERSÃO DE SINAL. */
+                        geraCodigo(NULL, "INVR");
+                        
+                        /* Repassando tipo de 'termo' ($2) para 'exp_simples'($$) */
+                        strcpy($$, $2);
+                    }
             |   exp_simples SOMA termo
                     {
                         /* Verificando tipos de $1 e $3 e repassando para 'exp_simples' */
@@ -289,15 +307,6 @@ exp_simples :   sinal termo
                         /* Imprime comando MEPA de DISJUNÇÃO. */
                         geraCodigo(NULL, "DISJ");
                     }
-;
-
-sinal   :   /*VAZIO*/
-        |   SOMA    
-        |   SUBTRACAO
-                {
-                    /* Imprime comando MEPA de INVERSÃO DE SINAL. */
-                    geraCodigo(NULL, "INVER");
-                }
 ;
 
 // LINHA 28
