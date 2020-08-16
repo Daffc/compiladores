@@ -78,8 +78,7 @@ programa:
 ;
 
 bloco: 
-        parte_declara_vars comando_composto
-    |   parte_de_declaracao_de_subrotinas
+        parte_declara_vars parte_de_declaracao_de_subrotinas comando_composto
 ;
 
 
@@ -91,12 +90,12 @@ bloco:
 
 parte_declara_vars: 
         {num_vars = 0;} var { imprimeAMEM(&num_vars); }
+    |   /* VAZIO */
 ;
 
 
 var:   
         VAR declara_vars
-    |   /* VAZIO */
 ;
 
 declara_vars: 
@@ -133,8 +132,6 @@ lista_id_var:
 
                 num_vars ++;       /* Incrementa 'deslocamento' par aproxima variável.*/
                 num_tipo_vars ++;  /* Acrecentando a contagem de variáeis a serem tipadas.*/
-                
-                mostraTabelaSimbolos();
             } 
     |   IDENT 
             { 
@@ -152,8 +149,6 @@ lista_id_var:
 
                 num_vars ++;       /* Incrementa 'deslocamento' par aproxima variável.*/
                 num_tipo_vars ++;  /* Acrecentando a contagem de variáeis a serem tipadas.*/
-
-                mostraTabelaSimbolos();
             }
 ;
 
@@ -179,11 +174,13 @@ lista_idents:
 parte_de_declaracao_de_subrotinas:
         declaracao_de_procedimento
 //    |   declaração de funcao
+
+    |   /* VAZIO */
 ;
 
 // LINHA 12
 declaracao_de_procedimento:
-        PROCEDURE IDENT parametros_formais PONTO_E_VIRGULA bloco
+        PROCEDURE IDENT ABRE_PARENTESES parametros_formais FECHA_PARENTESES PONTO_E_VIRGULA bloco
 ;
 
 // LINHA 14
@@ -220,8 +217,8 @@ comandos:
 comando_sem_rotulo:   
         atribui
     |   comando_condicional
-    |   comando_repetitivo
-                    
+    |   comando_repetitivo      
+    |   comando_composto              
 ; 
 
 // LINHA 19
@@ -296,7 +293,7 @@ comando_repetitivo  :
                 /* Imprime comando para saida de loop caso 'expressao' seja falsa.*/
                 imprimeDesviaSeFalsoMEPA(saida_while);
             } 
-        T_BEGIN comandos T_END PONTO_E_VIRGULA 
+        comando_sem_rotulo
             {
                 
                 desempilhaRotulo(saida_while);
@@ -495,6 +492,11 @@ variavel:
 %%
 
 int main (int argc, char** argv) {
+
+    #ifdef YYDEBUG
+        yydebug = 0;
+    #endif
+
     FILE* fp;
     extern FILE* yyin;
 
