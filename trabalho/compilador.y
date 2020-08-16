@@ -1,7 +1,7 @@
 
-// Testar se funciona corretamente o empilhamento de par�metros
-// passados por valor ou por refer�ncia.
-
+// [FAZER] Desalocar variáveis após o fim de procedimentos. 
+// [FAZER] Receber entrada de dados (read -> LEIT). 
+// [FAZER] Imprimir dados em saida (ESCR). 
 
 %{
 #include <stdio.h>
@@ -78,7 +78,8 @@ programa:
 ;
 
 bloco: 
-        parte_declara_vars comando_composto 
+        parte_declara_vars comando_composto
+    |   parte_de_declaracao_de_subrotinas
 ;
 
 
@@ -115,15 +116,15 @@ tipo:
 
 ;
 
-lista_id_var: lista_id_var 
-        VIRGULA IDENT    
+lista_id_var: 
+        lista_id_var VIRGULA IDENT    
             { 
 
-                strcpy(entrada_ts.identificador, token);         /* Resgata nome de variável. */
-                entrada_ts.categoria = VariavelSimples;          /* Definindo Categoria de entrada. */
-                entrada_ts.nivel = nivel_lexico;                           /* Indica o nível lexico da VS atual */
-                avs.tipo[1] = '\0';      /* Define o tipo de variável como string vazia. */
-                avs.deslocamento = num_vars; /* Deslocamento da variável. */
+                strcpy(entrada_ts.identificador, token);    /* Resgata nome de variável. */
+                entrada_ts.categoria = VariavelSimples;     /* Definindo Categoria de entrada. */
+                entrada_ts.nivel = nivel_lexico;            /* Indica o nível lexico da VS atual */
+                avs.tipo[1] = '\0';                         /* Define o tipo de variável como string vazia. */
+                avs.deslocamento = num_vars;                /* Deslocamento da variável. */
 
                 
 
@@ -132,15 +133,17 @@ lista_id_var: lista_id_var
 
                 num_vars ++;       /* Incrementa 'deslocamento' par aproxima variável.*/
                 num_tipo_vars ++;  /* Acrecentando a contagem de variáeis a serem tipadas.*/
+                
+                mostraTabelaSimbolos();
             } 
     |   IDENT 
             { 
                 
-                strcpy(entrada_ts.identificador, token);         /* Resgata nome de variável. */
-                entrada_ts.categoria = VariavelSimples;          /* Definindo Categoria de entrada. */
-                entrada_ts.nivel = nivel_lexico;                           /* Indica o nível lexico da VS atual */
-                avs.tipo[1] = '\0';      /* Define o tipo de variável como string vazia. */
-                avs.deslocamento = num_vars; /* Deslocamento da variável. */
+                strcpy(entrada_ts.identificador, token);    /* Resgata nome de variável. */
+                entrada_ts.categoria = VariavelSimples;     /* Definindo Categoria de entrada. */
+                entrada_ts.nivel = nivel_lexico;            /* Indica o nível lexico da VS atual */
+                avs.tipo[1] = '\0';                         /* Define o tipo de variável como string vazia. */
+                avs.deslocamento = num_vars;                /* Deslocamento da variável. */
 
                 
 
@@ -150,11 +153,12 @@ lista_id_var: lista_id_var
                 num_vars ++;       /* Incrementa 'deslocamento' par aproxima variável.*/
                 num_tipo_vars ++;  /* Acrecentando a contagem de variáeis a serem tipadas.*/
 
+                mostraTabelaSimbolos();
             }
 ;
 
-lista_idents: lista_idents 
-        VIRGULA IDENT  
+lista_idents: 
+        lista_idents VIRGULA IDENT  
     |   IDENT 
 ;
 
@@ -162,6 +166,43 @@ lista_idents: lista_idents
     ---------------------------------------
     |   FIM --- DECLARAÇÃO DE VARIAVEIS    |
     ---------------------------------------
+*/
+
+/*
+    ------------------------------------------
+    |   INICIO --- PROCEDIMENTOS/FUNÇÕES      |
+    ------------------------------------------
+*/
+
+
+// LINHA 11
+parte_de_declaracao_de_subrotinas:
+        declaracao_de_procedimento
+//    |   declaração de funcao
+;
+
+// LINHA 12
+declaracao_de_procedimento:
+        PROCEDURE IDENT parametros_formais PONTO_E_VIRGULA bloco
+;
+
+// LINHA 14
+parametros_formais:
+        secao_parametros_formais
+    |   parametros_formais PONTO_E_VIRGULA secao_parametros_formais  
+;
+
+
+// LINHA 15
+secao_parametros_formais:
+        lista_idents DOIS_PONTOS IDENT
+    |   VAR lista_idents DOIS_PONTOS IDENT
+;
+
+/*
+    ------------------------------------------
+    |   FIM --- PROCEDIMENTOS/FUNÇÕES         |
+    ------------------------------------------
 */
 
 comando_composto: 
@@ -175,8 +216,8 @@ comandos:
     |   /* VAZIO -> MARS PORQUE NÃO EXISTE EM DEFINIÇÃO? */
 ;
 
-// LINHA 18
-comando_sem_rotulo  :   
+
+comando_sem_rotulo:   
         atribui
     |   comando_condicional
     |   comando_repetitivo
