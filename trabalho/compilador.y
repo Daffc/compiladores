@@ -225,6 +225,7 @@ comando:
 
 comando_sem_rotulo:   
         atribui
+    |   chamada_procedimento
     |   comando_condicional
     |   comando_repetitivo      
     |   comando_composto              
@@ -242,8 +243,13 @@ atribui :
             }
 ;
 
-// LINHA 22
+// LINHA 20
+chamada_procedimento:
+        IDENT PONTO_E_VIRGULA
+    |   IDENT ABRE_PARENTESES lista_de_espressoes FECHA_PARENTESES PONTO_E_VIRGULA;
+;
 
+// LINHA 22
 comando_condicional: 
         if_then cond_else 
             {
@@ -314,6 +320,12 @@ comando_repetitivo  :
                 /* Imprimendo rótulo de saida do while em arquivo MEPA */
                 geraCodigo(saida_while, "NADA");
             }
+;
+
+// LINHA 24
+lista_de_espressoes:
+        expressao
+    |   lista_de_espressoes VIRGULA expressao
 ;
 
 // LINHA 25
