@@ -209,9 +209,9 @@ parte_de_declaracao_de_subrotinas:
             }
         
     |   parte_de_declaracao_de_subrotinas declaracao_de_procedimento PONTO_E_VIRGULA
-        {
-            $$ = 1;     // Informando a  'parte_de_declaracao_de_subrotinas' que um procedimento foi definido.                             
-        }
+            {
+                $$ = 1;     // Informando a  'parte_de_declaracao_de_subrotinas' que um procedimento foi definido.                             
+            }
 //    |   declaração de funcao PONTO_E_VIRGULA
 //    |   parte_de_declaracao_de_subrotinas PONTO_E_VIRGULA declaração de funcao PONTO_E_VIRGULA
     |   /* VAZIO */     
@@ -224,18 +224,17 @@ parte_de_declaracao_de_subrotinas:
 declaracao_de_procedimento:
         PROCEDURE IDENT 
             { 
-                // categoria_entrada_TS = Procedimento;
+                categoria_entrada_TS = Procedimento;
 
-                // strcpy(entrada_ts.identificador, token);        /* Resgata nome de variável. */
-                // entrada_ts.categoria = categoria_entrada_TS;    /* Definindo Categoria de entrada. */
-                // entrada_ts.nivel = nivel_lexico;                /* Indica o nível lexico da VS atual */
+                strcpy(entrada_ts.identificador, token);        /* Resgata nome de variável. */
+                entrada_ts.categoria = categoria_entrada_TS;    /* Definindo Categoria de entrada. */
+                entrada_ts.nivel = nivel_lexico;                /* Indica o nível lexico da VS atual */
                 
 
-                // /* Adicionando Novo Simbolo a Tabela de Simbolos */
-                // insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &aproc);
-
-                // num_vars ++;       /* Incrementa 'deslocamento' par aproxima variável.*/
-                // num_tipo_vars ++;  /* Acrecentando a contagem de variáeis a serem tipadas.*/
+                /* Adicionando Novo Simbolo a Tabela de Simbolos */
+                insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &aproc);
+                
+                mostraTabelaSimbolos();
             }
         ABRE_PARENTESES parametros_formais FECHA_PARENTESES PONTO_E_VIRGULA bloco
 ;
