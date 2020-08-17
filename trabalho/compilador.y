@@ -18,8 +18,8 @@ int nivel_lexico = 0,   /*Armazena o nível  nível léxico*/
     num_vars,           /* Armazena a quandtidade de variáveis para impressão de "AMEM num_vars */
     num_tipo_vars;             /* Armazena a quantidade de variáveis a terem sei tipo identificado. */
 
-char    entrada_while[4],
-        saida_while[4];
+char    entrada_rotulo[4],
+        saida_rotulo[4];
 /*  Armazena atributos de variável simples*/
 Atributos_VS avs;
 
@@ -32,6 +32,9 @@ Atributos_PROC aproc;
 /*  Auxilia na recuperação de Atributos */
 void   *atributos;
 
+/* Armazena o tipo de entrada para repasse ao lista_var por diferentes fontes. */
+CategoriaSimbolos categoria_entrada_TS;
+
 /* Auxilia em operções com entrada da tablea de simbolos. */
 EntradaTabelaSimbolos entrada_ts;
 %}
@@ -39,6 +42,7 @@ EntradaTabelaSimbolos entrada_ts;
 %union{
     Variavel_Simples v_sim;
     char    texto[128];
+    int numero;
 }
 
 /* DEFINIÇÃO PARA ESTADOS TERMINAIS */
@@ -68,7 +72,9 @@ EntradaTabelaSimbolos entrada_ts;
 
 /* DEFINIÇÃO PARA ESTADOS NÃO-TERMINAIS */
 %type <v_sim> variavel
-%type <texto> fator termo exp_simples expressao relacao
+%type <texto> fator termo exp_simples expressao relacao 
+%type <numero> parte_de_declaracao_de_subrotinas
+
 
 /* Aplicando precedência para IF THEN ELSE */
 %nonassoc LOWER_THAN_ELSE
@@ -81,7 +87,20 @@ programa:
 ;
 
 bloco: 
-        parte_declara_vars parte_de_declaracao_de_subrotinas comando_composto
+        parte_declara_vars 
+            {
+                nivel_lexico ++;
+            } 
+        parte_de_declaracao_de_subrotinas 
+            {
+                if($3){                                 // Verifica se algum procedimento foi definido.
+                    desempilhaRotulo(saida_rotulo);     // Desempilha rótulo para pular definição de procedimentos.
+                    geraCodigo(saida_rotulo, "NADA");   // Imprime rótulo destino para pulo de procedimentos.
+                }
+                
+                nivel_lexico --;
+            } 
+        comando_composto
 ;
 
 
@@ -92,7 +111,12 @@ bloco:
 */
 
 parte_declara_vars: 
-        {num_vars = 0;} var { imprimeAMEM(&num_vars); }
+        {
+            num_vars = 0;
+            categoria_entrada_TS = VariavelSimples;
+        } 
+            var 
+        { imprimeAMEM(&num_vars); }
     |   /* VAZIO */
 ;
 
@@ -106,7 +130,7 @@ declara_vars:
     |   declara_var 
 ;
 
-declara_var :   
+declara_var:   
         {num_tipo_vars = 0;} lista_id_var DOIS_PONTOS tipo  PONTO_E_VIRGULA
 ;
 
@@ -122,11 +146,11 @@ lista_id_var:
         lista_id_var VIRGULA IDENT    
             { 
 
-                strcpy(entrada_ts.identificador, token);    /* Resgata nome de variável. */
-                entrada_ts.categoria = VariavelSimples;     /* Definindo Categoria de entrada. */
-                entrada_ts.nivel = nivel_lexico;            /* Indica o nível lexico da VS atual */
-                avs.tipo[1] = '\0';                         /* Define o tipo de variável como string vazia. */
-                avs.deslocamento = num_vars;                /* Deslocamento da variável. */
+                strcpy(entrada_ts.identificador, token);        /* Resgata nome de variável. */
+                entrada_ts.categoria = categoria_entrada_TS;    /* Definindo Categoria de entrada. */
+                entrada_ts.nivel = nivel_lexico;                /* Indica o nível lexico da VS atual */
+                avs.tipo[1] = '\0';                             /* Define o tipo de variável como string vazia. */
+                avs.deslocamento = num_vars;                    /* Deslocamento da variável. */
 
                 
 
@@ -139,11 +163,11 @@ lista_id_var:
     |   IDENT 
             { 
                 
-                strcpy(entrada_ts.identificador, token);    /* Resgata nome de variável. */
-                entrada_ts.categoria = VariavelSimples;     /* Definindo Categoria de entrada. */
-                entrada_ts.nivel = nivel_lexico;            /* Indica o nível lexico da VS atual */
-                avs.tipo[1] = '\0';                         /* Define o tipo de variável como string vazia. */
-                avs.deslocamento = num_vars;                /* Deslocamento da variável. */
+                strcpy(entrada_ts.identificador, token);        /* Resgata nome de variável. */
+                entrada_ts.categoria = categoria_entrada_TS;     /* Definindo Categoria de entrada. */
+                entrada_ts.nivel = nivel_lexico;                /* Indica o nível lexico da VS atual */
+                avs.tipo[1] = '\0';                             /* Define o tipo de variável como string vazia. */
+                avs.deslocamento = num_vars;                    /* Deslocamento da variável. */
 
                 
 
@@ -175,16 +199,45 @@ lista_idents:
 
 // LINHA 11
 parte_de_declaracao_de_subrotinas:
+            {
+                empilhaRotulo(entrada_rotulo);          // Empilhando Rótulo para código (comando composto da função de nível léxico atual.)
+                imprimeDesviaSempre(entrada_rotulo);    // Definindo Desvio para esta código da função atual (pulando procedimentos declarados).
+            }
         declaracao_de_procedimento PONTO_E_VIRGULA
+            {
+                $$ = 1;     // Informando a  'parte_de_declaracao_de_subrotinas' que um procedimento foi definido.                       
+            }
+        
     |   parte_de_declaracao_de_subrotinas declaracao_de_procedimento PONTO_E_VIRGULA
+        {
+            $$ = 1;     // Informando a  'parte_de_declaracao_de_subrotinas' que um procedimento foi definido.                             
+        }
 //    |   declaração de funcao PONTO_E_VIRGULA
 //    |   parte_de_declaracao_de_subrotinas PONTO_E_VIRGULA declaração de funcao PONTO_E_VIRGULA
-    |   /* VAZIO */
+    |   /* VAZIO */     
+            { 
+                $$ = 0;  // Informando a  'parte_de_declaracao_de_subrotinas' que nenhuma função/procedimento foi definido.
+            }
 ;
 
 // LINHA 12
 declaracao_de_procedimento:
-        PROCEDURE IDENT ABRE_PARENTESES parametros_formais FECHA_PARENTESES PONTO_E_VIRGULA bloco
+        PROCEDURE IDENT 
+            { 
+                // categoria_entrada_TS = Procedimento;
+
+                // strcpy(entrada_ts.identificador, token);        /* Resgata nome de variável. */
+                // entrada_ts.categoria = categoria_entrada_TS;    /* Definindo Categoria de entrada. */
+                // entrada_ts.nivel = nivel_lexico;                /* Indica o nível lexico da VS atual */
+                
+
+                // /* Adicionando Novo Simbolo a Tabela de Simbolos */
+                // insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &aproc);
+
+                // num_vars ++;       /* Incrementa 'deslocamento' par aproxima variável.*/
+                // num_tipo_vars ++;  /* Acrecentando a contagem de variáeis a serem tipadas.*/
+            }
+        ABRE_PARENTESES parametros_formais FECHA_PARENTESES PONTO_E_VIRGULA bloco
 ;
 
 // LINHA 14
@@ -254,20 +307,20 @@ comando_condicional:
         if_then cond_else 
             {
                 /* Desempilha Rótulo de saida de if OU if/else */
-                desempilhaRotulo(saida_while);
+                desempilhaRotulo(saida_rotulo);
 
                 /* Imprime rótulo de saida em MEPA */
-                geraCodigo(saida_while, "NADA");
+                geraCodigo(saida_rotulo, "NADA");
             }
 ;
 if_then     : 
         IF expressao 
             {
                 /* Empilha Rótulo para onde deve-se dirigir quando condição IF for FALSA. */
-                empilhaRotulo(saida_while);
+                empilhaRotulo(saida_rotulo);
                 
                 /* Imprime comando para saida de if caso 'expressao' seja falso (DSVF).*/
-                imprimeDesviaSeFalsoMEPA(saida_while);
+                imprimeDesviaSeFalsoMEPA(saida_rotulo);
             }
         THEN comando_sem_rotulo
 ;
@@ -276,15 +329,15 @@ cond_else   :
         ELSE 
             {
                 /* Desemmpilha Rótulo para onde deve-se dirigir quando condição IF for FALSA. */
-                desempilhaRotulo(entrada_while);
+                desempilhaRotulo(entrada_rotulo);
                 /* Empilha Rótulo para onde deve-se dirigir ao final de 'comando_sem_rótulo' com IF VERDADEIRO */
-                empilhaRotulo(saida_while);
+                empilhaRotulo(saida_rotulo);
                 
                 /* Imprime instrução MEPA de desvio incondicional (DSVS) ao final de 'comando_sem_rotulo' de IF*/
-                imprimeDesviaSempre(saida_while);
+                imprimeDesviaSempre(saida_rotulo);
 
                 /* Imprime rótulo para onde deve-se dirigir quando expressão de IF é FALSA (equivalente ao ELSE). */
-                geraCodigo(entrada_while, "NADA");
+                geraCodigo(entrada_rotulo, "NADA");
             }
         comando_sem_rotulo
     |   %prec LOWER_THAN_ELSE
@@ -295,30 +348,30 @@ comando_repetitivo  :
         WHILE 
             {
                 /* Gerando os Rótulos de entrada e saida do WHILE*/
-                empilhaRotulo(entrada_while);
+                empilhaRotulo(entrada_rotulo);
 
                 /* Imprimendo rótulo de entrada do while em arquivo MEPA */
-                geraCodigo(entrada_while, "NADA");
+                geraCodigo(entrada_rotulo, "NADA");
             } 
         expressao DO
             { 
                 /* Gerando os Rótulos de entrada e saida do WHILE*/
-                empilhaRotulo(saida_while);
+                empilhaRotulo(saida_rotulo);
 
                 /* Imprime comando para saida de loop caso 'expressao' seja falsa.*/
-                imprimeDesviaSeFalsoMEPA(saida_while);
+                imprimeDesviaSeFalsoMEPA(saida_rotulo);
             } 
         comando_sem_rotulo
             {
                 
-                desempilhaRotulo(saida_while);
-                desempilhaRotulo(entrada_while);
+                desempilhaRotulo(saida_rotulo);
+                desempilhaRotulo(entrada_rotulo);
 
                 /* Imprime comando para retorno ao inícion do while */
-                imprimeDesviaSempre(entrada_while);
+                imprimeDesviaSempre(entrada_rotulo);
                 
                 /* Imprimendo rótulo de saida do while em arquivo MEPA */
-                geraCodigo(saida_while, "NADA");
+                geraCodigo(saida_rotulo, "NADA");
             }
 ;
 
