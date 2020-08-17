@@ -3,6 +3,9 @@
 // [FAZER] Receber entrada de dados (read -> LEIT). 
 // [FAZER] Imprimir dados em saida (ESCR). 
 
+
+%error-verbose          //Expressando melhor os Sytatic Errors.
+
 %{
 #include <stdio.h>
 #include <ctype.h>
@@ -172,8 +175,10 @@ lista_idents:
 
 // LINHA 11
 parte_de_declaracao_de_subrotinas:
-        declaracao_de_procedimento 
-//    |   declaração de funcao
+        declaracao_de_procedimento PONTO_E_VIRGULA
+    |   parte_de_declaracao_de_subrotinas declaracao_de_procedimento PONTO_E_VIRGULA
+//    |   declaração de funcao PONTO_E_VIRGULA
+//    |   parte_de_declaracao_de_subrotinas PONTO_E_VIRGULA declaração de funcao PONTO_E_VIRGULA
     |   /* VAZIO */
 ;
 
@@ -498,7 +503,7 @@ variavel:
 int main (int argc, char** argv) {
 
     #ifdef YYDEBUG
-        yydebug = 0;
+        yydebug = 1;
     #endif
 
     FILE* fp;
