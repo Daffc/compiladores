@@ -172,9 +172,8 @@ lista_idents:
 
 // LINHA 11
 parte_de_declaracao_de_subrotinas:
-        declaracao_de_procedimento
+        declaracao_de_procedimento 
 //    |   declaração de funcao
-
     |   /* VAZIO */
 ;
 
@@ -186,7 +185,8 @@ declaracao_de_procedimento:
 // LINHA 14
 parametros_formais:
         secao_parametros_formais
-    |   parametros_formais PONTO_E_VIRGULA secao_parametros_formais  
+    |   parametros_formais PONTO_E_VIRGULA secao_parametros_formais 
+    |   /* VAZIO */
 ;
 
 
@@ -207,10 +207,14 @@ comando_composto:
 ;
 
 comandos:   
+        comando         
+    |   comandos PONTO_E_VIRGULA comando
+;
+
+comando:
         comando_sem_rotulo 
     |   NUMERO DOIS_PONTOS comando_sem_rotulo
-    |   comandos PONTO_E_VIRGULA comandos
-    |   /* VAZIO -> MARS PORQUE NÃO EXISTE EM DEFINIÇÃO? */
+    |   /* VAZIO -> MAS PORQUE NÃO EXISTE EM DEFINIÇÃO? */
 ;
 
 
