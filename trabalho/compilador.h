@@ -14,6 +14,7 @@
 #define TAM_TOKEN 16
 #define MAX_ROTULOS 20
 #define MAX_PARAMETROS 20
+#define MAX_ESCOPO 20
 
 typedef enum simbolos { 
   simb_program, simb_var, simb_begin, simb_end, 
@@ -92,6 +93,20 @@ typedef struct tabela_simbolos_t{
 	EntradaTabelaSimbolos 	*entrada; 
 } Tabela_Simbolos;
 
+// Estrutura para controle de entadas e aplicação de DMEM em table de simbolos.
+typedef struct entrada_escopo_t{
+	int quantidade_simbolos;	// Armazena quantidae de simbolos por escopo.
+	int quantidade_vars;	// Armazena quantidae de variáveis por escopo.
+	int quantidade_parametros;	// Armazena quantidade de parâmetros por escopo.
+}EntradaEscopo;
+
+
+// Estrutura para controle de entadas e aplicação de DMEM em table de simbolos.
+typedef struct controle_escopo_t{
+	int topo;
+	EntradaEscopo entradas_escopo[MAX_ESCOPO];	// Armazena quantidae de variáveis por escopo.
+}ControleEscopo;
+
 /*
 	Declarando API de tabela de Simbolos.
 */
@@ -113,6 +128,13 @@ void defineTipoParametroFormal(unsigned char quantidade, char* tipo, TipoPassage
 void deslocaParametrosFormais(unsigned char quantidade);
 /* Preenche parte de parâmetros em entrada de Procedimento em TS. */
 void preencheAtributosProcedimento(int quantidade);
+
+/* Inicia pilha de escopos. */
+void iniciaPilhaControleEscopo();
+/* Empilha novo escopo. */
+EntradaEscopo empilhaControleEscopo( EntradaEscopo entrada);
+/* Desempilha escopo. */
+EntradaEscopo desempilhaControleEscopo();
 
 /* Libera Memória Alocada por Tablea de Simbolos*/
 void liberaTabelaSimbolos();

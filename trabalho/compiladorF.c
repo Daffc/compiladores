@@ -24,6 +24,8 @@
 
 Tabela_Simbolos ts;
 Pilha_Rotulos pr;
+ControleEscopo ce;
+
 
 FILE* fp=NULL;
 void geraCodigo (char* rot, char* comando) {
@@ -109,6 +111,20 @@ void mostraPilhaRotulos(){
 	}
 	printf("------------------------------\n\n");
 }
+
+void mostraPilhaControleEscopo(){
+
+	printf("------------------------------\n");
+	printf("TOPO: %d\n", ce.topo);
+	printf("------------------------------\n");
+	for (int i = ce.topo; i >= 0; i--){
+		/*	Imprime elemento da tabela de simbolos	*/
+		printf("%d\t%d\t%d\t%d", i, ce.entradas_escopo[i].quantidade_simbolos, ce.entradas_escopo[i]. quantidade_vars, ce.entradas_escopo[i].quantidade_parametros);
+		printf("\n");
+	}
+	printf("------------------------------\n\n");
+}
+
 
 /* 
 	-----------------------------
@@ -276,6 +292,56 @@ void liberaTabelaSimbolos(){
 	|		FIM VALIDAÇÃO		|
 	-----------------------------	
 */
+/*	
+	--------------------------------------------
+	| 	INICIO --- PILHA DE CONTROLE ESCOPO    |
+	--------------------------------------------
+*/
+
+void iniciaPilhaControleEscopo(){
+	ce.topo = -1;
+}
+
+
+EntradaEscopo empilhaControleEscopo( EntradaEscopo entrada){
+	
+	/* Ajustando topo */
+	ce.topo++;
+
+	/* Verifica se é possível armazenar novo escopo */
+	if(pr.topo >= MAX_ESCOPO){
+		fprintf (stderr,"ERRO: Quantidade máxima de Escopos ativos (%d) excedida.\n", MAX_ESCOPO);
+		exit(-1);
+	}
+
+	ce.entradas_escopo[ce.topo] = entrada;
+
+	return  ce.entradas_escopo[ce.topo];
+}
+
+/* Busca elemento na tabela de simbolos de acordo com o identificador informado.*/
+EntradaEscopo desempilhaControleEscopo(){
+	
+	EntradaEscopo entrada;
+	
+	/* Verifica se existe rótulo a ser desempilhado. */
+	if(pr.topo < 0){
+		fprintf (stderr,"ERRO: Não existe rótulo a ser desempilhado.\n");
+		exit(-1);
+	}
+
+	entrada = ce.entradas_escopo[ce.topo];
+
+	/* Ajustando contadores */
+	ce.topo --;	
+
+	return  entrada;
+}
+/*
+    -----------------------------------------
+    |   FIM --- PILHA DE CONTROLE ESCOPO    |
+    -----------------------------------------
+*/
 
 /*	
 	------------------------------------
@@ -435,35 +501,42 @@ void imprimeEntraProcedimento(char *rotulo, int nivel_lexico){
 */
 
 // int main (){
-// 	char rotulo[20];
+// 	EntradaEscopo entrada;
 
-// 	iniciaPilhaRotulos(rotulo);
-// 	mostraPilhaRotulos();
-	
-// 	empilhaRotulo(rotulo);
-// 	mostraPilhaRotulos();
-	
-// 	empilhaRotulo(rotulo);
-// 	mostraPilhaRotulos();
-	
-// 	empilhaRotulo(rotulo);
-// 	mostraPilhaRotulos();
-	
-// 	empilhaRotulo(rotulo);
-// 	mostraPilhaRotulos();
-	
-// 	desempilhaRotulo(rotulo);
-// 	mostraPilhaRotulos();
+// 	iniciaPilhaControleEscopo();
 
-// 	desempilhaRotulo(rotulo);
-// 	mostraPilhaRotulos();
+// 	entrada.quantidade_simbolos = 0;
+// 	entrada.quantidade_vars = 0;
+// 	entrada.quantidade_parametros = 0;
+// 	empilhaControleEscopo(entrada);
+// 	mostraPilhaControleEscopo();
 
-// 	empilhaRotulo(rotulo);
-// 	mostraPilhaRotulos();
+// 		entrada.quantidade_simbolos = 1;
+// 		entrada.quantidade_vars = 0;
+// 	entrada.quantidade_parametros = 0;
+// 	empilhaControleEscopo(entrada);
+// 	mostraPilhaControleEscopo();
 
+// 	entrada = desempilhaControleEscopo(entrada);
+// 	mostraPilhaControleEscopo();
 
-// 	desempilhaRotulo(rotulo);
-// 	mostraPilhaRotulos();
+// 		entrada.quantidade_simbolos = 2;
+// 		entrada.quantidade_vars = 0;
+// 	entrada.quantidade_parametros = 0;
+// 	empilhaControleEscopo(entrada);
+// 	mostraPilhaControleEscopo();
+
+// 		entrada.quantidade_simbolos = 3;
+// 		entrada.quantidade_vars = 0;
+// 	entrada.quantidade_parametros = 0;
+// 	empilhaControleEscopo(entrada);
+// 	mostraPilhaControleEscopo();
+
+// 		entrada.quantidade_simbolos = 4;
+// 		entrada.quantidade_vars = 0;
+// 	entrada.quantidade_parametros = 0;
+// 	empilhaControleEscopo(entrada);
+// 	mostraPilhaControleEscopo();
 
 // }
 
