@@ -60,7 +60,7 @@ void mostra_att_VS(Atributos_VS *ponteiro){
 }
 
 void mostra_att_PF(Atributos_PF *ponteiro){
-	/*	Preencher Posteriormente */
+	printf("\t%s\t%d\t%d\n", ponteiro->tipo, ponteiro->deslocamento, ponteiro->tipo_passagem);
 }
 
 void mostra_att_PROC(Atributos_PROC *ponteiro){
@@ -86,6 +86,7 @@ void mostraTabelaSimbolos(){
 				mostra_att_VS(ts.entrada[i].ponteiro_atributos);
 				break;
 			case ParametroFormal:
+				mostra_att_PF(ts.entrada[i].ponteiro_atributos);
 				break;
 			case Procedimento:
 				mostra_att_PROC(ts.entrada[i].ponteiro_atributos);
@@ -180,8 +181,30 @@ void retiraEntradasTabelaSimbolos(unsigned char quantidade){
 /*	Definindo o "tipo" para todas as "quantidade" variáveis a partir do topo	*/
 void defineTipoVariavel(unsigned char quantidade, char* tipo){
 	for (int i = ts.topo; i > (ts.topo - quantidade); i--){
-		/*	liberando memória de atributos dos elementos	*/
+		/*	Definindo o tipo da variavel */
 		strcpy(((Atributos_VS *)ts.entrada[i].ponteiro_atributos)->tipo, tipo);
+	}
+}
+
+/*	Definindo o "tipo" para todas as "quantidade" variáveis a partir do topo	*/
+void defineTipoParametroFormal(unsigned char quantidade, char* tipo, TipoPassagemParametro tipo_passagem){
+	for (int i = ts.topo; i > (ts.topo - quantidade); i--){
+		
+		/*	Definindo o tipo do parâmetro formal */
+		strcpy(((Atributos_PF *)ts.entrada[i].ponteiro_atributos)->tipo, tipo);
+		/*	Definindo o tipo de passagem do parâmetro formal */
+		((Atributos_PF *)ts.entrada[i].ponteiro_atributos)->tipo_passagem = tipo_passagem;
+	}
+}
+
+/* Define deslocamento de 'quantidade' parâmetros formais. */
+void deslocaParametrosFormais(unsigned char quantidade){
+	
+	int contador = 0;
+	for (int i = ts.topo; i > (ts.topo - quantidade); i--){
+		
+		((Atributos_PF *)ts.entrada[i].ponteiro_atributos)->deslocamento = -(4 + contador);
+		contador ++;
 	}
 }
 

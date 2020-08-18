@@ -38,6 +38,10 @@ CategoriaSimbolos categoria_entrada_TS;
 
 /* Auxilia em operções com entrada da tablea de simbolos. */
 EntradaTabelaSimbolos entrada_ts;
+
+/* Auxilia no controle de passagem de parâmetros. */
+TipoPassagemParametro tipo_passagem;
+
 %}
 
 %union{
@@ -150,16 +154,27 @@ lista_id_var:
                 strcpy(entrada_ts.identificador, token);        /* Resgata nome de variável. */
                 entrada_ts.categoria = categoria_entrada_TS;    /* Definindo Categoria de entrada. */
                 entrada_ts.nivel = nivel_lexico;                /* Indica o nível lexico da VS atual */
-                avs.tipo[1] = '\0';                             /* Define o tipo de variável como string vazia. */
-                avs.deslocamento = num_vars;                    /* Deslocamento da variável. */
-
                 
+                if(categoria_entrada_TS == VariavelSimples){
+                    avs.tipo[1] = '\0';                             /* Define o tipo de variável como string vazia. */
+                    avs.deslocamento = num_vars;                    /* Deslocamento da variável. */
 
-                /* Adicionando Novo Simbolo a Tabela de Simbolos */
-                insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &avs);
+                    /* Adicionando Novo Simbolo a Tabela de Simbolos */
+                    insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &avs);
+                }
+                if(categoria_entrada_TS == ParametroFormal){
+                    apf.tipo[1] = '\0';                             /* Define o tipo de PF como string vazia. */
+                    apf.deslocamento = num_vars;                    /* Deslocamento do PF. */
+                    apf.tipo_passagem = tipo_passagem;              /* Define qual foi o tipo de passagem do PF */
+
+                    /* Adicionando Novo Simbolo a Tabela de Simbolos */
+                    insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &apf);
+                }
 
                 num_vars ++;       /* Incrementa 'deslocamento' par aproxima variável.*/
                 num_tipo_vars ++;  /* Acrecentando a contagem de variáeis a serem tipadas.*/
+
+                mostraTabelaSimbolos();
             } 
     |   IDENT 
             { 
@@ -168,16 +183,27 @@ lista_id_var:
                 entrada_ts.categoria = categoria_entrada_TS;     /* Definindo Categoria de entrada. */
                 entrada_ts.nivel = nivel_lexico;                /* Indica o nível lexico da VS atual */
 
-                avs.tipo[1] = '\0';                             /* Define o tipo de variável como string vazia. */
-                avs.deslocamento = num_vars;                    /* Deslocamento da variável. */
+                if(categoria_entrada_TS == VariavelSimples){
+                    avs.tipo[1] = '\0';                             /* Define o tipo de variável como string vazia. */
+                    avs.deslocamento = num_vars;                    /* Deslocamento da variável. */
 
-                
+                    /* Adicionando Novo Simbolo a Tabela de Simbolos */
+                    insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &avs);
+                }
+                if(categoria_entrada_TS == ParametroFormal){
+                    apf.tipo[1] = '\0';                             /* Define o tipo de PF como string vazia. */
+                    apf.deslocamento = num_vars;                    /* Deslocamento do PF. */
+                    apf.tipo_passagem = tipo_passagem;              /* Define qual foi o tipo de passagem do PF */
 
-                /* Adicionando Novo Simbolo a Tabela de Simbolos */
-                insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &avs);
+                    /* Adicionando Novo Simbolo a Tabela de Simbolos */
+                    insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &apf);
+                }
+
 
                 num_vars ++;       /* Incrementa 'deslocamento' par aproxima variável.*/
                 num_tipo_vars ++;  /* Acrecentando a contagem de variáeis a serem tipadas.*/
+
+                mostraTabelaSimbolos();
             }
 ;
 
@@ -243,14 +269,18 @@ declaracao_de_procedimento:
 
                 /* Adicionando Novo Simbolo a Tabela de Simbolos */
                 insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &aproc);
-
-                mostraTabelaSimbolos();
             }
         ABRE_PARENTESES 
             { 
-                    categoria_entrada_TS = ParametroFormal;         /* A partir deste momendo, serão declarados Parâmetros fomais.  */
+                    categoria_entrada_TS = ParametroFormal; /* A partir deste momendo, serão declarados Parâmetros fomais.  */
+                    num_vars = 0;                           // Zeranvo variável para início da contagem de parâmetros.        
             }
-        parametros_formais FECHA_PARENTESES PONTO_E_VIRGULA bloco
+        parametros_formais 
+            {
+
+                deslocaParametrosFormais(num_vars); // Redefine valor de deslocamento para parâmetros para condizer com edereço de execussão.
+            }
+        FECHA_PARENTESES PONTO_E_VIRGULA bloco
 ;
 
 // LINHA 14
@@ -263,8 +293,23 @@ parametros_formais:
 
 // LINHA 15
 secao_parametros_formais:
-        lista_idents DOIS_PONTOS IDENT
-    |   VAR lista_idents DOIS_PONTOS IDENT
+            {
+                num_tipo_vars = 0;      //Zerando contador de parâmetros por tipo.
+                tipo_passagem = valor;  //Definindo o tipo de passagem dos parâmetros.
+            } 
+        lista_id_var DOIS_PONTOS IDENT 
+            {
+                defineTipoParametroFormal(num_tipo_vars, token, tipo_passagem); // Definindo o tipo dos parâmetros de acordocom o IDENT.
+            }
+    |       
+            {
+                num_tipo_vars = 0;      //Zerando contador de parâmetros por tipo.
+                tipo_passagem = valor;  //Definindo o tipo de passagem dos parâmetros.
+            } 
+        VAR lista_id_var DOIS_PONTOS IDENT 
+            {
+                defineTipoParametroFormal(num_tipo_vars, token, tipo_passagem);  // Definindo o tipo dos parâmetros de acordocom o IDENT.
+            }
 ;
 
 /*

@@ -64,7 +64,9 @@ typedef struct atributos_vs_t{
 }Atributos_VS;
 
 typedef struct atributos_pf_t{
-	/*Completar posteriormente*/
+	char tipo[20];
+	char deslocamento;
+	TipoPassagemParametro tipo_passagem;
 }Atributos_PF;
 
 typedef struct atributos_proc_t{
@@ -104,6 +106,11 @@ void * buscaTabelaSimbolos(char* identificador);
 void retiraEntradasTabelaSimbolos(unsigned char quantidade);
 /* Define para "quantidade" variáveis o tipo "tipo".*/
 void defineTipoVariavel(unsigned char quantidade, char* tipo);
+/*	Definindo o "tipo" para todas as "quantidade" variáveis a partir do topo	*/
+void defineTipoParametroFormal(unsigned char quantidade, char* tipo, TipoPassagemParametro tipo_passagem);
+/* Define deslocamento de 'quantidade' parâmetros formais. */
+void deslocaParametrosFormais(unsigned char quantidade);
+
 /* Libera Memória Alocada por Tablea de Simbolos*/
 void liberaTabelaSimbolos();
 
