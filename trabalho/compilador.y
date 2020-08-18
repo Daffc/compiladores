@@ -166,6 +166,7 @@ lista_id_var:
                 strcpy(entrada_ts.identificador, token);        /* Resgata nome de variável. */
                 entrada_ts.categoria = categoria_entrada_TS;     /* Definindo Categoria de entrada. */
                 entrada_ts.nivel = nivel_lexico;                /* Indica o nível lexico da VS atual */
+                
                 avs.tipo[1] = '\0';                             /* Define o tipo de variável como string vazia. */
                 avs.deslocamento = num_vars;                    /* Deslocamento da variável. */
 
@@ -230,13 +231,24 @@ declaracao_de_procedimento:
                 entrada_ts.categoria = categoria_entrada_TS;    /* Definindo Categoria de entrada. */
                 entrada_ts.nivel = nivel_lexico;                /* Indica o nível lexico da VS atual */
                 
+                empilhaRotulo(aproc.rotulo);                    /* Definindo e empilhando rótulo para procedimento. */
+
+                /* [MELHORAR] Desvincular geração de rótulo com empilhamento .*/
+                desempilhaRotulo(aproc.rotulo);                    /* Uma vez que o rótulo esteja na TDS, não é mais necessário empilha-lo*/
+
+
+                imprimeEntraProcedimento(aproc.rotulo, nivel_lexico);   /* Imprime instrução MEPA de entrada para procedimento, indicando o nível lexico. */
 
                 /* Adicionando Novo Simbolo a Tabela de Simbolos */
                 insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &aproc);
-                
+
                 mostraTabelaSimbolos();
             }
-        ABRE_PARENTESES parametros_formais FECHA_PARENTESES PONTO_E_VIRGULA bloco
+        ABRE_PARENTESES 
+         { 
+                categoria_entrada_TS = ParametroFormal;         /* A partir deste momendo, serão declarados Parâmetros fomais.  */
+         }
+        parametros_formais FECHA_PARENTESES PONTO_E_VIRGULA bloco
 ;
 
 // LINHA 14
@@ -277,14 +289,14 @@ comando:
 
 comando_sem_rotulo:   
         atribui
-    |   chamada_procedimento
+    /* |   chamada_procedimento */
     |   comando_condicional
     |   comando_repetitivo      
     |   comando_composto              
 ; 
 
 // LINHA 19
-atribui :   
+atribui:   
         variavel ATRIBUICAO expressao
             {
                 /* Verificando se 'variavel' $1 e 'expressao' $3 possuem o mesmo tipo */
@@ -296,10 +308,10 @@ atribui :
 ;
 
 // LINHA 20
-chamada_procedimento:
+/* chamada_procedimento:
         IDENT PONTO_E_VIRGULA
-    |   IDENT ABRE_PARENTESES lista_de_espressoes FECHA_PARENTESES PONTO_E_VIRGULA;
-;
+    |   IDENT ABRE_PARENTESES lista_de_espressoes FECHA_PARENTESES PONTO_E_VIRGULA
+; */
 
 // LINHA 22
 comando_condicional: 
@@ -375,10 +387,10 @@ comando_repetitivo  :
 ;
 
 // LINHA 24
-lista_de_espressoes:
+/* lista_de_espressoes:
         expressao
     |   lista_de_espressoes VIRGULA expressao
-;
+; */
 
 // LINHA 25
 expressao:   
@@ -519,7 +531,7 @@ fator   :
                 /* Repassando tipo de 'variavel' ($2) para 'fator'($$) */
                 strcpy($$, $1.tipo);
 
-                carregaVariavelSimplesMEPA( nivel_lexico, $1.deslocamento);
+                carregaVariavelSimplesMEPA(nivel_lexico, $1.deslocamento);
             }
     |   NUMERO
             {
@@ -549,7 +561,7 @@ fator   :
 // LINHA 30
 variavel:   
         IDENT
-            {              
+            {         
                 /* Armazena em 'avs' atributos de 'token' após verificação por validaSimbolo(); */
                 avs = *( (Atributos_VS *) validaSimbolo(nl, token));
 
