@@ -39,10 +39,6 @@ void geraCodigo (char* rot, char* comando) {
 	}
 }
 
-/*
-	DESCOMENTAR POSTERIORMENTE !!!!
-*/
-
 int imprimeErro ( char* erro ) {
 	fprintf (stderr, "Erro na linha %d - %s\n", 1, erro);
 	exit(-1);
@@ -53,15 +49,6 @@ int imprimeErro ( char* erro ) {
 	|	MINHAS ALTERAÇÔES		|
 	-----------------------------	
 */
-void imprimeAMEM (int *num_variaveis){
-
-	char str[12];
-
-	sprintf(str, "AMEM %d", *num_variaveis);
-	geraCodigo(NULL, str);
-}
-
-
 /* 
 	-----------------------------
 	|			DEBUG			|
@@ -77,7 +64,10 @@ void mostra_att_PF(Atributos_PF *ponteiro){
 }
 
 void mostra_att_PROC(Atributos_PROC *ponteiro){
-	/*	Preencher Posteriormente */
+	printf("\n");
+	printf("\t%s\t%d\n", ponteiro->rotulo, ponteiro->quantidade_parametros);
+	for (int i = 0; i < ponteiro->quantidade_parametros; i++)
+		printf("\t\t%s\t%d\n", ponteiro->entradas_parametros[i].tipo, ponteiro->entradas_parametros[i].tipo_passagem);
 }
 
 
@@ -98,6 +88,7 @@ void mostraTabelaSimbolos(){
 			case ParametroFormal:
 				break;
 			case Procedimento:
+				mostra_att_PROC(ts.entrada[i].ponteiro_atributos);
 				break;
 		}
 		printf("\n");
@@ -236,9 +227,6 @@ void liberaTabelaSimbolos(){
 	free(ts.entrada);
 }
 
-
-
-
 /* 
 	-----------------------------
 	|		FIM VALIDAÇÃO		|
@@ -306,6 +294,17 @@ void desempilhaRotulo(char *rotulo){
 	-----------------------------	
 */
 
+
+/*Recebe o número de variáveis em num_variaveis e imprime "AMEM num_variaveis" em MEPA*/
+void imprimeAMEM (int *num_variaveis){
+
+	char str[12];
+
+	sprintf(str, "AMEM %d", *num_variaveis);
+	geraCodigo(NULL, str);
+}
+
+
 /* Recebe texto com valor de constante e imprime em arquivo MEPA */
 void carregaConstanteMEPA(char *constante){
 
@@ -364,6 +363,18 @@ void imprimeDesviaSempre(char* rotulo){
 
 	/* Imprimindo resultado em MEPA */
 	geraCodigo(NULL,resultado);
+}
+
+/* Recebe 'rotulo' e 'nivelL léxico' imprime comando MEPA de entrada de procedimento em arquivo MEPA.*/
+void imprimeEntraProcedimento(char *rotulo, int nivel_lexico){
+	
+	char resultado[20];
+
+	/* Imnprimeindo comando 'ENPR nivel_lexico' em buffer resltado */
+	sprintf(resultado, "ENPR %d", nivel_lexico);
+
+	/* Imprimindo resultado em MEPA */
+	geraCodigo(rotulo,resultado);
 }
 
 /* 

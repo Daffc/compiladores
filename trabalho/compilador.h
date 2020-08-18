@@ -13,6 +13,7 @@
 
 #define TAM_TOKEN 16
 #define MAX_ROTULOS 20
+#define MAX_PARAMETROS 20
 
 typedef enum simbolos { 
   simb_program, simb_var, simb_begin, simb_end, 
@@ -26,6 +27,17 @@ typedef enum simbolos {
   simb_subtracao, simb_soma, simb_or, simb_produto, simb_divisao, simb_and, simb_not
 } simbolos;
 
+
+typedef enum tipo_passagem_parametro_t{
+	valor,
+	referencia
+} TipoPassagemParametro;
+
+
+typedef struct entrada_parametros{
+	char tipo[20];
+	TipoPassagemParametro tipo_passagem;
+}EntradaParametros;
 
 /*	
 	--------------------------------------
@@ -56,7 +68,9 @@ typedef struct atributos_pf_t{
 }Atributos_PF;
 
 typedef struct atributos_proc_t{
-	/*Completar Posteriormente*/
+	char rotulo[4];
+	int quantidade_parametros;
+	EntradaParametros entradas_parametros[MAX_PARAMETROS];		// [FAZER] tornar dinâmico caso haja tempo.
 }Atributos_PROC;
 
 
@@ -180,9 +194,6 @@ void geraCodigo (char* rot, char* comando);
 		-------------------------	
 */
 
-/*Recebe o número de variáveis em num_variaveis e imprime "AMEM num_variaveis" em MEPA*/
-void imprimeAMEM (int *num_variaveis);
-
 /*
 	Verifica se "primeiro" e "segundo" São do mesmo tipo, retornando "primeiro" caso verdadeiro 
 	e imprime mensagem de error e para execussão (exit(-1)) caso seja falso.
@@ -207,6 +218,8 @@ void * validaSimbolo(int linha, char *simbolo);
 		|		DEFINIÇÕES MEPA		|
 		-----------------------------	
 */
+/*Recebe o número de variáveis em num_variaveis e imprime "AMEM num_variaveis" em MEPA*/
+void imprimeAMEM (int *num_variaveis);
 
 /* Recebe texto com valor de constante e imprime em arquivo MEPA */
 void carregaConstanteMEPA(char *constante);
@@ -222,6 +235,9 @@ void imprimeDesviaSeFalsoMEPA(char* rotulo);
 
 /* Recebe 'rotulo' imprime comando MEPA de desvio incondicional em arquivo MEPA. */
 void imprimeDesviaSempre(char* rotulo);
+
+/* Recebe 'rotulo' e 'nivelL léxico' imprime comando MEPA de entrada de procedimento em arquivo MEPA.*/
+void imprimeEntraProcedimento(char *rotulo, int nivel_lexico);
 /* 
 		---------------------------------
 		|		FIM DEFINIÇÕES MEPA		|
