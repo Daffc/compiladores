@@ -2,6 +2,7 @@
 // [FAZER] Desalocar variáveis após o fim de procedimentos. 
 // [FAZER] Receber entrada de dados (read -> LEIT). 
 // [FAZER] Imprimir dados em saida (ESCR). 
+// [ERRO] por algum motivo fluxo de 'chamada_procedimento' implica que, em 'atribui', ao verificar o tipo de 'variavel' utiliza-se o token de 'ATRIBUICAO'.  
 
 
 %error-verbose          //Expressando melhor os Sytatic Errors.
@@ -166,7 +167,7 @@ lista_id_var:
                 strcpy(entrada_ts.identificador, token);        /* Resgata nome de variável. */
                 entrada_ts.categoria = categoria_entrada_TS;     /* Definindo Categoria de entrada. */
                 entrada_ts.nivel = nivel_lexico;                /* Indica o nível lexico da VS atual */
-                
+
                 avs.tipo[1] = '\0';                             /* Define o tipo de variável como string vazia. */
                 avs.deslocamento = num_vars;                    /* Deslocamento da variável. */
 
@@ -213,6 +214,7 @@ parte_de_declaracao_de_subrotinas:
             {
                 $$ = 1;     // Informando a  'parte_de_declaracao_de_subrotinas' que um procedimento foi definido.                             
             }
+
 //    |   declaração de funcao PONTO_E_VIRGULA
 //    |   parte_de_declaracao_de_subrotinas PONTO_E_VIRGULA declaração de funcao PONTO_E_VIRGULA
     |   /* VAZIO */     
@@ -245,9 +247,9 @@ declaracao_de_procedimento:
                 mostraTabelaSimbolos();
             }
         ABRE_PARENTESES 
-         { 
-                categoria_entrada_TS = ParametroFormal;         /* A partir deste momendo, serão declarados Parâmetros fomais.  */
-         }
+            { 
+                    categoria_entrada_TS = ParametroFormal;         /* A partir deste momendo, serão declarados Parâmetros fomais.  */
+            }
         parametros_formais FECHA_PARENTESES PONTO_E_VIRGULA bloco
 ;
 
