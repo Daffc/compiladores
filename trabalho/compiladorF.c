@@ -119,7 +119,7 @@ void mostraPilhaControleEscopo(){
 	printf("------------------------------\n");
 	for (int i = ce.topo; i >= 0; i--){
 		/*	Imprime elemento da tabela de simbolos	*/
-		printf("%d\t%d\t%d\t%d", i, ce.entradas_escopo[i].quantidade_simbolos, ce.entradas_escopo[i]. quantidade_vars, ce.entradas_escopo[i].quantidade_parametros);
+		printf("%d\t%d\t%d\t%d", i, ce.entradas_escopo[i]. quantidade_vars, ce.entradas_escopo[i].quantidade_procs, ce.entradas_escopo[i].quantidade_parametros );
 		printf("\n");
 	}
 	printf("------------------------------\n\n");
@@ -298,11 +298,12 @@ void liberaTabelaSimbolos(){
 	--------------------------------------------
 */
 
+/* Inicia  a pilha de controle de escopos.  */
 void iniciaPilhaControleEscopo(){
 	ce.topo = -1;
 }
 
-
+/* Empilha 'entrada' de escopo. */
 EntradaEscopo empilhaControleEscopo( EntradaEscopo entrada){
 	
 	/* Ajustando topo */
@@ -319,14 +320,14 @@ EntradaEscopo empilhaControleEscopo( EntradaEscopo entrada){
 	return  ce.entradas_escopo[ce.topo];
 }
 
-/* Busca elemento na tabela de simbolos de acordo com o identificador informado.*/
+/* Desempilha 'entrada' de escopo. */
 EntradaEscopo desempilhaControleEscopo(){
 	
 	EntradaEscopo entrada;
 	
-	/* Verifica se existe rótulo a ser desempilhado. */
-	if(pr.topo < 0){
-		fprintf (stderr,"ERRO: Não existe rótulo a ser desempilhado.\n");
+	/* Verifica se existe escopo a ser desempilhado. */
+	if(ce.topo < 0){
+		fprintf (stderr,"ERRO: Não existe escopo a ser desempilhado.\n");
 		exit(-1);
 	}
 
@@ -487,6 +488,32 @@ void imprimeEntraProcedimento(char *rotulo, int nivel_lexico){
 	geraCodigo(rotulo,resultado);
 }
 
+/* Recebe a quantidade de variáveis a serem desalocadas em 'quantidade' e imprime 'DMEM quantidade' */
+void imprimeDesalocaMemoria(int quantidade){
+
+	char resultado[20];
+
+	/* Imnprimeindo comando 'ENPR nivel_lexico' em buffer resltado */
+	sprintf(resultado, "DMEM %d", quantidade);
+
+	/* Imprimindo resultado em MEPA */
+	geraCodigo(NULL,resultado);
+};
+
+/* Recebe a o nível léxico e a quantidade de parâmetros da função a ser retornada e imprime 'RPTR nivel_lexico,quantidade_parametros' */
+void imprimeRetornaProcedimento(int nivel_lexico, int quantidade_parametros){
+
+	char resultado[20];
+
+	/* Imnprimeindo comando 'ENPR nivel_lexico' em buffer resltado */
+	sprintf(resultado, "RPTR %d,%d", nivel_lexico, quantidade_parametros);
+
+	/* Imprimindo resultado em MEPA */
+	geraCodigo(NULL,resultado);
+};
+
+
+
 /* 
 	---------------------------------
 	|		FIM DEFINIÇÕES MEPA		|
@@ -507,13 +534,13 @@ void imprimeEntraProcedimento(char *rotulo, int nivel_lexico){
 
 // 	entrada.quantidade_simbolos = 0;
 // 	entrada.quantidade_vars = 0;
-// 	entrada.quantidade_parametros = 0;
+// 	entrada.quantidade_procs = 0;
 // 	empilhaControleEscopo(entrada);
 // 	mostraPilhaControleEscopo();
 
 // 		entrada.quantidade_simbolos = 1;
 // 		entrada.quantidade_vars = 0;
-// 	entrada.quantidade_parametros = 0;
+// 	entrada.quantidade_procs = 0;
 // 	empilhaControleEscopo(entrada);
 // 	mostraPilhaControleEscopo();
 
@@ -522,19 +549,19 @@ void imprimeEntraProcedimento(char *rotulo, int nivel_lexico){
 
 // 		entrada.quantidade_simbolos = 2;
 // 		entrada.quantidade_vars = 0;
-// 	entrada.quantidade_parametros = 0;
+// 	entrada.quantidade_procs = 0;
 // 	empilhaControleEscopo(entrada);
 // 	mostraPilhaControleEscopo();
 
 // 		entrada.quantidade_simbolos = 3;
 // 		entrada.quantidade_vars = 0;
-// 	entrada.quantidade_parametros = 0;
+// 	entrada.quantidade_procs = 0;
 // 	empilhaControleEscopo(entrada);
 // 	mostraPilhaControleEscopo();
 
 // 		entrada.quantidade_simbolos = 4;
 // 		entrada.quantidade_vars = 0;
-// 	entrada.quantidade_parametros = 0;
+// 	entrada.quantidade_procs = 0;
 // 	empilhaControleEscopo(entrada);
 // 	mostraPilhaControleEscopo();
 

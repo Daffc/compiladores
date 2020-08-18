@@ -93,20 +93,6 @@ typedef struct tabela_simbolos_t{
 	EntradaTabelaSimbolos 	*entrada; 
 } Tabela_Simbolos;
 
-// Estrutura para controle de entadas e aplicação de DMEM em table de simbolos.
-typedef struct entrada_escopo_t{
-	int quantidade_simbolos;	// Armazena quantidae de simbolos por escopo.
-	int quantidade_vars;	// Armazena quantidae de variáveis por escopo.
-	int quantidade_parametros;	// Armazena quantidade de parâmetros por escopo.
-}EntradaEscopo;
-
-
-// Estrutura para controle de entadas e aplicação de DMEM em table de simbolos.
-typedef struct controle_escopo_t{
-	int topo;
-	EntradaEscopo entradas_escopo[MAX_ESCOPO];	// Armazena quantidae de variáveis por escopo.
-}ControleEscopo;
-
 /*
 	Declarando API de tabela de Simbolos.
 */
@@ -129,13 +115,6 @@ void deslocaParametrosFormais(unsigned char quantidade);
 /* Preenche parte de parâmetros em entrada de Procedimento em TS. */
 void preencheAtributosProcedimento(int quantidade);
 
-/* Inicia pilha de escopos. */
-void iniciaPilhaControleEscopo();
-/* Empilha novo escopo. */
-EntradaEscopo empilhaControleEscopo( EntradaEscopo entrada);
-/* Desempilha escopo. */
-EntradaEscopo desempilhaControleEscopo();
-
 /* Libera Memória Alocada por Tablea de Simbolos*/
 void liberaTabelaSimbolos();
 
@@ -144,12 +123,50 @@ void mostraTabelaSimbolos();
 void mostra_att_VS(Atributos_VS *ponteiro);
 void mostra_att_PF(Atributos_PF *ponteiro);
 void mostra_att_PROC(Atributos_PROC *ponteiro);
+void mostraPilhaControleEscopo();
 
 /*
     -----------------------------------
     |   FIM --- TABELA DE SIMBOLOS    |
     -----------------------------------
 */
+
+/*	
+	--------------------------------------------
+	| 	INICIO --- PILHA DE CONTROLE ESCOPO    |
+	--------------------------------------------
+*/
+
+// Estrutura para controle de entadas e aplicação de DMEM em table de simbolos.
+typedef struct entrada_escopo_t{
+	int nivel_lexico;
+	int quantidade_vars;	// Armazena quantidae de variáveis por escopo.
+	int quantidade_procs;	// Armazena quantidade de procedimentos por escopo.
+	int quantidade_parametros;	// Armazena quantidade de parâmetros por escopo.
+}EntradaEscopo;
+
+
+// Estrutura para controle de entadas e aplicação de DMEM em table de simbolos.
+typedef struct controle_escopo_t{
+	int topo;
+	EntradaEscopo entradas_escopo[MAX_ESCOPO];	// Armazena quantidae de variáveis por escopo.
+}ControleEscopo;
+
+
+/* Inicia  a pilha de controle de escopos.  */
+void iniciaPilhaControleEscopo();
+
+/* Empilha 'entrada' de escopo. */
+EntradaEscopo empilhaControleEscopo( EntradaEscopo entrada);
+
+/* Desempilha 'entrada' de escopo. */
+EntradaEscopo desempilhaControleEscopo();
+/*
+    -----------------------------------------
+    |   FIM --- PILHA DE CONTROLE ESCOPO    |
+    -----------------------------------------
+*/
+
 
 /*	
 	------------------------------------
@@ -270,6 +287,13 @@ void imprimeDesviaSempre(char* rotulo);
 
 /* Recebe 'rotulo' e 'nivelL léxico' imprime comando MEPA de entrada de procedimento em arquivo MEPA.*/
 void imprimeEntraProcedimento(char *rotulo, int nivel_lexico);
+
+/* Recebe a quantidade de variáveis a serem desalocadas em 'quantidade' e imprime 'DMEM quantidade' */
+void imprimeDesalocaMemoria(int quantidade);
+
+/* Recebe a o nível léxico e a quantidade de parâmetros da função a ser retornada e imprime 'RPTR nivel_lexico,quantidade_parametros' */
+void imprimeRetornaProcedimento(int nivel_lexico, int quantidade_parametros);
+
 /* 
 		---------------------------------
 		|		FIM DEFINIÇÕES MEPA		|
