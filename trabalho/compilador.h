@@ -106,10 +106,13 @@ void * buscaTabelaSimbolos(char* identificador);
 void retiraEntradasTabelaSimbolos(unsigned char quantidade);
 /* Define para "quantidade" variáveis o tipo "tipo".*/
 void defineTipoVariavel(unsigned char quantidade, char* tipo);
+
 /*	Definindo o "tipo" para todas as "quantidade" variáveis a partir do topo	*/
 void defineTipoParametroFormal(unsigned char quantidade, char* tipo, TipoPassagemParametro tipo_passagem);
 /* Define deslocamento de 'quantidade' parâmetros formais. */
 void deslocaParametrosFormais(unsigned char quantidade);
+/* Preenche parte de parâmetros em entrada de Procedimento em TS. */
+void preencheAtributosProcedimento(int quantidade);
 
 /* Libera Memória Alocada por Tablea de Simbolos*/
 void liberaTabelaSimbolos();

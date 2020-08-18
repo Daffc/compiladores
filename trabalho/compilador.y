@@ -277,8 +277,8 @@ declaracao_de_procedimento:
             }
         parametros_formais 
             {
-
                 deslocaParametrosFormais(num_vars); // Redefine valor de deslocamento para parâmetros para condizer com edereço de execussão.
+                preencheAtributosProcedimento(num_vars);    // Preenchendo sessão de parâmetros em entrada de procedimento em TS.
             }
         FECHA_PARENTESES PONTO_E_VIRGULA bloco
 ;
@@ -304,7 +304,7 @@ secao_parametros_formais:
     |       
             {
                 num_tipo_vars = 0;      //Zerando contador de parâmetros por tipo.
-                tipo_passagem = valor;  //Definindo o tipo de passagem dos parâmetros.
+                tipo_passagem = referencia;  //Definindo o tipo de passagem dos parâmetros.
             } 
         VAR lista_id_var DOIS_PONTOS IDENT 
             {
