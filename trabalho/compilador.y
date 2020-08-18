@@ -1,5 +1,4 @@
 
-// [FAZER] Desalocar variáveis após o fim de procedimentos. 
 // [FAZER] Receber entrada de dados (read -> LEIT). 
 // [FAZER] Imprimir dados em saida (ESCR). 
 // [ERRO] por algum motivo fluxo de 'chamada_procedimento' implica que, em 'atribui', ao verificar o tipo de 'variavel' utiliza-se o token de 'ATRIBUICAO'.  
@@ -16,8 +15,8 @@
 
 
 int nivel_lexico = 0,   /*Armazena o nível  nível léxico*/
-    num_vars,           /* Armazena a quandtidade de variáveis para impressão de "AMEM num_vars */
-    num_tipo_vars;             /* Armazena a quantidade de variáveis a terem sei tipo identificado. */
+    num_vars = 0,           /* Armazena a quandtidade de variáveis para impressão de "AMEM num_vars */
+    num_tipo_vars = 0;             /* Armazena a quantidade de variáveis a terem sei tipo identificado. */
 
 char    entrada_rotulo[4],
         saida_rotulo[4];
@@ -41,6 +40,9 @@ EntradaTabelaSimbolos entrada_ts;
 
 /* Auxilia no controle de passagem de parâmetros. */
 TipoPassagemParametro tipo_passagem;
+
+/* Auxilia no controle dos escopos. */
+EntradaEscopo entrada_escopo;
 
 %}
 
@@ -91,21 +93,43 @@ programa:
         { geraCodigo (NULL, "INPP"); } PROGRAM IDENT ABRE_PARENTESES lista_idents FECHA_PARENTESES PONTO_E_VIRGULA bloco PONTO  {geraCodigo (NULL, "PARA"); }
 ;
 
-bloco: 
+bloco:  
+            {
+                entrada_escopo.quantidade_parametros = num_vars;    // Armazena a quantidade de parâmetros pré calculada (antes da chamada de 'bloco').
+                entrada_escopo.nivel_lexico = nivel_lexico;         // Armazena o nível léxico do escopo atual. 
+                entrada_escopo.quantidade_procs = 0;                // Define a quantidade de funções/procedimentos do escopo atual como 0;
+            }
         parte_declara_vars 
             {
-                nivel_lexico ++;
+                entrada_escopo.quantidade_vars = num_vars;          // Armazena a quantidade de variáveis locais do escopo atual.
+                empilhaControleEscopo(entrada_escopo);              // Empilha escopo atual.
+
+                nivel_lexico ++;    // Incrementa nível léxico para procedimentos/funções aninhados.                                
+
             } 
         parte_de_declaracao_de_subrotinas 
             {
-                if($3){                                 // Verifica se algum procedimento foi definido.
+                if($4){                                 // Verifica se algum procedimento foi definido.
                     desempilhaRotulo(saida_rotulo);     // Desempilha rótulo para pular definição de procedimentos.
                     geraCodigo(saida_rotulo, "NADA");   // Imprime rótulo destino para pulo de procedimentos.
                 }
                 
-                nivel_lexico --;
+                nivel_lexico --; // Volta a nível léxico de escopo atual.
             } 
         comando_composto
+            {
+                entrada_escopo = desempilhaControleEscopo();                    // Desempilha entrada de controle escopo.
+                imprimeDesalocaMemoria(entrada_escopo.quantidade_vars);         // Imprime comando MEPA DMEM n
+                retiraEntradasTabelaSimbolos(entrada_escopo.quantidade_vars);   // Removendo Variáveis locais de TS.                                    
+
+                // Verifica se escopo atual tem nível léxico > 0 (se não é a "raiz" do programa).
+                if(entrada_escopo.nivel_lexico > 0){
+                    imprimeRetornaProcedimento(entrada_escopo.nivel_lexico, entrada_escopo.quantidade_parametros);  // Imprime comando MEPA  "RPTR k,n".
+                }
+
+                retiraEntradasTabelaSimbolos(entrada_escopo.quantidade_parametros);     // Remove da TS os parâmetros.
+                retiraEntradasTabelaSimbolos(entrada_escopo.quantidade_procs);          // Remove da TS os procedimentos aninhados.
+            }
 ;
 
 
@@ -174,7 +198,6 @@ lista_id_var:
                 num_vars ++;       /* Incrementa 'deslocamento' par aproxima variável.*/
                 num_tipo_vars ++;  /* Acrecentando a contagem de variáeis a serem tipadas.*/
 
-                mostraTabelaSimbolos();
             } 
     |   IDENT 
             { 
@@ -203,7 +226,6 @@ lista_id_var:
                 num_vars ++;       /* Incrementa 'deslocamento' par aproxima variável.*/
                 num_tipo_vars ++;  /* Acrecentando a contagem de variáeis a serem tipadas.*/
 
-                mostraTabelaSimbolos();
             }
 ;
 
@@ -233,12 +255,23 @@ parte_de_declaracao_de_subrotinas:
             }
         declaracao_de_procedimento PONTO_E_VIRGULA
             {
-                $$ = 1;     // Informando a  'parte_de_declaracao_de_subrotinas' que um procedimento foi definido.                       
+                $$ = 1;     // Informando a  'parte_de_declaracao_de_subrotinas' que um procedimento foi definido.             
+
+                entrada_escopo = desempilhaControleEscopo(); 
+                entrada_escopo.quantidade_procs ++;
+                empilhaControleEscopo(entrada_escopo);
+                // mostraPilhaControleEscopo();
             }
         
     |   parte_de_declaracao_de_subrotinas declaracao_de_procedimento PONTO_E_VIRGULA
             {
-                $$ = 1;     // Informando a  'parte_de_declaracao_de_subrotinas' que um procedimento foi definido.                             
+                $$ = 1;     // Informando a  'parte_de_declaracao_de_subrotinas' que um procedimento foi definido.  
+
+                entrada_escopo = desempilhaControleEscopo(); 
+                entrada_escopo.quantidade_procs ++;
+                empilhaControleEscopo(entrada_escopo);
+                // mostraPilhaControleEscopo();
+
             }
 
 //    |   declaração de funcao PONTO_E_VIRGULA
@@ -649,6 +682,7 @@ int main (int argc, char** argv) {
  * ------------------------------------------------------------------- */
     iniciaTabelaSimbolos();
     iniciaPilhaRotulos();
+    iniciaPilhaControleEscopo();
 
     yyin=fp;
     yyparse();
