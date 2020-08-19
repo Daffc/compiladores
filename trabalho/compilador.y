@@ -185,7 +185,7 @@ lista_id_var:
                     avs.deslocamento = num_vars;                    /* Deslocamento da variável. */
 
                     /* Adicionando Novo Simbolo a Tabela de Simbolos */
-                    insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &avs);
+                    insereTabelaSimbolos(nl, entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &avs);
                 }
                 if(categoria_entrada_TS == ParametroFormal){
                     apf.tipo[1] = '\0';                             /* Define o tipo de PF como string vazia. */
@@ -193,7 +193,7 @@ lista_id_var:
                     apf.tipo_passagem = tipo_passagem;              /* Define qual foi o tipo de passagem do PF */
 
                     /* Adicionando Novo Simbolo a Tabela de Simbolos */
-                    insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &apf);
+                    insereTabelaSimbolos(nl, entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &apf);
                 }
 
                 num_vars ++;       /* Incrementa 'deslocamento' par aproxima variável.*/
@@ -212,7 +212,7 @@ lista_id_var:
                     avs.deslocamento = num_vars;                    /* Deslocamento da variável. */
 
                     /* Adicionando Novo Simbolo a Tabela de Simbolos */
-                    insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &avs);
+                    insereTabelaSimbolos(nl, entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &avs);
                 }
                 if(categoria_entrada_TS == ParametroFormal){
                     apf.tipo[1] = '\0';                             /* Define o tipo de PF como string vazia. */
@@ -220,7 +220,7 @@ lista_id_var:
                     apf.tipo_passagem = tipo_passagem;              /* Define qual foi o tipo de passagem do PF */
 
                     /* Adicionando Novo Simbolo a Tabela de Simbolos */
-                    insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &apf);
+                    insereTabelaSimbolos(nl, entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &apf);
                 }
 
 
@@ -302,7 +302,7 @@ declaracao_de_procedimento:
                 imprimeEntraProcedimento(aproc.rotulo, nivel_lexico);   /* Imprime instrução MEPA de entrada para procedimento, indicando o nível lexico. */
 
                 /* Adicionando Novo Simbolo a Tabela de Simbolos */
-                insereTabelaSimbolos(entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &aproc);
+                insereTabelaSimbolos(nl, entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &aproc);
             }
         ABRE_PARENTESES 
             { 

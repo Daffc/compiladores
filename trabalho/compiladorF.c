@@ -147,7 +147,10 @@ void iniciaTabelaSimbolos(){
 }
 
 /*	Insere novo simbolo em tabela de simbolos de acordo com sua categoria.	*/
-void insereTabelaSimbolos(char* identificador, CategoriaSimbolos categoria, unsigned char nivel, void *atributos){
+void insereTabelaSimbolos(int linha, char* identificador, CategoriaSimbolos categoria, unsigned char nivel, void *atributos){
+
+	// Cerifica se novo simbolo 'identificador' pode ser inserido em Tabela de Simbolos.
+	validaInsercaoSimbolo(linha, identificador, nivel, categoria);
 
 	/*	Caso não tenha espaço para novo simbolo, duplicar tamanho de tabela.	*/
 	if (ts.tamanho <= (ts.topo + 1)){
@@ -175,10 +178,11 @@ void insereTabelaSimbolos(char* identificador, CategoriaSimbolos categoria, unsi
 			ts.entrada[ts.topo].ponteiro_atributos = malloc(sizeof(Atributos_PROC));
 			memcpy(ts.entrada[ts.topo].ponteiro_atributos, atributos, sizeof(Atributos_PROC));
 	}
+	mostraTabelaSimbolos();
 }
 
-/*	Busca simbolo em tabela de simbolos de acordo com o identificador, retornando ponteiro para atributos caso encontrado e NULL caso contrário.	*/
-void * buscaTabelaSimbolos(char* identificador){
+/*	Busca simbolo em tabela de simbolos de acordo com o identificador, retornando ponteiro para entrada de identificador caso encontrado e NULL caso contrário.	*/
+EntradaTabelaSimbolos * buscaTabelaSimbolos(char* identificador){
 	/* Busca em todos os simbolos validos, do topo a base.*/
 	for (int i = ts.topo; i >= 0; i--){
 		/* Compara se entrada corresponde a nível informado e depois compara identificadores */
@@ -299,7 +303,7 @@ char * validaParametro(int linha, char *primeiro, char *segundo){
 EntradaTabelaSimbolos * validaSimbolo(int linha, char *simbolo){
 	
 	/* Recupera atributos da variável */
-	void *ponteiro = buscaTabelaSimbolos(simbolo);
+	EntradaTabelaSimbolos *ponteiro = buscaTabelaSimbolos(simbolo);
 
 	/* Verifica se 'simbolo' NÃO consta em Tabela de Sombolos, retirnando mensagem. */
 	if (!ponteiro){
@@ -320,6 +324,35 @@ void validaNumParametros(int linha, int parametros_encontraros, int parametros_n
 		fprintf (stderr,"ERRO LINHA %d: Quantidade de parâmetros incompatível ( esperado %d, recebido %d ).\n", linha, parametros_necesarios, parametros_encontraros);
 		exit(-1);
 	}
+}
+
+// Verifica se o simbolo 'identificador' pode ser inserido em Tabela de Simbolos, caso contrário retorna erro.
+void validaInsercaoSimbolo(int linha, char *identificador, int nivel, CategoriaSimbolos categoria){
+
+	// Busca por simbolo em Tabela de Simbolos.
+	EntradaTabelaSimbolos *entrada = buscaTabelaSimbolos(identificador);
+
+	// Caso simbolo conste em Tabela de Simbolos.
+	if (entrada){
+
+		// Caso Categoria do Simbolo encontrado seja VariavelSimples.
+		if (categoria == VariavelSimples){
+			if(entrada->nivel == nivel){
+				/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
+				fprintf (stderr,"ERRO LINHA %d: Simbolo entre '%s' já foi declarado neste escopo.\n", linha, identificador);
+				exit(-1);
+			}
+		}
+		// Caso Categoria do Simbolo encontrado seja Procedimento.
+		if (categoria == Procedimento){
+			if(entrada->nivel == (nivel) || entrada->nivel == (nivel - 1) ){
+				/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
+				fprintf (stderr,"ERRO LINHA %d: Simbolo entre '%s' já foi declarado neste escopo.\n", linha, identificador);
+				exit(-1);
+			}
+		}
+	}
+
 }
 
 /* 

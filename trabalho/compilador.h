@@ -100,9 +100,9 @@ typedef struct tabela_simbolos_t{
 /* Define valores para Tabela de Simbolos vazia. */
 void iniciaTabelaSimbolos();
 /* Empilha novo elemento na tabela de simbolos. */
-void insereTabelaSimbolos(char* identificador, CategoriaSimbolos categoria, unsigned char nivel, void *atributos);
+void insereTabelaSimbolos(int linha, char* identificador, CategoriaSimbolos categoria, unsigned char nivel, void *atributos);
 /* Busca elemento na tabela de simbolos de acordo com o identificador informado.*/
-void * buscaTabelaSimbolos(char* identificador);
+EntradaTabelaSimbolos* buscaTabelaSimbolos(char* identificador);
 /* Desempilha "quantidade" entradas da tabela de Simbolos. */
 void retiraEntradasTabelaSimbolos(unsigned char quantidade);
 /* Define para "quantidade" variáveis o tipo "tipo".*/
@@ -263,6 +263,9 @@ char * validaParametro(int linha, char *primeiro, char *segundo);
 
 // Verifica se quantidade de parâmetros é igual, caso contrário retorna erro.
 void validaNumParametros(int linha, int parametros_encontraros, int parametros_necesarios);
+
+// Verifica se o simbolo 'identificador' pode ser inserido em Tabela de Simbolos, caso contrário retorna erro.
+void validaInsercaoSimbolo(int linha, char *identificador, int nivel, CategoriaSimbolos categoria);
 /* 
 		-----------------------------
 		|		FIM VALIDAÇÃO		|
