@@ -1,8 +1,6 @@
 
 // [FAZER] Receber entrada de dados (read -> LEIT). 
 // [FAZER] Imprimir dados em saida (ESCR). 
-// [ERRO] por algum motivo fluxo de 'chamada_procedimento' implica que, em 'atribui', ao verificar o tipo de 'variavel' utiliza-se o token de 'ATRIBUICAO'.  
-
 
 %error-verbose          //Expressando melhor os Sytatic Errors.
 
@@ -379,8 +377,7 @@ comando_sem_rotulo:
             {
                 // Caso IDENT sejá uma 'VariavelSimples'
                 if ($1.categoria == VariavelSimples)
-                // Caso 'identificador_comando' retorne de uma atribuição
-                if($3[0] != '\0'){
+                {
 
                     /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
                     avs = *( (Atributos_VS *) $1.ponteiro_atributos);
@@ -390,6 +387,16 @@ comando_sem_rotulo:
 
                     /* Defindo instrução MEPA para armazenamento em 'variavel' */
                     armazenaVariavelSimplesMEPA($1.nivel, avs.deslocamento);
+                }
+
+                // Caso IDENT sejá uma 'VariavelSimples'
+                if ($1.categoria == Procedimento)
+                {
+
+                    /* Armazena em 'aproc' atributos de entrada de 'IDENT'*/
+                    aproc = *( (Atributos_PROC *) $1.ponteiro_atributos);
+
+                    imprimeChamaProcedimento(aproc.rotulo, nivel_lexico);
                 }
 
             }

@@ -505,8 +505,20 @@ void imprimeRetornaProcedimento(int nivel_lexico, int quantidade_parametros){
 
 	char resultado[20];
 
-	/* Imnprimeindo comando 'ENPR nivel_lexico' em buffer resltado */
+	/* Imnprimeindo comando 'RPTR nivel_lexico,quantidade_parametros' em buffer resltado */
 	sprintf(resultado, "RPTR %d,%d", nivel_lexico, quantidade_parametros);
+
+	/* Imprimindo resultado em MEPA */
+	geraCodigo(NULL,resultado);
+};
+
+/* Recebe o rótulo e o nível léxico de retorno da função a ser chamada e imprime 'CHPR rotulo,nivel_lexico' */
+void imprimeChamaProcedimento(char *rotulo,int nivel_lexico){
+	
+	char resultado[20];
+
+	/* Imnprimeindo comando 'CHPR rotulo,nivel_lexico' em buffer resltado */
+	sprintf(resultado, "CHPR %s,%d", rotulo, nivel_lexico);
 
 	/* Imprimindo resultado em MEPA */
 	geraCodigo(NULL,resultado);

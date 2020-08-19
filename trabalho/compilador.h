@@ -291,9 +291,11 @@ void imprimeEntraProcedimento(char *rotulo, int nivel_lexico);
 /* Recebe a quantidade de variáveis a serem desalocadas em 'quantidade' e imprime 'DMEM quantidade' */
 void imprimeDesalocaMemoria(int quantidade);
 
-/* Recebe a o nível léxico e a quantidade de parâmetros da função a ser retornada e imprime 'RPTR nivel_lexico,quantidade_parametros' */
+/* Recebe o nível léxico e a quantidade de parâmetros da função a ser retornada e imprime 'RPTR nivel_lexico,quantidade_parametros' */
 void imprimeRetornaProcedimento(int nivel_lexico, int quantidade_parametros);
 
+/* Recebe o rótulo e o nível léxico de retorno da função a ser chamada e imprime 'CHPR rotulo,nivel_lexico' */
+void imprimeChamaProcedimento(char *rotulo,int nivel_lexico);
 /* 
 		---------------------------------
 		|		FIM DEFINIÇÕES MEPA		|
