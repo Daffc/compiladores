@@ -80,8 +80,8 @@ EntradaEscopo entrada_escopo;
 /* DEFINIÇÃO PARA ESTADOS NÃO-TERMINAIS */
 %type <texto> fator termo exp_simples expressao relacao atribui variavel
 %type <numero> parte_de_declaracao_de_subrotinas
-%type <matrix_texto> lista_de_espressoes identificador_comando chamada_procedimento
-
+%type <matrix_texto> lista_de_espressoes chamada_procedimento
+%type <entrada_ts> identificador_comando
 /* Aplicando precedência para IF THEN ELSE */
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
@@ -370,67 +370,9 @@ comando_sem_rotulo:
         IDENT 
             {
                 // Armazena token de entrada do simbolo 'token' em $1.
-                $1 = * validaSimbolo(nl, token);
-
+                $1 = *validaSimbolo(nl, token);
             } 
         identificador_comando
-            {
-                // Caso IDENT sejá uma 'VariavelSimples'
-                if ($1.categoria == VariavelSimples)
-                {
-
-                    /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
-                    avs = *( (Atributos_VS *) $1.ponteiro_atributos);
-
-                    /* Verificando se 'IDENT' e 'identificador_comando' $3 possuem o mesmo tipo */
-                    validaTipos(nl, avs.tipo, $3[0]);
-
-                    /* Defindo instrução MEPA para armazenamento em 'variavel' */
-                    armazenaVariavelSimplesMEPA($1.nivel, avs.deslocamento);
-                }
-
-                // Caso IDENT sejá uma 'ParametroFormal'
-                if ($1.categoria == ParametroFormal)
-                {
-
-                    /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
-                    apf = *( (Atributos_PF *) $1.ponteiro_atributos);
-
-                    /* Verificando se 'IDENT' e 'identificador_comando' $3 possuem o mesmo tipo */
-                    validaTipos(nl, apf.tipo, $3[0]);
-
-
-                    if(apf.tipo_passagem == valor){
-                        /* Defindo instrução MEPA para armazenamento em 'variavel' */
-                        armazenaVariavelSimplesMEPA($1.nivel, apf.deslocamento);
-                    }
-                    else{
-                        // Retorna Código MEPA de carregamento da variável.
-                        armazenaVariavelIndiretaMEPA(nivel_lexico, apf.deslocamento);
-                    }
-
-                }
-
-                // Caso IDENT sejá uma 'Procedimento'
-                if ($1.categoria == Procedimento)
-                {
-
-                    /* Armazena em 'aproc' atributos de entrada de 'IDENT'*/
-                    aproc = *( (Atributos_PROC *) $1.ponteiro_atributos);
-
-                    // Verifica se quantidade de parâmetros da chamada é compatível com cabeçalho.
-                    validaNumParametros(nl, num_parametros, aproc.quantidade_parametros);
-
-                    // Verifica se os tipos dos parâmetros são compatíveis com os do cabeçalho.
-                    for (int i = 0; i < num_parametros; i++){
-                        validaParametro(nl, $3[i], aproc.entradas_parametros[i].tipo);
-                    }
-
-                    // Imprime instrução MEPA de achamada de procedimento.
-                    imprimeChamaProcedimento(aproc.rotulo, nivel_lexico);
-                }
-
-            }
     |   comando_condicional
     |   comando_repetitivo      
     |   comando_composto              
@@ -440,13 +382,68 @@ comando_sem_rotulo:
 identificador_comando:
         atribui
             {
-                /* Repassando tipo de 'atribui' ($1) para 'identificador_comando'($$[0]) */
-                strcpy($$[0], $1);
+                // Resgatando entrada de Tabela de Simbolos de IDENT em comando_sem_rotulo.
+                $$ = $<entrada_ts>-1;
+                
+                // Caso IDENT sejá uma 'VariavelSimples'
+                if ($$.categoria == VariavelSimples)
+                {
+
+                    /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
+                    avs = *( (Atributos_VS *) $$.ponteiro_atributos);
+
+                    /* Verificando se 'IDENT' e 'atribui' $1 possuem o mesmo tipo */
+                    validaTipos(nl, avs.tipo, $1);
+
+                    /* Defindo instrução MEPA para armazenamento em 'variavel' */
+                    armazenaVariavelSimplesMEPA($$.nivel, avs.deslocamento);
+                }
+
+                // Caso IDENT sejá uma 'ParametroFormal'
+                if ($$.categoria == ParametroFormal)
+                {
+
+                    /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
+                    apf = *( (Atributos_PF *) $$.ponteiro_atributos);
+
+                    /* Verificando se 'IDENT' e 'atribui' $1 possuem o mesmo tipo */
+                    validaTipos(nl, apf.tipo, $1);
+
+
+                    if(apf.tipo_passagem == valor){
+                        /* Defindo instrução MEPA para armazenamento em 'variavel' */
+                        armazenaVariavelSimplesMEPA($$.nivel, apf.deslocamento);
+                    }
+                    else{
+                        // Retorna Código MEPA de carregamento da variável.
+                        armazenaVariavelIndiretaMEPA(nivel_lexico, apf.deslocamento);
+                    }
+
+                }
             }
     |   chamada_procedimento
             {
-                /* Repassando lista de atributos de  'chamada_procedimento' ($1) para 'identificador_comando'($$) */
-                memcpy($$, $1, 20 * 20 * sizeof(char));
+                // Resgatando entrada de Tabela de Simbolos de IDENT em comando_sem_rotulo.
+                $$ = $<entrada_ts>-1;
+
+                // Caso IDENT sejá uma 'Procedimento'
+                if ($$.categoria == Procedimento)
+                {
+
+                    /* Armazena em 'aproc' atributos de entrada de 'IDENT'*/
+                    aproc = *( (Atributos_PROC *) $$.ponteiro_atributos);
+
+                    // Verifica se quantidade de parâmetros da chamada é compatível com cabeçalho.
+                    validaNumParametros(nl, num_parametros, aproc.quantidade_parametros);
+
+                    // Verifica se os tipos dos parâmetros são compatíveis com os do cabeçalho.
+                    for (int i = 0; i < num_parametros; i++){
+                        validaParametro(nl, $1[i], aproc.entradas_parametros[i].tipo);
+                    }
+
+                    // Imprime instrução MEPA de achamada de procedimento.
+                    imprimeChamaProcedimento(aproc.rotulo, nivel_lexico);
+                }
             }
     ;
 
