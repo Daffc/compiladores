@@ -178,7 +178,7 @@ void * buscaTabelaSimbolos(char* identificador){
 	for (int i = ts.topo; i >= 0; i--){
 		/* Compara se entrada corresponde a nível informado e depois compara identificadores */
 		if ( strcmp(ts.entrada[i].identificador, identificador) == 0 )
-			return ts.entrada[i].ponteiro_atributos;
+			return &(ts.entrada[i]);
 	}
 	return NULL;
 }
@@ -219,7 +219,7 @@ void deslocaParametrosFormais(unsigned char quantidade){
 	int contador = 0;
 	for (int i = ts.topo; i > (ts.topo - quantidade); i--){
 		
-		((Atributos_PF *)ts.entrada[i].ponteiro_atributos)->deslocamento = -(4 + contador);
+		((Atributos_PF *)ts.entrada[i].ponteiro_atributos)->deslocamento = - (4 + contador);
 		contador ++;
 	}
 }
@@ -266,7 +266,7 @@ char * validaTipos(int linha, char *primeiro, char *segundo){
 }
 
 
-void * validaSimbolo(int linha, char *simbolo){
+EntradaTabelaSimbolos * validaSimbolo(int linha, char *simbolo){
 	
 	/* Recupera atributos da variável */
 	void *ponteiro = buscaTabelaSimbolos(simbolo);
@@ -278,7 +278,7 @@ void * validaSimbolo(int linha, char *simbolo){
 		exit(-1);
 	}
 	
-	/* Retorna ponteiro para atributos de 'simbolo' caso ele seja encontrado */
+	/* Retorna ponteiro para entrada de 'simbolo' caso ele seja encontrado */
 	return ponteiro;
 }
 

@@ -49,6 +49,7 @@ EntradaEscopo entrada_escopo;
 %union{
     Variavel_Simples v_sim;
     char    texto[128];
+    EntradaTabelaSimbolos entrada_ts;
     int numero;
 }
 
@@ -68,7 +69,7 @@ EntradaEscopo entrada_escopo;
 %token NUMERO
 
 /* TOKEN IDENTIFICADOR */
-%token IDENT
+%token <entrada_ts> IDENT
 
 /* TOKEN WHILE*/
 %token WHILE
@@ -79,7 +80,7 @@ EntradaEscopo entrada_escopo;
 
 /* DEFINIÇÃO PARA ESTADOS NÃO-TERMINAIS */
 %type <v_sim> variavel
-%type <texto> fator termo exp_simples expressao relacao 
+%type <texto> fator termo exp_simples expressao relacao atribui identificador_comando
 %type <numero> parte_de_declaracao_de_subrotinas
 
 
@@ -368,30 +369,62 @@ comando:
 
 
 comando_sem_rotulo:   
-        atribui
-    /* |   chamada_procedimento */
+        IDENT 
+            {
+                // Armazena token de entrada do simbolo 'token' em $1.
+                $1 = * validaSimbolo(nl, token);
+
+            } 
+        identificador_comando
+            {
+                // Caso IDENT sejá uma 'VariavelSimples'
+                if ($1.categoria == VariavelSimples)
+                // Caso 'identificador_comando' retorne de uma atribuição
+                if($3[0] != '\0'){
+
+                    /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
+                    avs = *( (Atributos_VS *) $1.ponteiro_atributos);
+
+                    /* Verificando se 'IDENT' e 'identificador_comando' $3 possuem o mesmo tipo */
+                    validaTipos(nl, avs.tipo, $3);
+
+                    /* Defindo instrução MEPA para armazenamento em 'variavel' */
+                    armazenaVariavelSimplesMEPA($1.nivel, avs.deslocamento);
+                }
+
+            }
     |   comando_condicional
     |   comando_repetitivo      
     |   comando_composto              
 ; 
 
+// Necessário Fatoração em comandos de atribuição e chamada de procedimento.
+identificador_comando:
+        atribui
+            {
+                /* Repassando tipo de 'atribui' ($1) para 'identificador_comando'($$) */
+                strcpy($$, $1);
+            }
+    |   chamada_procedimento
+            {
+                /* Repassando tipo de 'atribui' ($1) para 'identificador_comando'($$) */
+                $$[0] = '\0';
+            }
+    ;
+
 // LINHA 19
 atribui:   
-        variavel ATRIBUICAO expressao
+        ATRIBUICAO expressao
             {
-                /* Verificando se 'variavel' $1 e 'expressao' $3 possuem o mesmo tipo */
-                validaTipos(nl, $1.tipo, $3);
-
-                /* Defindo instrução MEPA para armazenamento em 'variavel' */
-                armazenaVariavelSimplesMEPA($1.nivel, $1.deslocamento);
+                /* Repassando tipo de 'expressao' ($2) para 'atribui'($$) */
+                strcpy($$, $2);
             }
 ;
 
 // LINHA 20
-/* chamada_procedimento:
-        IDENT PONTO_E_VIRGULA
-    |   IDENT ABRE_PARENTESES lista_de_espressoes FECHA_PARENTESES PONTO_E_VIRGULA
-; */
+chamada_procedimento:
+    |   ABRE_PARENTESES lista_de_espressoes FECHA_PARENTESES
+;
 
 // LINHA 22
 comando_condicional: 
@@ -467,10 +500,11 @@ comando_repetitivo  :
 ;
 
 // LINHA 24
-/* lista_de_espressoes:
-        expressao
-    |   lista_de_espressoes VIRGULA expressao
-; */
+lista_de_espressoes:
+        lista_de_espressoes VIRGULA expressao
+    |   expressao
+    |   // VAZIO
+;
 
 // LINHA 25
 expressao:   
@@ -524,7 +558,7 @@ relacao :
 ;
 
 //LINHA 27
-exp_simples :   
+exp_simples:   
         termo
             {
                 /* Repassando tipo de 'termo' ($1) para 'exp_simples'($$) */
@@ -643,7 +677,7 @@ variavel:
         IDENT
             {         
                 /* Armazena em 'avs' atributos de 'token' após verificação por validaSimbolo(); */
-                avs = *( (Atributos_VS *) validaSimbolo(nl, token));
+                avs = *( (Atributos_VS *) validaSimbolo(nl, token)->ponteiro_atributos);
 
                 /* Populando 'variavel' com atributos recebidos de Tabela de Simbolos. */
                 strcpy($$.token, token);

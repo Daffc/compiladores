@@ -253,7 +253,7 @@ char * validaTipos(int nivel, char *primeiro, char *segundo);
 	Verifica se "primeiro" e "segundo" São do mesmo tipo, retornando "primeiro" caso verdadeiro 
 	e imprime mensagem de error e para execussão (exit(-1)) caso seja falso.
 */
-void * validaSimbolo(int linha, char *simbolo);
+EntradaTabelaSimbolos * validaSimbolo(int linha, char *simbolo);
 
 /* 
 		-----------------------------
