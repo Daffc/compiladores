@@ -14,7 +14,8 @@
 
 int nivel_lexico = 0,   /*Armazena o nível  nível léxico*/
     num_vars = 0,           /* Armazena a quandtidade de variáveis para impressão de "AMEM num_vars */
-    num_tipo_vars = 0;             /* Armazena a quantidade de variáveis a terem sei tipo identificado. */
+    num_tipo_vars = 0,             /* Armazena a quantidade de variáveis a terem sei tipo identificado. */
+    num_parametros = 0; // Armazena a quantidade de parâmetro recebidos por uma chamada de função.
 
 char    entrada_rotulo[4],
         saida_rotulo[4];
@@ -49,6 +50,7 @@ EntradaEscopo entrada_escopo;
     char    texto[128];
     EntradaTabelaSimbolos entrada_ts;
     int numero;
+    char    matrix_texto[20][20];
 }
 
 /* DEFINIÇÃO PARA ESTADOS TERMINAIS */
@@ -78,9 +80,9 @@ EntradaEscopo entrada_escopo;
 
 /* DEFINIÇÃO PARA ESTADOS NÃO-TERMINAIS */
 %type <v_sim> variavel
-%type <texto> fator termo exp_simples expressao relacao atribui identificador_comando
+%type <texto> fator termo exp_simples expressao relacao atribui 
 %type <numero> parte_de_declaracao_de_subrotinas
-
+%type <matrix_texto> lista_de_espressoes identificador_comando chamada_procedimento
 
 /* Aplicando precedência para IF THEN ELSE */
 %nonassoc LOWER_THAN_ELSE
@@ -383,7 +385,7 @@ comando_sem_rotulo:
                     avs = *( (Atributos_VS *) $1.ponteiro_atributos);
 
                     /* Verificando se 'IDENT' e 'identificador_comando' $3 possuem o mesmo tipo */
-                    validaTipos(nl, avs.tipo, $3);
+                    validaTipos(nl, avs.tipo, $3[0]);
 
                     /* Defindo instrução MEPA para armazenamento em 'variavel' */
                     armazenaVariavelSimplesMEPA($1.nivel, avs.deslocamento);
@@ -396,6 +398,15 @@ comando_sem_rotulo:
                     /* Armazena em 'aproc' atributos de entrada de 'IDENT'*/
                     aproc = *( (Atributos_PROC *) $1.ponteiro_atributos);
 
+                    // Verifica se quantidade de parâmetros da chamada é compatível com cabeçalho.
+                    validaNumParametros(nl, num_parametros, aproc.quantidade_parametros);
+
+                    // Verifica se os tipos dos parâmetros são compatíveis com os do cabeçalho.
+                    for (int i = 0; i < num_parametros; i++){
+                        validaParametro(nl, $3[i], aproc.entradas_parametros[i].tipo);
+                    }
+
+                    // Imprime instrução MEPA de achamada de procedimento.
                     imprimeChamaProcedimento(aproc.rotulo, nivel_lexico);
                 }
 
@@ -409,13 +420,13 @@ comando_sem_rotulo:
 identificador_comando:
         atribui
             {
-                /* Repassando tipo de 'atribui' ($1) para 'identificador_comando'($$) */
-                strcpy($$, $1);
+                /* Repassando tipo de 'atribui' ($1) para 'identificador_comando'($$[0]) */
+                strcpy($$[0], $1);
             }
     |   chamada_procedimento
             {
-                /* Repassando tipo de 'atribui' ($1) para 'identificador_comando'($$) */
-                $$[0] = '\0';
+                /* Repassando lista de atributos de  'chamada_procedimento' ($1) para 'identificador_comando'($$) */
+                memcpy($$, $1, 20 * 20 * sizeof(char));
             }
     ;
 
@@ -430,7 +441,20 @@ atribui:
 
 // LINHA 20
 chamada_procedimento:
-    |   ABRE_PARENTESES lista_de_espressoes FECHA_PARENTESES
+    ABRE_PARENTESES 
+        {
+            // Zera contador de parâmetros.
+            num_parametros = 0;
+        }
+    lista_de_espressoes FECHA_PARENTESES
+        {
+            /* Repassando lista de atributos de  'lista_de_espressoes' ($2) para 'chamada_procedimento'($$) */
+            memcpy($$, $3, 20 * 20 * sizeof(char));
+        }
+    | // VAZIO
+        {
+            $$[0][0] = '\0';
+        }
 ;
 
 // LINHA 22
@@ -509,8 +533,23 @@ comando_repetitivo  :
 // LINHA 24
 lista_de_espressoes:
         lista_de_espressoes VIRGULA expressao
+        {
+            // Adiciona novo parâmetro a contador de parâmetros.
+            strcpy($$[num_parametros], $3);
+            // Adiciona novo parâmetro a contador de parâmetros.
+            num_parametros ++; 
+        }
     |   expressao
+        {
+            // Adiciona novo parâmetro a contador de parâmetros.
+            strcpy($$[num_parametros], $1);
+            // Adiciona novo parâmetro a contador de parâmetros.
+            num_parametros ++; 
+        }
     |   // VAZIO
+        {
+            $$[0][0] = '\0';
+        }
 ;
 
 // LINHA 25

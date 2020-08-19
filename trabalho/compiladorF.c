@@ -131,6 +131,11 @@ void mostraPilhaControleEscopo(){
 	|		  FIM DEBUG			|
 	-----------------------------	
 */
+/*	
+	--------------------------------------
+	| 	INICIO --- TABELA DE SIMBOLOS    |
+	--------------------------------------
+*/
 
 /*	Inicializando Tabela de Simbolos*/
 void iniciaTabelaSimbolos(){
@@ -246,6 +251,17 @@ void preencheAtributosProcedimento(int quantidade){
 	}
 }
 
+/* Libera Memória Alocada por Tablea de Simbolos*/
+void liberaTabelaSimbolos(){
+	free(ts.entrada);
+}
+
+/* 
+	-----------------------------------
+	|	FIM --- TABELA DE SIMBOLOS     |
+	-----------------------------------	
+*/
+
 /* 
 	-------------------------
 	|		VALIDAÇÃO		|
@@ -258,6 +274,20 @@ char * validaTipos(int linha, char *primeiro, char *segundo){
 	if(strcmp(primeiro, segundo)){
 		/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
 		fprintf (stderr,"ERRO LINHA %d: Operação entre '%s' e '%s' inválida.\n", linha, primeiro, segundo);
+		exit(-1);
+	}
+
+	/* Retorna ponteiro para string 'primeiro' */
+	return primeiro;
+}
+
+
+char * validaParametro(int linha, char *primeiro, char *segundo){
+
+	// Verifica se "primeiro" e "segundo" NÃO são do mesmo tipo, informando erro caso verdadeiro.
+	if(strcmp(primeiro, segundo)){
+		/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
+		fprintf (stderr,"ERRO LINHA %d: Tipo de parâmetro '%s' incompatível ( esperado: '%s' ).\n", linha, primeiro, segundo);
 		exit(-1);
 	}
 
@@ -282,9 +312,14 @@ EntradaTabelaSimbolos * validaSimbolo(int linha, char *simbolo){
 	return ponteiro;
 }
 
-/* Libera Memória Alocada por Tablea de Simbolos*/
-void liberaTabelaSimbolos(){
-	free(ts.entrada);
+// Verifica se quantidade de parâmetros é igual, caso contrário retorna erro.
+void validaNumParametros(int linha, int parametros_encontraros, int parametros_necesarios){
+
+	if(parametros_encontraros != parametros_necesarios){
+		/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
+		fprintf (stderr,"ERRO LINHA %d: Quantidade de parâmetros incompatível ( esperado %d, recebido %d ).\n", linha, parametros_necesarios, parametros_encontraros);
+		exit(-1);
+	}
 }
 
 /* 

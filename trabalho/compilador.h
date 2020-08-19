@@ -255,6 +255,14 @@ char * validaTipos(int nivel, char *primeiro, char *segundo);
 */
 EntradaTabelaSimbolos * validaSimbolo(int linha, char *simbolo);
 
+/*
+	Verifica se "primeiro" e "segundo" São do mesmo tipo, retornando "primeiro" caso verdadeiro 
+	e imprime mensagem de error e para execussão (exit(-1)) caso seja falso.
+*/
+char * validaParametro(int linha, char *primeiro, char *segundo);
+
+// Verifica se quantidade de parâmetros é igual, caso contrário retorna erro.
+void validaNumParametros(int linha, int parametros_encontraros, int parametros_necesarios);
 /* 
 		-----------------------------
 		|		FIM VALIDAÇÃO		|
