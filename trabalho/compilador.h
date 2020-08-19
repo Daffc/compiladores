@@ -196,25 +196,6 @@ void desempilhaRotulo(char *rotulo);
     ---------------------------------
 */
 
-/*	
-	--------------------------------------
-	| 	INICIO --- ESTRUTURAS BISON      |
-	--------------------------------------
-*/
-
-typedef struct variavel_simples_t{
-	char token[128];
-	char tipo[20];
-	unsigned char nivel;
-	unsigned char deslocamento;
-}Variavel_Simples;
-
-/*
-    -----------------------------------
-    |   FIM --- ESTRUTURAS BISON      |
-    -----------------------------------
-*/
-
 /* -------------------------------------------------------------------
  * vari�veis globais
  * ------------------------------------------------------------------- */
@@ -287,8 +268,14 @@ void carregaConstanteMEPA(char *constante);
 /* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de recuperação de variável em arquivo MEPA.*/
 void carregaVariavelSimplesMEPA(int nivel_lexico, int deslocamento);
 
+/* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de recuperação de variável em arquivo MEPA.*/
+void carregaVariavelIndiretoMEPA(int nivel_lexico, int deslocamento);
+
 /* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de armazenamento de valore em variavel MEPA.*/
 void armazenaVariavelSimplesMEPA(int nivel_lexico, int deslocamento);
+
+/* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de armazenamento de valor indiretamente em variavel MEPA.*/
+void armazenaVariavelIndiretaMEPA(int nivel_lexico, int deslocamento);
 
 /* Recebe 'rotulo' imprime comando MEPA de desvio condicional em arquivo MEPA.*/
 void imprimeDesviaSeFalsoMEPA(char* rotulo);

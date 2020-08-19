@@ -46,7 +46,6 @@ EntradaEscopo entrada_escopo;
 %}
 
 %union{
-    Variavel_Simples v_sim;
     char    texto[128];
     EntradaTabelaSimbolos entrada_ts;
     int numero;
@@ -79,8 +78,7 @@ EntradaEscopo entrada_escopo;
 
 
 /* DEFINIÇÃO PARA ESTADOS NÃO-TERMINAIS */
-%type <v_sim> variavel
-%type <texto> fator termo exp_simples expressao relacao atribui 
+%type <texto> fator termo exp_simples expressao relacao atribui variavel
 %type <numero> parte_de_declaracao_de_subrotinas
 %type <matrix_texto> lista_de_espressoes identificador_comando chamada_procedimento
 
@@ -391,7 +389,29 @@ comando_sem_rotulo:
                     armazenaVariavelSimplesMEPA($1.nivel, avs.deslocamento);
                 }
 
-                // Caso IDENT sejá uma 'VariavelSimples'
+                // Caso IDENT sejá uma 'ParametroFormal'
+                if ($1.categoria == ParametroFormal)
+                {
+
+                    /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
+                    apf = *( (Atributos_PF *) $1.ponteiro_atributos);
+
+                    /* Verificando se 'IDENT' e 'identificador_comando' $3 possuem o mesmo tipo */
+                    validaTipos(nl, apf.tipo, $3[0]);
+
+
+                    if(apf.tipo_passagem == valor){
+                        /* Defindo instrução MEPA para armazenamento em 'variavel' */
+                        armazenaVariavelSimplesMEPA($1.nivel, apf.deslocamento);
+                    }
+                    else{
+                        // Retorna Código MEPA de carregamento da variável.
+                        armazenaVariavelIndiretaMEPA(nivel_lexico, apf.deslocamento);
+                    }
+
+                }
+
+                // Caso IDENT sejá uma 'Procedimento'
                 if ($1.categoria == Procedimento)
                 {
 
@@ -689,9 +709,7 @@ fator   :
         variavel
             {
                 /* Repassando tipo de 'variavel' ($2) para 'fator'($$) */
-                strcpy($$, $1.tipo);
-
-                carregaVariavelSimplesMEPA(nivel_lexico, $1.deslocamento);
+                strcpy($$, $1);
             }
     |   NUMERO
             {
@@ -721,15 +739,42 @@ fator   :
 // LINHA 30
 variavel:   
         IDENT
-            {         
-                /* Armazena em 'avs' atributos de 'token' após verificação por validaSimbolo(); */
-                avs = *( (Atributos_VS *) validaSimbolo(nl, token)->ponteiro_atributos);
+            {     
+                // Recupera entrada em Tabela de Simbolos de 'token'    
+                $1 = * validaSimbolo(nl, token);
 
-                /* Populando 'variavel' com atributos recebidos de Tabela de Simbolos. */
-                strcpy($$.token, token);
-                strcpy($$.tipo, avs.tipo);
-                $$.nivel = nivel_lexico;
-                $$.deslocamento = avs.deslocamento;
+                // Caso IDENT sejá uma 'VariavelSimples'
+                if ($1.categoria == VariavelSimples)
+                {
+                    /* Armazena em 'avs' atributos de 'token' após verificação por validaSimbolo(); */
+                    avs = *( (Atributos_VS *) $1.ponteiro_atributos);
+
+                    // Retorna Código MEPA de carregamento da variável.
+                    carregaVariavelSimplesMEPA(nivel_lexico, avs.deslocamento);
+                    
+                    // Retornando em 'variavel' o tipo de variável de 'token'.
+                    strcpy($$, avs.tipo);
+                }
+
+                // Caso IDENT sejá uma 'ParametroFormal'
+                if ($1.categoria == ParametroFormal)
+                {
+
+                    /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
+                    apf = *( (Atributos_PF *) $1.ponteiro_atributos);                    
+
+                    if(apf.tipo_passagem == valor){
+                        // Retorna Código MEPA de carregamento da variável.
+                        carregaVariavelSimplesMEPA(nivel_lexico, apf.deslocamento);
+                    }
+                    else{
+                        // Retorna Código MEPA de carregamento da variável.
+                        carregaVariavelIndiretoMEPA(nivel_lexico, apf.deslocamento);
+                    }
+
+                    // Retornando em 'variavel' o tipo de variável de 'token'.
+                    strcpy($$, apf.tipo);
+                }
             }
 ;
 

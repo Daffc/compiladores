@@ -508,13 +508,37 @@ void carregaVariavelSimplesMEPA(int nivel_lexico, int deslocamento){
 	geraCodigo(NULL,resultado);
 }
 
-/* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de armazenamento de valore em variavel MEPA.*/
+/* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de recuperação de variável em arquivo MEPA.*/
+void carregaVariavelIndiretoMEPA(int nivel_lexico,int deslocamento){
+
+	char 	resultado[20];
+
+	/* Armazenando comando 'CRCT nivel_lexico,deslocamento' em buffer resltado */
+	sprintf(resultado, "CRVI %d,%d", nivel_lexico, deslocamento);
+
+	/* Imprimindo resultado em MEPA */
+	geraCodigo(NULL,resultado);
+}
+
+/* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de armazenamento de valor em variavel MEPA.*/
 void armazenaVariavelSimplesMEPA(int nivel_lexico, int deslocamento){
 
 	char 	resultado[20];
 
 	/* Armazenando comando 'ARMZ nivel_lexico,deslocamento' em buffer resltado */
 	sprintf(resultado, "ARMZ %d,%d", nivel_lexico, deslocamento);
+
+	/* Imprimindo resultado em MEPA */
+	geraCodigo(NULL,resultado);
+}
+
+/* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de armazenamento de valor indiretamente em variavel MEPA.*/
+void armazenaVariavelIndiretaMEPA(int nivel_lexico, int deslocamento){
+
+	char 	resultado[20];
+
+	/* Armazenando comando 'ARMI nivel_lexico,deslocamento' em buffer resltado */
+	sprintf(resultado, "ARMI %d,%d", nivel_lexico, deslocamento);
 
 	/* Imprimindo resultado em MEPA */
 	geraCodigo(NULL,resultado);
