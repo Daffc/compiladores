@@ -97,6 +97,7 @@ bloco:
                 entrada_escopo.quantidade_parametros = num_vars;    // Armazena a quantidade de parâmetros pré calculada (antes da chamada de 'bloco').
                 entrada_escopo.nivel_lexico = nivel_lexico;         // Armazena o nível léxico do escopo atual. 
                 entrada_escopo.quantidade_procs = 0;                // Define a quantidade de funções/procedimentos do escopo atual como 0;
+                num_vars = 0;                                       // Zerando a quantidade de variáveis ates de entrar em 'parte_declara_vars'
             }
         parte_declara_vars 
             {
@@ -140,7 +141,6 @@ bloco:
 
 parte_declara_vars: 
         {
-            num_vars = 0;
             categoria_entrada_TS = VariavelSimples;
         } 
             var 
