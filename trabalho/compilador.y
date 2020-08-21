@@ -274,8 +274,30 @@ parte_de_declaracao_de_subrotinas:
 
             }
 
-//    |   declaração de funcao PONTO_E_VIRGULA
-//    |   parte_de_declaracao_de_subrotinas PONTO_E_VIRGULA declaração de funcao PONTO_E_VIRGULA
+    |   
+            {
+                empilhaRotulo(entrada_rotulo);          // Empilhando Rótulo para código (comando composto da função de nível léxico atual.)
+                imprimeDesviaSempre(entrada_rotulo);    // Definindo Desvio para esta código da função atual (pulando procedimentos declarados).
+            }
+        declaracao_de_funcao PONTO_E_VIRGULA
+            {
+                $$ = 1;     // Informando a  'parte_de_declaracao_de_subrotinas' que um procedimento foi definido.             
+
+                entrada_escopo = desempilhaControleEscopo(); 
+                entrada_escopo.quantidade_procs ++;
+                empilhaControleEscopo(entrada_escopo);
+                // mostraPilhaControleEscopo();
+            }
+    |   parte_de_declaracao_de_subrotinas declaracao_de_funcao PONTO_E_VIRGULA
+            {
+                $$ = 1;     // Informando a  'parte_de_declaracao_de_subrotinas' que um procedimento foi definido.  
+
+                entrada_escopo = desempilhaControleEscopo(); 
+                entrada_escopo.quantidade_procs ++;
+                empilhaControleEscopo(entrada_escopo);
+                // mostraPilhaControleEscopo();
+
+            }
     |   /* VAZIO */     
             { 
                 $$ = 0;  // Informando a  'parte_de_declaracao_de_subrotinas' que nenhuma função/procedimento foi definido.
@@ -311,9 +333,48 @@ declaracao_de_procedimento:
         parametros_formais 
             {
                 deslocaParametrosFormais(num_vars, Procedimento); // Redefine valor de deslocamento para parâmetros para condizer com edereço de execussão.
-                preencheAtributosProcedimento(num_vars);    // Preenchendo sessão de parâmetros em entrada de procedimento em TS.
+                preencheAtributosSubrotina(num_vars, NULL);    // Preenchendo sessão de parâmetros em entrada de procedimento em TS.
             }
         FECHA_PARENTESES PONTO_E_VIRGULA bloco
+;
+
+// LINHA 13
+declaracao_de_funcao:
+        FUNCTION IDENT 
+            { 
+                categoria_entrada_TS = Funcao;
+
+                strcpy(entrada_ts.identificador, token);        /* Resgata nome de variável. */
+                entrada_ts.categoria = categoria_entrada_TS;    /* Definindo Categoria de entrada. */
+                entrada_ts.nivel = nivel_lexico;                /* Indica o nível lexico da VS atual */
+
+                
+                empilhaRotulo(aproc.rotulo);                    /* Definindo e empilhando rótulo para procedimento. */
+
+                /* [MELHORAR] Desvincular geração de rótulo com empilhamento .*/
+                desempilhaRotulo(aproc.rotulo);                 /* Uma vez que o rótulo esteja na TDS, não é mais necessário empilha-lo*/
+
+                /* Adicionando Novo Simbolo a Tabela de Simbolos */
+                insereTabelaSimbolos(nl, entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &aproc);
+
+                //Imprime instrução MEPA de entrada para procedimento, indicando o nível lexico.
+                imprimeEntraProcedimento(aproc.rotulo, nivel_lexico);   
+            }
+        ABRE_PARENTESES 
+            { 
+                    categoria_entrada_TS = ParametroFormal; /* A partir deste momendo, serão declarados Parâmetros fomais.  */
+                    num_vars = 0;                           // Zeranvo variável para início da contagem de parâmetros.        
+            }
+        parametros_formais 
+            {
+                deslocaParametrosFormais(num_vars, Funcao);         // Redefine valor de deslocamento para parâmetros para condizer com edereço de execussão.
+            }
+        FECHA_PARENTESES DOIS_PONTOS IDENT 
+            {
+                // Preenchendo sessão de parâmetros em entrada de procedimento e armazenando tipo de retorno da função.
+                preencheAtributosSubrotina(num_vars, token); 
+            }
+        PONTO_E_VIRGULA bloco
 ;
 
 // LINHA 14
