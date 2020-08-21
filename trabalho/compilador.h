@@ -118,7 +118,7 @@ void defineTipoParametroFormal(unsigned char quantidade, char* tipo, TipoPassage
 void deslocaParametrosFormais(unsigned char quantidade, CategoriaSimbolos tipo_chamada);
 
 /* Preenche parte de parâmetros em entrada de Procedimento em TS. */
-void preencheAtributosProcedimento(int quantidade);
+void preencheAtributosSubrotina(int quantidade, char * tipo_retorno);
 
 /* Libera Memória Alocada por Tablea de Simbolos*/
 void liberaTabelaSimbolos();

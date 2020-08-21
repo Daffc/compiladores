@@ -191,7 +191,6 @@ void insereTabelaSimbolos(int linha, char* identificador, CategoriaSimbolos cate
 			memcpy(ts.entrada[ts.topo].ponteiro_atributos, atributos, sizeof(Atributos_PROC));
 	}
 
-	mostraTabelaSimbolos();
 }
 
 /*	Busca simbolo em tabela de simbolos de acordo com o identificador, retornando ponteiro para entrada de identificador caso encontrado e NULL caso contrário.	*/
@@ -252,24 +251,30 @@ void deslocaParametrosFormais(unsigned char quantidade, CategoriaSimbolos tipo_c
 }
 
 /* Preenche parte de parâmetros em entrada de Procedimento em TS. */
-void preencheAtributosProcedimento(int quantidade){
+void preencheAtributosSubrotina(int quantidade, char * tipo_retorno){
 
 	int contador = quantidade - 1;
-	Atributos_PROC *entrada_proc;
+	Atributos_PROC *entrada_subr;
 
-	entrada_proc = ((Atributos_PROC *) ts.entrada[ts.topo - quantidade].ponteiro_atributos);
+	entrada_subr = ((Atributos_PROC *) ts.entrada[ts.topo - quantidade].ponteiro_atributos);
 
-	// Define a quantidade de parâmetros recebidos por procedimento.
-	entrada_proc->quantidade_parametros = quantidade;
+	// Define a quantidade de parâmetros recebidos por subrotina.
+	entrada_subr->quantidade_parametros = quantidade;
 
 	for (int i = ts.topo; i > (ts.topo - quantidade); i--){
 		
 		// Copiando tipo do parãmetro.
-		strcpy(entrada_proc->entradas_parametros[contador].tipo, ((Atributos_PF *)ts.entrada[i].ponteiro_atributos)->tipo); 
+		strcpy(entrada_subr->entradas_parametros[contador].tipo, ((Atributos_PF *)ts.entrada[i].ponteiro_atributos)->tipo); 
 		// Copiando tipo de passagem to parâmetro (valor/referência).
-		entrada_proc->entradas_parametros[contador].tipo_passagem = ((Atributos_PF *)ts.entrada[i].ponteiro_atributos)->tipo_passagem; 
+		entrada_subr->entradas_parametros[contador].tipo_passagem = ((Atributos_PF *)ts.entrada[i].ponteiro_atributos)->tipo_passagem; 
 		
 		contador --;
+	}
+	
+	// Caso entrada seja de uma função (ou seja, possui um tipo de retorno).
+	if(tipo_retorno){
+		// Atribuir tipo de retorno a 'entrada_subr'.
+		strcpy(entrada_subr->tipo_retorno, tipo_retorno);
 	}
 }
 
