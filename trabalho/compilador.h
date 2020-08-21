@@ -238,15 +238,18 @@ EntradaTabelaSimbolos * validaSimbolo(int linha, char *simbolo);
 
 /*
 	Verifica se "primeiro" e "segundo" São do mesmo tipo, retornando "primeiro" caso verdadeiro 
-	e imprime mensagem de error e para execussão (exit(-1)) caso seja falso.
+	e imprime mensagem de error indicando parâmetro e para execussão (exit(-1)) caso seja falso.
 */
-char * validaParametro(int linha, char *primeiro, char *segundo);
+char * validaParametro(int linha, char *primeiro, char *segundo, int ordem);
 
 // Verifica se quantidade de parâmetros é igual, caso contrário retorna erro.
 void validaNumParametros(int linha, int parametros_encontraros, int parametros_necesarios);
 
 // Verifica se o simbolo 'identificador' pode ser inserido em Tabela de Simbolos, caso contrário retorna erro.
 void validaInsercaoSimbolo(int linha, char *identificador, int nivel, CategoriaSimbolos categoria);
+
+// Verifica se flag indicativa que expressão se trata do passamento de variavel por referência ('flag_PF_ref'), caso verdadeiro retornar erro.
+void verificaProcedenciaReferencia(int linha, int flag_PF_ref);
 /* 
 		-----------------------------
 		|		FIM VALIDAÇÃO		|

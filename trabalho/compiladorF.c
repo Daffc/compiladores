@@ -178,7 +178,6 @@ void insereTabelaSimbolos(int linha, char* identificador, CategoriaSimbolos cate
 			ts.entrada[ts.topo].ponteiro_atributos = malloc(sizeof(Atributos_PROC));
 			memcpy(ts.entrada[ts.topo].ponteiro_atributos, atributos, sizeof(Atributos_PROC));
 	}
-	mostraTabelaSimbolos();
 }
 
 /*	Busca simbolo em tabela de simbolos de acordo com o identificador, retornando ponteiro para entrada de identificador caso encontrado e NULL caso contrário.	*/
@@ -286,12 +285,12 @@ char * validaTipos(int linha, char *primeiro, char *segundo){
 }
 
 
-char * validaParametro(int linha, char *primeiro, char *segundo){
+char * validaParametro(int linha, char *primeiro, char *segundo, int ordem){
 
 	// Verifica se "primeiro" e "segundo" NÃO são do mesmo tipo, informando erro caso verdadeiro.
 	if(strcmp(primeiro, segundo)){
 		/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
-		fprintf (stderr,"ERRO LINHA %d: Tipo de parâmetro '%s' incompatível ( esperado: '%s' ).\n", linha, primeiro, segundo);
+		fprintf (stderr,"ERRO LINHA %d: Tipo de parâmetro de ordem %d é incompatível ( recebido:'%s'  esperado: '%s' ).\n", linha, ordem, primeiro, segundo);
 		exit(-1);
 	}
 
@@ -353,6 +352,17 @@ void validaInsercaoSimbolo(int linha, char *identificador, int nivel, CategoriaS
 		}
 	}
 
+}
+
+// Verifica se flag indicativa que expressão se trata do passamento de variavel por referência ('flag_PF_ref'), caso verdadeiro retornar erro.
+void verificaProcedenciaReferencia(int linha, int flag_PF_ref){
+	
+	// caso flag seja 'flag_PF_ref' verdadeira, imprimir erro e informa usuário.
+	if (flag_PF_ref){
+		/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
+		fprintf (stderr,"ERRO LINHA %d: Passagem de parâmetro por referância incorreta.\n", linha);
+		exit(-1);
+	}
 }
 
 /* 

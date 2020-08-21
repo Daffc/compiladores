@@ -13,9 +13,10 @@
 
 
 int nivel_lexico = 0,   /*Armazena o nível  nível léxico*/
-    num_vars = 0,           /* Armazena a quandtidade de variáveis para impressão de "AMEM num_vars */
-    num_tipo_vars = 0,             /* Armazena a quantidade de variáveis a terem sei tipo identificado. */
-    num_parametros = 0; // Armazena a quantidade de parâmetro recebidos por uma chamada de função.
+    num_vars = 0,       /* Armazena a quandtidade de variáveis para impressão de "AMEM num_vars */
+    num_tipo_vars = 0,  /* Armazena a quantidade de variáveis a terem sei tipo identificado. */
+    num_parametros = 0, // Armazena a quantidade de parâmetro recebidos por uma chamada de função.
+    flag_PF_ref = 0;    // Informa se encontra-se em análise de passagem de parâmetro por referância.
 
 char    entrada_rotulo[4],
         saida_rotulo[4];
@@ -49,7 +50,7 @@ EntradaEscopo entrada_escopo;
     char    texto[128];
     EntradaTabelaSimbolos entrada_ts;
     int numero;
-    char    matrix_texto[20][20];
+    EntradaParametros   vetor_parametros[20];
 }
 
 /* DEFINIÇÃO PARA ESTADOS TERMINAIS */
@@ -80,7 +81,7 @@ EntradaEscopo entrada_escopo;
 /* DEFINIÇÃO PARA ESTADOS NÃO-TERMINAIS */
 %type <texto> fator termo exp_simples expressao relacao atribui variavel
 %type <numero> parte_de_declaracao_de_subrotinas
-%type <matrix_texto> lista_de_espressoes chamada_procedimento
+%type <vetor_parametros> lista_de_espressoes
 %type <entrada_ts> identificador_comando
 /* Aplicando precedência para IF THEN ELSE */
 %nonassoc LOWER_THAN_ELSE
@@ -426,26 +427,16 @@ identificador_comando:
                 // Resgatando entrada de Tabela de Simbolos de IDENT em comando_sem_rotulo.
                 $$ = $<entrada_ts>-1;
 
-                // Caso IDENT sejá uma 'Procedimento'
-                if ($$.categoria == Procedimento)
-                {
+                /* Armazena em 'aproc' atributos de entrada de 'IDENT'*/
+                aproc = *( (Atributos_PROC *) $$.ponteiro_atributos);
 
-                    /* Armazena em 'aproc' atributos de entrada de 'IDENT'*/
-                    aproc = *( (Atributos_PROC *) $$.ponteiro_atributos);
+                // Verifica se quantidade de parâmetros da chamada é compatível com cabeçalho.
+                validaNumParametros(nl, num_parametros, aproc.quantidade_parametros);
 
-                    // Verifica se quantidade de parâmetros da chamada é compatível com cabeçalho.
-                    validaNumParametros(nl, num_parametros, aproc.quantidade_parametros);
-
-                    // Verifica se os tipos dos parâmetros são compatíveis com os do cabeçalho.
-                    for (int i = 0; i < num_parametros; i++){
-                        validaParametro(nl, $1[i], aproc.entradas_parametros[i].tipo);
-                    }
-
-                    // Imprime instrução MEPA de achamada de procedimento.
-                    imprimeChamaProcedimento(aproc.rotulo, nivel_lexico);
-                }
+                // Imprime instrução MEPA de achamada de procedimento.
+                imprimeChamaProcedimento(aproc.rotulo, nivel_lexico);
             }
-    ;
+;
 
 // LINHA 19
 atribui:   
@@ -465,13 +456,11 @@ chamada_procedimento:
         }
     lista_de_espressoes FECHA_PARENTESES
         {
-            /* Repassando lista de atributos de  'lista_de_espressoes' ($2) para 'chamada_procedimento'($$) */
-            memcpy($$, $3, 20 * 20 * sizeof(char));
+            // Indica que não precisa se preocupar com referências
+            // [FAZER] Efetuar o mesmo processo para funções !!!.
+            flag_PF_ref = 0;
         }
     | // VAZIO
-        {
-            $$[0][0] = '\0';
-        }
 ;
 
 // LINHA 22
@@ -549,24 +538,41 @@ comando_repetitivo  :
 
 // LINHA 24
 lista_de_espressoes:
-        lista_de_espressoes VIRGULA expressao
-        {
-            // Adiciona novo parâmetro a contador de parâmetros.
-            strcpy($$[num_parametros], $3);
-            // Adiciona novo parâmetro a contador de parâmetros.
-            num_parametros ++; 
-        }
-    |   expressao
-        {
-            // Adiciona novo parâmetro a contador de parâmetros.
-            strcpy($$[num_parametros], $1);
-            // Adiciona novo parâmetro a contador de parâmetros.
-            num_parametros ++; 
-        }
+        lista_de_espressoes VIRGULA
+            {
+                // Recupeando tipo de passagem de parametro atual de'lista_de_expressoes'
+                flag_PF_ref = $1[num_parametros].tipo_passagem;
+            }
+        expressao
+            {               
+                // Verifica se os tipos dos parâmetros são compatíveis com os do cabeçalho.
+                validaParametro(nl, $$[num_parametros].tipo, $4, num_parametros);
+                
+                // Adiciona novo parâmetro a contador de parâmetros.
+                num_parametros ++; 
+            }
+    |   
+            {
+                // Atributos de entrada de procedimento em Tabela de Simbolos.
+                memcpy(&$<vetor_parametros>$, ((Atributos_PROC *)($<entrada_ts>-3.ponteiro_atributos))->entradas_parametros, 20 * sizeof(EntradaParametros));
+                // Caso armazena tipo de passagem de parâmetro atual.
+                flag_PF_ref = $<vetor_parametros>$[num_parametros].tipo_passagem;
+            }
+        expressao
+            {
+                // Adiciona novo parâmetro a contador de parâmetros.
+                
+                // Verifica se os tipos dos parâmetros são compatíveis com os do cabeçalho.
+                validaParametro(nl, $$[num_parametros].tipo, $2, num_parametros);
+                
+                // Adiciona novo parâmetro a contador de parâmetros.
+                num_parametros ++; 
+            }
     |   // VAZIO
-        {
-            $$[0][0] = '\0';
-        }
+            {
+                // Evitar warnings (retorno dummy).
+                $<vetor_parametros>$[num_parametros].tipo[0] = '\0';   
+            }
 ;
 
 // LINHA 25
@@ -579,6 +585,9 @@ expressao:
 
     |   exp_simples relacao exp_simples
             {
+                /* Verificando se análise chamada de função com passagem por referência.*/
+                verificaProcedenciaReferencia(nl, flag_PF_ref);
+                
                 /* Verificando tipos de $1 e $3 e repassando para 'expressao' */
                 strcpy($$, validaTipos(nl,$1, $3));
                 /* Imprime comando MEPA de relação  obtido por 'relacao' */
@@ -629,11 +638,17 @@ exp_simples:
             }
     |   SOMA  termo
             {
+                /* Verificando se análise chamada de função com passagem por referência.*/
+                verificaProcedenciaReferencia(nl, flag_PF_ref);
+
                 /* Repassando tipo de 'termo' ($2) para 'exp_simples'($$) */
                 strcpy($$, $2);
             }
     |   SUBTRACAO termo
             {
+                /* Verificando se análise chamada de função com passagem por referência.*/
+                verificaProcedenciaReferencia(nl, flag_PF_ref);
+
                 /* Imprime comando MEPA de INVERSÃO DE SINAL. */
                 geraCodigo(NULL, "INVR");
                 
@@ -642,6 +657,9 @@ exp_simples:
             }
     |   exp_simples SOMA termo
             {
+                /* Verificando se análise chamada de função com passagem por referência.*/
+                verificaProcedenciaReferencia(nl, flag_PF_ref);
+
                 /* Verificando tipos de $1 e $3 e repassando para 'exp_simples' */
                 strcpy($$, validaTipos(nl,$1, $3));
 
@@ -650,6 +668,9 @@ exp_simples:
             }
     |   exp_simples SUBTRACAO termo
             {
+                /* Verificando se análise chamada de função com passagem por referência.*/
+                verificaProcedenciaReferencia(nl, flag_PF_ref);
+
                 /* Verificando tipos de $1 e $3 e repassando para 'exp_simples' */
                 strcpy($$, validaTipos(nl,$1, $3));
 
@@ -658,6 +679,9 @@ exp_simples:
             }
     |   exp_simples OR termo
             {
+                /* Verificando se análise chamada de função com passagem por referência.*/
+                verificaProcedenciaReferencia(nl, flag_PF_ref);
+
                 /* Verificando tipos de $1 e $3 e repassando para 'exp_simples' */
                 strcpy($$, validaTipos(nl,$1, $3));
 
@@ -676,6 +700,9 @@ termo   :
 
     |   termo PRODUTO fator                 
             {
+                /* Verificando se análise chamada de função com passagem por referência.*/
+                verificaProcedenciaReferencia(nl, flag_PF_ref);
+
                 /* Verificando tipos de $1 e $3 e repassando para 'termo' */
                 strcpy($$, validaTipos(nl,$1, $3));
 
@@ -685,6 +712,9 @@ termo   :
             }
     |   termo DIVISAO fator
             {
+                /* Verificando se análise chamada de função com passagem por referência.*/
+                verificaProcedenciaReferencia(nl, flag_PF_ref);
+
                 /* Verificando tipos de $1 e $3 e repassando para 'termo' */
                 strcpy($$, validaTipos(nl,$1, $3));
                 
@@ -693,6 +723,9 @@ termo   :
             }
     |   termo AND fator
             {
+                /* Verificando se análise chamada de função com passagem por referência.*/
+                verificaProcedenciaReferencia(nl, flag_PF_ref);
+
                 /* Verificando tipos de $1 e $3 e repassando para 'termo' */
                 strcpy($$, validaTipos(nl,$1, $3));
 
@@ -710,6 +743,9 @@ fator   :
             }
     |   NUMERO
             {
+                /* Verificando se análise chamada de função com passagem por referência.*/
+                verificaProcedenciaReferencia(nl, flag_PF_ref);
+
                 /* Definindo tipo de 'fator' para 'integer'. */
                 strcpy($$, "integer");
 
@@ -725,6 +761,9 @@ fator   :
             }
     |   NOT fator
             {
+                /* Verificando se análise chamada de função com passagem por referência.*/
+                verificaProcedenciaReferencia(nl, flag_PF_ref);
+
                 /* Repassando tipo de  $2 para $$ */
                 strcpy($$, $2);
 
@@ -743,6 +782,8 @@ variavel:
                 // Caso IDENT sejá uma 'VariavelSimples'
                 if ($1.categoria == VariavelSimples)
                 {
+                    /* [FAZER] if(flag_PF_ref) => PASSAR REFERENCIA */
+
                     /* Armazena em 'avs' atributos de 'token' após verificação por validaSimbolo(); */
                     avs = *( (Atributos_VS *) $1.ponteiro_atributos);
 
@@ -760,14 +801,19 @@ variavel:
                     /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
                     apf = *( (Atributos_PF *) $1.ponteiro_atributos);                    
 
-                    if(apf.tipo_passagem == valor){
-                        // Retorna Código MEPA de carregamento da variável.
-                        carregaVariavelSimplesMEPA(nivel_lexico, apf.deslocamento);
-                    }
-                    else{
-                        // Retorna Código MEPA de carregamento da variável.
-                        carregaVariavelIndiretoMEPA(nivel_lexico, apf.deslocamento);
-                    }
+                    /* [FAZER] if(flag_PF_ref) => VERIFICAR TIPO */
+                        /* [FAZER] if(apf.tipo_passagem == valor) => PASSAR REFERÊNCIA */
+                        /* [FAZER] else => PASSAR VALOR (POIS JÁ É REFERÊNCIA DE VARIAVEL) */
+
+                    /* [FAZER] else => MANTER CÓDIGO ABAIXO */
+                        if(apf.tipo_passagem == valor){
+                            // Retorna Código MEPA de carregamento da variável.
+                            carregaVariavelSimplesMEPA(nivel_lexico, apf.deslocamento);
+                        }
+                        else{
+                            // Retorna Código MEPA de carregamento da variável.
+                            carregaVariavelIndiretoMEPA(nivel_lexico, apf.deslocamento);
+                        }
 
                     // Retornando em 'variavel' o tipo de variável de 'token'.
                     strcpy($$, apf.tipo);
