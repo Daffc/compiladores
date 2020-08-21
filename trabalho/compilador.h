@@ -52,7 +52,8 @@ typedef struct entrada_parametros{
 typedef enum categoria_simbolos_t{
 	VariavelSimples,
 	ParametroFormal,
-	Procedimento
+	Procedimento,
+	Funcao
 } CategoriaSimbolos;
 
 /*
@@ -73,6 +74,8 @@ typedef struct atributos_pf_t{
 typedef struct atributos_proc_t{
 	char rotulo[4];
 	int quantidade_parametros;
+	char tipo_retorno[20];
+	int deslocamento;
 	EntradaParametros entradas_parametros[MAX_PARAMETROS];		// [FAZER] tornar dinâmico caso haja tempo.
 }Atributos_PROC;
 
@@ -110,8 +113,10 @@ void defineTipoVariavel(unsigned char quantidade, char* tipo);
 
 /*	Definindo o "tipo" para todas as "quantidade" variáveis a partir do topo	*/
 void defineTipoParametroFormal(unsigned char quantidade, char* tipo, TipoPassagemParametro tipo_passagem);
+
 /* Define deslocamento de 'quantidade' parâmetros formais. */
-void deslocaParametrosFormais(unsigned char quantidade);
+void deslocaParametrosFormais(unsigned char quantidade, CategoriaSimbolos tipo_chamada);
+
 /* Preenche parte de parâmetros em entrada de Procedimento em TS. */
 void preencheAtributosProcedimento(int quantidade);
 

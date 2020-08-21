@@ -72,6 +72,12 @@ void mostra_att_PROC(Atributos_PROC *ponteiro){
 		printf("\t\t%s\t%d\n", ponteiro->entradas_parametros[i].tipo, ponteiro->entradas_parametros[i].tipo_passagem);
 }
 
+void mostra_att_FUNC(Atributos_PROC *ponteiro){
+	printf("\n");
+	printf("\t%s\t%s\t%d\t%d\n", ponteiro->rotulo, ponteiro->tipo_retorno, ponteiro->deslocamento, ponteiro->quantidade_parametros);
+	for (int i = 0; i < ponteiro->quantidade_parametros; i++)
+		printf("\t\t%s\t%d\n", ponteiro->entradas_parametros[i].tipo, ponteiro->entradas_parametros[i].tipo_passagem);
+}
 
 void mostraTabelaSimbolos(){
 
@@ -92,6 +98,9 @@ void mostraTabelaSimbolos(){
 				break;
 			case Procedimento:
 				mostra_att_PROC(ts.entrada[i].ponteiro_atributos);
+				break;
+			case Funcao:
+				mostra_att_FUNC(ts.entrada[i].ponteiro_atributos);
 				break;
 		}
 		printf("\n");
@@ -177,7 +186,12 @@ void insereTabelaSimbolos(int linha, char* identificador, CategoriaSimbolos cate
 		case Procedimento:
 			ts.entrada[ts.topo].ponteiro_atributos = malloc(sizeof(Atributos_PROC));
 			memcpy(ts.entrada[ts.topo].ponteiro_atributos, atributos, sizeof(Atributos_PROC));
+		case Funcao:
+			ts.entrada[ts.topo].ponteiro_atributos = malloc(sizeof(Atributos_PROC));
+			memcpy(ts.entrada[ts.topo].ponteiro_atributos, atributos, sizeof(Atributos_PROC));
 	}
+
+	mostraTabelaSimbolos();
 }
 
 /*	Busca simbolo em tabela de simbolos de acordo com o identificador, retornando ponteiro para entrada de identificador caso encontrado e NULL caso contrário.	*/
@@ -222,13 +236,18 @@ void defineTipoParametroFormal(unsigned char quantidade, char* tipo, TipoPassage
 }
 
 /* Define deslocamento de 'quantidade' parâmetros formais. */
-void deslocaParametrosFormais(unsigned char quantidade){
+void deslocaParametrosFormais(unsigned char quantidade, CategoriaSimbolos tipo_chamada){
 	
-	int contador = 0;
-	for (int i = ts.topo; i > (ts.topo - quantidade); i--){
+	int contador = 0, i;
+	for (i = ts.topo; i > (ts.topo - quantidade); i--){
 		
 		((Atributos_PF *)ts.entrada[i].ponteiro_atributos)->deslocamento = - (4 + contador);
 		contador ++;
+	}
+
+	// Caso os parâmetros ajustados pertençam a uma função, deve-se ajustar o delocamento do posicionamento do retorno da função.
+	if(tipo_chamada == Funcao){
+		((Atributos_PROC *)ts.entrada[i].ponteiro_atributos)->deslocamento = - (4 + contador);
 	}
 }
 
