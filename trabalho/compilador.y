@@ -482,6 +482,22 @@ identificador_comando:
                     }
 
                 }
+
+                // Caso IDENT sejá uma 'Funcao', definir o retorno.
+                if ($$.categoria == Funcao)
+                {       
+                    // Verifica valor esta sendo atribuido enquanto dentro de função (ou seja, nivel léxico de função == nivel léxico atual).
+                    validaNivelLexico(nl, $$.nivel, nivel_lexico);
+
+                    /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
+                    aproc = *( (Atributos_PROC *) $$.ponteiro_atributos);
+
+                    /* Verificando se 'IDENT' e 'atribui' $1 possuem o mesmo tipo */
+                    validaTipos(nl, aproc.tipo_retorno, $1);
+
+                    /* Defindo instrução MEPA para armazenamento em retorno de funcao. */
+                    armazenaVariavelSimplesMEPA($$.nivel, aproc.deslocamento);
+                }
             }
     |   chamada_procedimento
             {
@@ -802,6 +818,12 @@ fator:
             {
                 // Armazena token de entrada do simbolo 'token' em $1.
                 $1 = *validaSimbolo(nl, token);
+
+                // Verifica se tipo de identificar é de função.
+                if($1.categoria == Funcao){
+                    // Reserva espaço para retorno de função em tempo de execussao.
+                    imprimeAMEM(1);
+                }
             }
         define_terminal
             {
@@ -853,9 +875,6 @@ define_terminal:
 
                 // Verifica se quantidade de parâmetros da chamada é compatível com cabeçalho.
                 validaNumParametros(nl, num_parametros, aproc.quantidade_parametros);
-
-                // Reserva espaço para retorno de função em tempo de execussao.
-                imprimeAMEM(1);
 
                 // Imprime instrução MEPA de achamada de procedimento.
                 imprimeChamaProcedimento(aproc.rotulo, nivel_lexico);

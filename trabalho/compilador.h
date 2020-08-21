@@ -255,12 +255,14 @@ void validaInsercaoSimbolo(int linha, char *identificador, int nivel, CategoriaS
 
 // Verifica se flag indicativa que expressão se trata do passamento de variavel por referência ('flag_PF_ref'), caso verdadeiro retornar erro.
 void verificaProcedenciaReferencia(int linha, int flag_PF_ref);
+
+// Compara valores de 'primeiro_nivel' e 'segundo_nivel', caso diferentes, retorna erro indicando linha 'linha'.
+void validaNivelLexico(int linha, int primeiro_nivel, int segundo_nivel);
 /* 
 		-----------------------------
 		|		FIM VALIDAÇÃO		|
 		-----------------------------	
 */
-
 
 /* 
 		-----------------------------

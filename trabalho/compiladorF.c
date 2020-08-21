@@ -389,6 +389,18 @@ void verificaProcedenciaReferencia(int linha, int flag_PF_ref){
 	}
 }
 
+// Compara valores de 'primeiro_nivel' e 'segundo_nivel', caso diferentes, retorna erro indicando linha 'linha'.
+void validaNivelLexico(int linha, int primeiro_nivel, int segundo_nivel){
+	
+	// caso caso níveis sejam diferentes, indicar erro.
+	if (primeiro_nivel != segundo_nivel){
+		/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
+		fprintf (stderr,"ERRO LINHA %d: Atribuição incorreta (variável fora de escopo).\n", linha);
+		exit(-1);
+	}
+}
+
+
 /* 
 	-----------------------------
 	|		FIM VALIDAÇÃO		|
