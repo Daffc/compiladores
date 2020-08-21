@@ -310,7 +310,7 @@ declaracao_de_procedimento:
             }
         parametros_formais 
             {
-                deslocaParametrosFormais(num_vars); // Redefine valor de deslocamento para parâmetros para condizer com edereço de execussão.
+                deslocaParametrosFormais(num_vars, Procedimento); // Redefine valor de deslocamento para parâmetros para condizer com edereço de execussão.
                 preencheAtributosProcedimento(num_vars);    // Preenchendo sessão de parâmetros em entrada de procedimento em TS.
             }
         FECHA_PARENTESES PONTO_E_VIRGULA bloco
@@ -788,7 +788,7 @@ variavel:
                     avs = *( (Atributos_VS *) $1.ponteiro_atributos);
 
                     // Retorna Código MEPA de carregamento da variável.
-                    carregaVariavelSimplesMEPA(nivel_lexico, avs.deslocamento);
+                    carregaValorMEPA(nivel_lexico, avs.deslocamento);
                     
                     // Retornando em 'variavel' o tipo de variável de 'token'.
                     strcpy($$, avs.tipo);
@@ -808,7 +808,7 @@ variavel:
                     /* [FAZER] else => MANTER CÓDIGO ABAIXO */
                         if(apf.tipo_passagem == valor){
                             // Retorna Código MEPA de carregamento da variável.
-                            carregaVariavelSimplesMEPA(nivel_lexico, apf.deslocamento);
+                            carregaValorMEPA(nivel_lexico, apf.deslocamento);
                         }
                         else{
                             // Retorna Código MEPA de carregamento da variável.
