@@ -71,13 +71,13 @@ typedef struct atributos_pf_t{
 	TipoPassagemParametro tipo_passagem;
 }Atributos_PF;
 
-typedef struct atributos_proc_t{
+typedef struct atributos_subr_t{
 	char rotulo[4];
 	int quantidade_parametros;
 	char tipo_retorno[20];
 	int deslocamento;
 	EntradaParametros entradas_parametros[MAX_PARAMETROS];		// [FAZER] tornar dinâmico caso haja tempo.
-}Atributos_PROC;
+}Atributos_SUBR;
 
 
 /* Definindo entrada de tabela de simbolos*/
@@ -127,7 +127,7 @@ void liberaTabelaSimbolos();
 void mostraTabelaSimbolos();
 void mostra_att_VS(Atributos_VS *ponteiro);
 void mostra_att_PF(Atributos_PF *ponteiro);
-void mostra_att_PROC(Atributos_PROC *ponteiro);
+void mostra_att_PROC(Atributos_SUBR *ponteiro);
 void mostraPilhaControleEscopo();
 
 /*
@@ -146,7 +146,7 @@ void mostraPilhaControleEscopo();
 typedef struct entrada_escopo_t{
 	int nivel_lexico;
 	int quantidade_vars;	// Armazena quantidae de variáveis por escopo.
-	int quantidade_procs;	// Armazena quantidade de procedimentos por escopo.
+	int quantidade_subr;	// Armazena quantidade de procedimentos por escopo.
 	int quantidade_parametros;	// Armazena quantidade de parâmetros por escopo.
 }EntradaEscopo;
 
@@ -296,7 +296,7 @@ void imprimeDesviaSeFalsoMEPA(char* rotulo);
 /* Recebe 'rotulo' imprime comando MEPA de desvio incondicional em arquivo MEPA. */
 void imprimeDesviaSempre(char* rotulo);
 
-/* Recebe 'rotulo' e 'nivelL léxico' imprime comando MEPA de entrada de procedimento em arquivo MEPA.*/
+/* Recebe 'rotulo' e 'nivelL léxico' imprime comando MEPA de entrada de subrotina em arquivo MEPA.*/
 void imprimeEntraProcedimento(char *rotulo, int nivel_lexico);
 
 /* Recebe a quantidade de variáveis a serem desalocadas em 'quantidade' e imprime 'DMEM quantidade' */

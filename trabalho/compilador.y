@@ -27,7 +27,7 @@ Atributos_VS avs;
 Atributos_PF apf;
 
 /*  Armazena atributos de procedimento */
-Atributos_PROC aproc;
+Atributos_SUBR aproc;
 
 /*  Auxilia na recuperação de Atributos */
 void   *atributos;
@@ -97,7 +97,7 @@ bloco:
             {
                 entrada_escopo.quantidade_parametros = num_vars;    // Armazena a quantidade de parâmetros pré calculada (antes da chamada de 'bloco').
                 entrada_escopo.nivel_lexico = nivel_lexico;         // Armazena o nível léxico do escopo atual. 
-                entrada_escopo.quantidade_procs = 0;                // Define a quantidade de funções/procedimentos do escopo atual como 0;
+                entrada_escopo.quantidade_subr = 0;                // Define a quantidade de funções/procedimentos do escopo atual como 0;
                 num_vars = 0;                                       // Zerando a quantidade de variáveis ates de entrar em 'parte_declara_vars'
             }
         parte_declara_vars 
@@ -129,7 +129,7 @@ bloco:
                 }
 
                 retiraEntradasTabelaSimbolos(entrada_escopo.quantidade_parametros);     // Remove da TS os parâmetros.
-                retiraEntradasTabelaSimbolos(entrada_escopo.quantidade_procs);          // Remove da TS os procedimentos aninhados.
+                retiraEntradasTabelaSimbolos(entrada_escopo.quantidade_subr);          // Remove da TS os procedimentos aninhados.
             }
 ;
 
@@ -258,7 +258,7 @@ parte_de_declaracao_de_subrotinas:
                 $$ = 1;     // Informando a  'parte_de_declaracao_de_subrotinas' que um procedimento foi definido.             
 
                 entrada_escopo = desempilhaControleEscopo(); 
-                entrada_escopo.quantidade_procs ++;
+                entrada_escopo.quantidade_subr ++;
                 empilhaControleEscopo(entrada_escopo);
                 // mostraPilhaControleEscopo();
             }
@@ -268,7 +268,7 @@ parte_de_declaracao_de_subrotinas:
                 $$ = 1;     // Informando a  'parte_de_declaracao_de_subrotinas' que um procedimento foi definido.  
 
                 entrada_escopo = desempilhaControleEscopo(); 
-                entrada_escopo.quantidade_procs ++;
+                entrada_escopo.quantidade_subr ++;
                 empilhaControleEscopo(entrada_escopo);
                 // mostraPilhaControleEscopo();
 
@@ -284,7 +284,7 @@ parte_de_declaracao_de_subrotinas:
                 $$ = 1;     // Informando a  'parte_de_declaracao_de_subrotinas' que um procedimento foi definido.             
 
                 entrada_escopo = desempilhaControleEscopo(); 
-                entrada_escopo.quantidade_procs ++;
+                entrada_escopo.quantidade_subr ++;
                 empilhaControleEscopo(entrada_escopo);
                 // mostraPilhaControleEscopo();
             }
@@ -293,7 +293,7 @@ parte_de_declaracao_de_subrotinas:
                 $$ = 1;     // Informando a  'parte_de_declaracao_de_subrotinas' que um procedimento foi definido.  
 
                 entrada_escopo = desempilhaControleEscopo(); 
-                entrada_escopo.quantidade_procs ++;
+                entrada_escopo.quantidade_subr ++;
                 empilhaControleEscopo(entrada_escopo);
                 // mostraPilhaControleEscopo();
 
@@ -490,7 +490,7 @@ identificador_comando:
                     validaNivelLexico(nl, $$.nivel, nivel_lexico);
 
                     /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
-                    aproc = *( (Atributos_PROC *) $$.ponteiro_atributos);
+                    aproc = *( (Atributos_SUBR *) $$.ponteiro_atributos);
 
                     /* Verificando se 'IDENT' e 'atribui' $1 possuem o mesmo tipo */
                     validaTipos(nl, aproc.tipo_retorno, $1);
@@ -499,13 +499,13 @@ identificador_comando:
                     armazenaVariavelSimplesMEPA($$.nivel, aproc.deslocamento);
                 }
             }
-    |   chamada_procedimento
+    |   chamada_subrotina
             {
                 // Resgatando entrada de Tabela de Simbolos de IDENT em comando_sem_rotulo.
                 $$ = $<entrada_ts>-1;
 
                 /* Armazena em 'aproc' atributos de entrada de 'IDENT'*/
-                aproc = *( (Atributos_PROC *) $$.ponteiro_atributos);
+                aproc = *( (Atributos_SUBR *) $$.ponteiro_atributos);
 
                 // Verifica se quantidade de parâmetros da chamada é compatível com cabeçalho.
                 validaNumParametros(nl, num_parametros, aproc.quantidade_parametros);
@@ -525,7 +525,7 @@ atribui:
 ;
 
 // LINHA 20
-chamada_procedimento:
+chamada_subrotina:
     ABRE_PARENTESES 
         {
             // Zera contador de parâmetros.
@@ -631,7 +631,7 @@ lista_de_espressoes:
     |   
             {
                 // Atributos de entrada de procedimento em Tabela de Simbolos.
-                memcpy(&$<vetor_parametros>$, ((Atributos_PROC *)($<entrada_ts>-3.ponteiro_atributos))->entradas_parametros, 20 * sizeof(EntradaParametros));
+                memcpy(&$<vetor_parametros>$, ((Atributos_SUBR *)($<entrada_ts>-3.ponteiro_atributos))->entradas_parametros, 20 * sizeof(EntradaParametros));
                 // Caso armazena tipo de passagem de parâmetro atual.
                 flag_PF_ref = $<vetor_parametros>$[num_parametros].tipo_passagem;
             }
@@ -861,7 +861,7 @@ fator:
 
 // LINHAS 30 e 31
 define_terminal:  
-        chamada_procedimento
+        chamada_subrotina
             {
                 // Resgatando entrada de Tabela de Simbolos de IDENT em comando_sem_rotulo.
                 entrada_ts = $<entrada_ts>-1;
@@ -871,7 +871,7 @@ define_terminal:
                 verificaProcedenciaReferencia(nl, flag_PF_ref);
 
                 /* Armazena em 'aproc' atributos de entrada de 'IDENT'*/
-                aproc = *( (Atributos_PROC *) entrada_ts.ponteiro_atributos);
+                aproc = *( (Atributos_SUBR *) entrada_ts.ponteiro_atributos);
 
                 // Verifica se quantidade de parâmetros da chamada é compatível com cabeçalho.
                 validaNumParametros(nl, num_parametros, aproc.quantidade_parametros);

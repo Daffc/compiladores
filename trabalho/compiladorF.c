@@ -65,14 +65,14 @@ void mostra_att_PF(Atributos_PF *ponteiro){
 	printf("\t%s\t%d\t%d\n", ponteiro->tipo, ponteiro->deslocamento, ponteiro->tipo_passagem);
 }
 
-void mostra_att_PROC(Atributos_PROC *ponteiro){
+void mostra_att_PROC(Atributos_SUBR *ponteiro){
 	printf("\n");
 	printf("\t%s\t%d\n", ponteiro->rotulo, ponteiro->quantidade_parametros);
 	for (int i = 0; i < ponteiro->quantidade_parametros; i++)
 		printf("\t\t%s\t%d\n", ponteiro->entradas_parametros[i].tipo, ponteiro->entradas_parametros[i].tipo_passagem);
 }
 
-void mostra_att_FUNC(Atributos_PROC *ponteiro){
+void mostra_att_FUNC(Atributos_SUBR *ponteiro){
 	printf("\n");
 	printf("\t%s\t%s\t%d\t%d\n", ponteiro->rotulo, ponteiro->tipo_retorno, ponteiro->deslocamento, ponteiro->quantidade_parametros);
 	for (int i = 0; i < ponteiro->quantidade_parametros; i++)
@@ -128,7 +128,7 @@ void mostraPilhaControleEscopo(){
 	printf("------------------------------\n");
 	for (int i = ce.topo; i >= 0; i--){
 		/*	Imprime elemento da tabela de simbolos	*/
-		printf("%d\t%d\t%d\t%d", i, ce.entradas_escopo[i]. quantidade_vars, ce.entradas_escopo[i].quantidade_procs, ce.entradas_escopo[i].quantidade_parametros );
+		printf("%d\t%d\t%d\t%d", i, ce.entradas_escopo[i]. quantidade_vars, ce.entradas_escopo[i].quantidade_subr, ce.entradas_escopo[i].quantidade_parametros );
 		printf("\n");
 	}
 	printf("------------------------------\n\n");
@@ -184,11 +184,11 @@ void insereTabelaSimbolos(int linha, char* identificador, CategoriaSimbolos cate
 			memcpy(ts.entrada[ts.topo].ponteiro_atributos, atributos, sizeof(Atributos_PF));
 			break;
 		case Procedimento:
-			ts.entrada[ts.topo].ponteiro_atributos = malloc(sizeof(Atributos_PROC));
-			memcpy(ts.entrada[ts.topo].ponteiro_atributos, atributos, sizeof(Atributos_PROC));
+			ts.entrada[ts.topo].ponteiro_atributos = malloc(sizeof(Atributos_SUBR));
+			memcpy(ts.entrada[ts.topo].ponteiro_atributos, atributos, sizeof(Atributos_SUBR));
 		case Funcao:
-			ts.entrada[ts.topo].ponteiro_atributos = malloc(sizeof(Atributos_PROC));
-			memcpy(ts.entrada[ts.topo].ponteiro_atributos, atributos, sizeof(Atributos_PROC));
+			ts.entrada[ts.topo].ponteiro_atributos = malloc(sizeof(Atributos_SUBR));
+			memcpy(ts.entrada[ts.topo].ponteiro_atributos, atributos, sizeof(Atributos_SUBR));
 	}
 
 }
@@ -246,7 +246,7 @@ void deslocaParametrosFormais(unsigned char quantidade, CategoriaSimbolos tipo_c
 
 	// Caso os parâmetros ajustados pertençam a uma função, deve-se ajustar o delocamento do posicionamento do retorno da função.
 	if(tipo_chamada == Funcao){
-		((Atributos_PROC *)ts.entrada[i].ponteiro_atributos)->deslocamento = - (4 + contador);
+		((Atributos_SUBR *)ts.entrada[i].ponteiro_atributos)->deslocamento = - (4 + contador);
 	}
 }
 
@@ -254,9 +254,9 @@ void deslocaParametrosFormais(unsigned char quantidade, CategoriaSimbolos tipo_c
 void preencheAtributosSubrotina(int quantidade, char * tipo_retorno){
 
 	int contador = quantidade - 1;
-	Atributos_PROC *entrada_subr;
+	Atributos_SUBR *entrada_subr;
 
-	entrada_subr = ((Atributos_PROC *) ts.entrada[ts.topo - quantidade].ponteiro_atributos);
+	entrada_subr = ((Atributos_SUBR *) ts.entrada[ts.topo - quantidade].ponteiro_atributos);
 
 	// Define a quantidade de parâmetros recebidos por subrotina.
 	entrada_subr->quantidade_parametros = quantidade;
@@ -696,13 +696,13 @@ void imprimeChamaProcedimento(char *rotulo,int nivel_lexico){
 
 // 	entrada.quantidade_simbolos = 0;
 // 	entrada.quantidade_vars = 0;
-// 	entrada.quantidade_procs = 0;
+// 	entrada.quantidade_subr = 0;
 // 	empilhaControleEscopo(entrada);
 // 	mostraPilhaControleEscopo();
 
 // 		entrada.quantidade_simbolos = 1;
 // 		entrada.quantidade_vars = 0;
-// 	entrada.quantidade_procs = 0;
+// 	entrada.quantidade_subr = 0;
 // 	empilhaControleEscopo(entrada);
 // 	mostraPilhaControleEscopo();
 
@@ -711,19 +711,19 @@ void imprimeChamaProcedimento(char *rotulo,int nivel_lexico){
 
 // 		entrada.quantidade_simbolos = 2;
 // 		entrada.quantidade_vars = 0;
-// 	entrada.quantidade_procs = 0;
+// 	entrada.quantidade_subr = 0;
 // 	empilhaControleEscopo(entrada);
 // 	mostraPilhaControleEscopo();
 
 // 		entrada.quantidade_simbolos = 3;
 // 		entrada.quantidade_vars = 0;
-// 	entrada.quantidade_procs = 0;
+// 	entrada.quantidade_subr = 0;
 // 	empilhaControleEscopo(entrada);
 // 	mostraPilhaControleEscopo();
 
 // 		entrada.quantidade_simbolos = 4;
 // 		entrada.quantidade_vars = 0;
-// 	entrada.quantidade_procs = 0;
+// 	entrada.quantidade_subr = 0;
 // 	empilhaControleEscopo(entrada);
 // 	mostraPilhaControleEscopo();
 
