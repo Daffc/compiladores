@@ -509,11 +509,11 @@ void desempilhaRotulo(char *rotulo){
 
 
 /*Recebe o número de variáveis em num_variaveis e imprime "AMEM num_variaveis" em MEPA*/
-void imprimeAMEM (int *num_variaveis){
+void imprimeAMEM (int num_variaveis){
 
 	char str[12];
 
-	sprintf(str, "AMEM %d", *num_variaveis);
+	sprintf(str, "AMEM %d", num_variaveis);
 	geraCodigo(NULL, str);
 }
 

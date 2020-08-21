@@ -79,7 +79,7 @@ EntradaEscopo entrada_escopo;
 
 
 /* DEFINIÇÃO PARA ESTADOS NÃO-TERMINAIS */
-%type <texto> fator termo exp_simples expressao relacao atribui variavel
+%type <texto> fator termo exp_simples expressao relacao atribui define_terminal
 %type <numero> parte_de_declaracao_de_subrotinas
 %type <vetor_parametros> lista_de_espressoes
 %type <entrada_ts> identificador_comando
@@ -145,7 +145,7 @@ parte_declara_vars:
             categoria_entrada_TS = VariavelSimples;
         } 
             var 
-        { imprimeAMEM(&num_vars); }
+        { imprimeAMEM(num_vars); }
     |   /* VAZIO */
 ;
 
@@ -521,7 +521,7 @@ chamada_procedimento:
             // [FAZER] Efetuar o mesmo processo para funções !!!.
             flag_PF_ref = 0;
         }
-    | // VAZIO
+    // | // VAZIO -> entra em conflito com definição de variavel. como concertar????
 ;
 
 // LINHA 22
@@ -796,11 +796,17 @@ termo   :
 ; 
               
 // LINHA 29
-fator   :   
-        variavel
+fator:   
+        //  [FAZER] fatorar variavel para receber function (mesma maneira que em atribui).
+        IDENT 
             {
-                /* Repassando tipo de 'variavel' ($2) para 'fator'($$) */
-                strcpy($$, $1);
+                // Armazena token de entrada do simbolo 'token' em $1.
+                $1 = *validaSimbolo(nl, token);
+            }
+        define_terminal
+            {
+                /* Repassando tipo de 'define_terminal' ($3) para 'fator'($$) */
+                strcpy($$, $3);
             }
     |   NUMERO
             {
@@ -813,8 +819,6 @@ fator   :
                 /* Imprime comando MEPA de definição de constante. */
                 carregaConstanteMEPA(token);
             }
-    /* ADCIONAR ASSIM QUE FUNÇÕES FOREM APRESENTADAS.*/
-//      |   chamada_funcao  
     |   ABRE_PARENTESES expressao FECHA_PARENTESES
             {
                 /* Repassando tipo de 'expressao' ($2) para 'fator'($$) */
@@ -833,40 +837,74 @@ fator   :
             }
 ;
 
-// LINHA 30
-variavel:   
-        IDENT
+// LINHAS 30 e 31
+define_terminal:  
+        chamada_procedimento
+            {
+                // Resgatando entrada de Tabela de Simbolos de IDENT em comando_sem_rotulo.
+                entrada_ts = $<entrada_ts>-1;
+
+                //[FAZER] Verificar se 'entrada_ts' é do tipo Funcao, caso contrário retornar erro.
+                
+                verificaProcedenciaReferencia(nl, flag_PF_ref);
+
+                /* Armazena em 'aproc' atributos de entrada de 'IDENT'*/
+                aproc = *( (Atributos_PROC *) entrada_ts.ponteiro_atributos);
+
+                // Verifica se quantidade de parâmetros da chamada é compatível com cabeçalho.
+                validaNumParametros(nl, num_parametros, aproc.quantidade_parametros);
+
+                // Reserva espaço para retorno de função em tempo de execussao.
+                imprimeAMEM(1);
+
+                // Imprime instrução MEPA de achamada de procedimento.
+                imprimeChamaProcedimento(aproc.rotulo, nivel_lexico);
+
+                // Retornando em 'define_terminal' o tipo de retorno da funçao identificad variável de 'IDENT' ($<entrada_ts>-1).
+                strcpy($$, avs.tipo);
+            }
+    |    // VAZIO -> Caso termo em quetão se refira a uma variavel em uma expressão.
             {     
-                // Recupera entrada em Tabela de Simbolos de 'token'    
-                $1 = * validaSimbolo(nl, token);
+                /* Armazena em 'avs' atributos de 'IDENT'; */
+                avs = *( (Atributos_VS *) $<entrada_ts>-1.ponteiro_atributos);
 
                 // Caso IDENT sejá uma 'VariavelSimples'
-                if ($1.categoria == VariavelSimples)
+                if ($<entrada_ts>-1.categoria == VariavelSimples)
                 {
-                    /* [FAZER] if(flag_PF_ref) => PASSAR REFERENCIA */
-
-                    /* Armazena em 'avs' atributos de 'token' após verificação por validaSimbolo(); */
-                    avs = *( (Atributos_VS *) $1.ponteiro_atributos);
-
-                    // Retorna Código MEPA de carregamento da variável.
-                    carregaValorMEPA(nivel_lexico, avs.deslocamento);
+                    // Verifica se encontra-se em avaliação de parâmetro por referência.
+                    if(flag_PF_ref){
+                        // Retorna Código MEPA de carregamento da variável.
+                        carregaReferenciaVariavelMEPA(nivel_lexico, avs.deslocamento);
+                    }
+                    else{                        
+                        // Retorna Código MEPA de carregamento da variável.
+                        carregaValorMEPA(nivel_lexico, avs.deslocamento);
+                    }
                     
                     // Retornando em 'variavel' o tipo de variável de 'token'.
                     strcpy($$, avs.tipo);
                 }
 
                 // Caso IDENT sejá uma 'ParametroFormal'
-                if ($1.categoria == ParametroFormal)
+                if ($<entrada_ts>-1.categoria == ParametroFormal)
                 {
 
                     /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
-                    apf = *( (Atributos_PF *) $1.ponteiro_atributos);                    
+                    apf = *( (Atributos_PF *) $<entrada_ts>-1.ponteiro_atributos); 
 
-                    /* [FAZER] if(flag_PF_ref) => VERIFICAR TIPO */
-                        /* [FAZER] if(apf.tipo_passagem == valor) => PASSAR REFERÊNCIA */
-                        /* [FAZER] else => PASSAR VALOR (POIS JÁ É REFERÊNCIA DE VARIAVEL) */
+                    // Verifica se encontra-se em avaliação de parâmetro por referência.
+                    if(flag_PF_ref){
 
-                    /* [FAZER] else => MANTER CÓDIGO ABAIXO */
+                        if(apf.tipo_passagem == valor){
+                            // Retorna Código MEPA de carregamento da variável.
+                            carregaReferenciaVariavelMEPA(nivel_lexico, avs.deslocamento);
+                        }
+                        else{
+                            // Retorna Código MEPA de carregamento da variável.
+                            carregaValorMEPA(nivel_lexico, apf.deslocamento);
+                        }
+                    }
+                    else{                        
                         if(apf.tipo_passagem == valor){
                             // Retorna Código MEPA de carregamento da variável.
                             carregaValorMEPA(nivel_lexico, apf.deslocamento);
@@ -875,8 +913,9 @@ variavel:
                             // Retorna Código MEPA de carregamento da variável.
                             carregaVariavelIndiretoMEPA(nivel_lexico, apf.deslocamento);
                         }
+                    }                   
 
-                    // Retornando em 'variavel' o tipo de variável de 'token'.
+                    // Retornando em 'define_terminal' o tipo de variável de 'token'.
                     strcpy($$, apf.tipo);
                 }
             }

@@ -268,7 +268,7 @@ void verificaProcedenciaReferencia(int linha, int flag_PF_ref);
 		-----------------------------	
 */
 /*Recebe o número de variáveis em num_variaveis e imprime "AMEM num_variaveis" em MEPA*/
-void imprimeAMEM (int *num_variaveis);
+void imprimeAMEM (int num_variaveis);
 
 /* Recebe texto com valor de constante e imprime em arquivo MEPA */
 void carregaConstanteMEPA(char *constante);
