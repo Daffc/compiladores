@@ -507,7 +507,7 @@ void carregaConstanteMEPA(char *constante){
 }
 
 /* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de recuperação de variável em arquivo MEPA.*/
-void carregaVariavelSimplesMEPA(int nivel_lexico, int deslocamento){
+void carregaValorMEPA(int nivel_lexico, int deslocamento){
 
 	char 	resultado[20];
 
@@ -525,6 +525,18 @@ void carregaVariavelIndiretoMEPA(int nivel_lexico,int deslocamento){
 
 	/* Armazenando comando 'CRCT nivel_lexico,deslocamento' em buffer resltado */
 	sprintf(resultado, "CRVI %d,%d", nivel_lexico, deslocamento);
+
+	/* Imprimindo resultado em MEPA */
+	geraCodigo(NULL,resultado);
+}
+
+/* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de passagem de variável por referência em arquivo MEPA. */
+void carregaReferenciaVariavelMEPA(int nivel_lexico,int deslocamento){
+
+	char 	resultado[20];
+
+	/* Armazenando comando 'CREN nivel_lexico,deslocamento' em buffer resltado */
+	sprintf(resultado, "CREN %d,%d", nivel_lexico, deslocamento);
 
 	/* Imprimindo resultado em MEPA */
 	geraCodigo(NULL,resultado);

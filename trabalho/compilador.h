@@ -269,10 +269,13 @@ void imprimeAMEM (int *num_variaveis);
 void carregaConstanteMEPA(char *constante);
 
 /* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de recuperação de variável em arquivo MEPA.*/
-void carregaVariavelSimplesMEPA(int nivel_lexico, int deslocamento);
+void carregaValorMEPA(int nivel_lexico, int deslocamento);
 
 /* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de recuperação de variável em arquivo MEPA.*/
 void carregaVariavelIndiretoMEPA(int nivel_lexico, int deslocamento);
+
+/* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de passagem de variável por referência em arquivo MEPA. */
+void carregaReferenciaVariavelMEPA(int nivel_lexico,int deslocamento);
 
 /* Recebe valores de 'nível_lexico' e 'deslocamento' e imprime comando MEPA de armazenamento de valore em variavel MEPA.*/
 void armazenaVariavelSimplesMEPA(int nivel_lexico, int deslocamento);
