@@ -436,9 +436,6 @@ EntradaEscopo empilhaControleEscopo( EntradaEscopo entrada){
 	}
 
 	ce.entradas_escopo[ce.topo] = entrada;
-
-	mostraPilhaControleEscopo();
-
 	return  ce.entradas_escopo[ce.topo];	
 }
 
@@ -698,43 +695,6 @@ void imprimeChamaProcedimento(char *rotulo,int nivel_lexico){
 */
 
 // int main (){
-// 	EntradaEscopo entrada;
-
-// 	iniciaPilhaControleEscopo();
-
-// 	entrada.quantidade_simbolos = 0;
-// 	entrada.quantidade_vars = 0;
-// 	entrada.quantidade_subr = 0;
-// 	empilhaControleEscopo(entrada);
-// 	mostraPilhaControleEscopo();
-
-// 		entrada.quantidade_simbolos = 1;
-// 		entrada.quantidade_vars = 0;
-// 	entrada.quantidade_subr = 0;
-// 	empilhaControleEscopo(entrada);
-// 	mostraPilhaControleEscopo();
-
-// 	entrada = desempilhaControleEscopo(entrada);
-// 	mostraPilhaControleEscopo();
-
-// 		entrada.quantidade_simbolos = 2;
-// 		entrada.quantidade_vars = 0;
-// 	entrada.quantidade_subr = 0;
-// 	empilhaControleEscopo(entrada);
-// 	mostraPilhaControleEscopo();
-
-// 		entrada.quantidade_simbolos = 3;
-// 		entrada.quantidade_vars = 0;
-// 	entrada.quantidade_subr = 0;
-// 	empilhaControleEscopo(entrada);
-// 	mostraPilhaControleEscopo();
-
-// 		entrada.quantidade_simbolos = 4;
-// 		entrada.quantidade_vars = 0;
-// 	entrada.quantidade_subr = 0;
-// 	empilhaControleEscopo(entrada);
-// 	mostraPilhaControleEscopo();
-
 // }
 
 /* 

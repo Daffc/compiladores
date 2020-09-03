@@ -443,9 +443,98 @@ comando_sem_rotulo:
         identificador_comando
     |   comando_condicional
     |   comando_repetitivo      
-    |   comando_composto              
+    |   comando_composto
+    |   comando_leitura    
+    |   comando_escrita          
 ; 
 
+/*
+    ---------------------------------
+    |   ENTRADA E SAIDA DE DADOS    |
+    ---------------------------------
+*/
+comando_leitura:
+        READ ABRE_PARENTESES IDENT 
+            {
+                // Imprime comando MEPA para leitura.
+                geraCodigo(NULL, "LEIT");
+
+                // Recupera entrada de Tabela de simbolos para IDENT;
+                $3 = *validaSimbolo(nl, token);
+
+                switch($3.categoria){
+                    // Caso IDENT sejá uma 'VariavelSimples'
+                    case VariavelSimples:
+                        /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
+                        avs = *( (Atributos_VS *) $3.ponteiro_atributos);
+
+                        /* Defindo instrução MEPA para armazenamento em 'variavel' */
+                        armazenaVariavelSimplesMEPA($3.nivel, avs.deslocamento);
+                    break;
+
+                    // Caso IDENT sejá uma 'ParametroFormal'
+                    case ParametroFormal:
+                        /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
+                        apf = *( (Atributos_PF *) $3.ponteiro_atributos);
+
+                        if(apf.tipo_passagem == valor){
+                            /* Defindo instrução MEPA para armazenamento em 'variavel' */
+                            armazenaVariavelSimplesMEPA($3.nivel, apf.deslocamento);
+                        }
+                        else{
+                            // Retorna Código MEPA de carregamento da variável.
+                            armazenaVariavelIndiretaMEPA(nivel_lexico, apf.deslocamento);
+                        }
+                    break;
+
+                    // Caso IDENT sejá uma 'Funcao', definir o retorno.
+                    case Funcao:
+                        
+                        // Verifica se o simbolo em questão NÃO PERTENCE é o mesmo da função atual.
+                        if(strcmp($3.identificador, entrada_escopo.identificador)){
+                            // Caso simbolo pertença a outra função, retornar erro.
+                            erroAtribuiSimbolo(nl, $3.identificador);
+                        }
+
+                        /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
+                        aproc = *( (Atributos_SUBR *) $3.ponteiro_atributos);
+
+                        /* Defindo instrução MEPA para armazenamento em retorno de funcao. */
+                        armazenaVariavelSimplesMEPA($3.nivel, aproc.deslocamento);
+
+                    break;
+
+                    default:
+                        erroAtribuiSimbolo(nl, $3.identificador);
+                }
+
+            }
+        FECHA_PARENTESES
+;
+
+comando_escrita:
+    WRITE ABRE_PARENTESES lista_de_escritas FECHA_PARENTESES
+;
+
+lista_de_escritas:
+        lista_de_escritas VIRGULA expressao
+            {
+                // Imprime comando MEPA para escrita em saida.
+                geraCodigo(NULL, "IMPR");
+                
+            }
+    |   expressao
+            {
+                // Imprime comando MEPA para escrita em saida.
+                geraCodigo(NULL, "IMPR");
+                
+            }
+;
+/*
+    -------------------------------------
+    |   FIM - ENTRADA E SAIDA DE DADOS  |
+    -------------------------------------
+*/
 // Necessário Fatoração em comandos de atribuição e chamada de procedimento.
 identificador_comando:
         atribui
@@ -493,10 +582,6 @@ identificador_comando:
                             // Caso simbolo pertença a outra função, retornar erro.
                             erroAtribuiSimbolo(nl, $$.identificador);
                         }
-                        
-                        
-                        // Verifica valor esta sendo atribuido enquanto dentro de função (ou seja, nivel léxico de função == nivel léxico atual).
-                        validaNivelLexico(nl, $$.nivel, nivel_lexico);
 
                         /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
                         aproc = *( (Atributos_SUBR *) $$.ponteiro_atributos);
