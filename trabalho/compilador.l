@@ -100,8 +100,7 @@ end { simbolo = simb_end;
  }
 
  /*====================== Minhas Modificações ======================*/
-    /* necessário implementar:*/ 
-    /* label, type, array|of, procedure, function, goto, if|then|else, while|do, =|<>|<|>|<=|>=, -|+|or, *|div|and, not */
+    /* PALAVRAS RESERVADAS */
 label { simbolo  = simb_label;  
         strncpy (token, yytext, TAM_TOKEN);
         IMPRIME(" label ");
@@ -174,6 +173,19 @@ do { simbolo  = simb_do;
         return DO;
     }
 
+read { simbolo = simb_read;
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME(" read ");
+        return READ;
+    }
+
+write { simbolo = simb_write;
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME(" write ");
+        return WRITE;
+    }
+
+    /* OPERADORES DE EXPRESSÕES */
 \=  { simbolo = simb_igual;  
           strncpy (token, yytext, TAM_TOKEN);
           IMPRIME(" igual ");

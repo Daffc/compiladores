@@ -75,7 +75,7 @@ EntradaEscopo entrada_escopo;
 %token WHILE
 
 /*!!!!!! NÃO UTILIZADOS !!!!!!!*/
-%token LABEL TYPE ARRAY OF PROCEDURE FUNCTION GOTO IF THEN ELSE DO
+%token LABEL TYPE ARRAY OF PROCEDURE FUNCTION GOTO IF THEN ELSE DO READ WRITE
 
 
 /* DEFINIÇÃO PARA ESTADOS NÃO-TERMINAIS */
@@ -487,6 +487,14 @@ identificador_comando:
 
                     // Caso IDENT sejá uma 'Funcao', definir o retorno.
                     case Funcao:
+                        
+                        // Verifica se o simbolo em questão NÃO PERTENCE a função atual.
+                        if(strcmp($$.identificador, entrada_escopo.identificador)){
+                            // Caso simbolo pertença a outra função, retornar erro.
+                            erroAtribuiSimbolo(nl, $$.identificador);
+                        }
+                        
+                        
                         // Verifica valor esta sendo atribuido enquanto dentro de função (ou seja, nivel léxico de função == nivel léxico atual).
                         validaNivelLexico(nl, $$.nivel, nivel_lexico);
 
