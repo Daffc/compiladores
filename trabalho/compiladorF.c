@@ -128,7 +128,7 @@ void mostraPilhaControleEscopo(){
 	printf("------------------------------\n");
 	for (int i = ce.topo; i >= 0; i--){
 		/*	Imprime elemento da tabela de simbolos	*/
-		printf("%d\t%d\t%d\t%d", i, ce.entradas_escopo[i]. quantidade_vars, ce.entradas_escopo[i].quantidade_subr, ce.entradas_escopo[i].quantidade_parametros );
+		printf("%d\t%d\t%d\t%d\t%s", i, ce.entradas_escopo[i]. quantidade_vars, ce.entradas_escopo[i].quantidade_subr, ce.entradas_escopo[i].quantidade_parametros, ce.entradas_escopo[i].identificador );
 		printf("\n");
 	}
 	printf("------------------------------\n\n");
@@ -431,7 +431,9 @@ EntradaEscopo empilhaControleEscopo( EntradaEscopo entrada){
 
 	ce.entradas_escopo[ce.topo] = entrada;
 
-	return  ce.entradas_escopo[ce.topo];
+	mostraPilhaControleEscopo();
+
+	return  ce.entradas_escopo[ce.topo];	
 }
 
 /* Desempilha 'entrada' de escopo. */

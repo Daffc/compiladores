@@ -144,10 +144,11 @@ void mostraPilhaControleEscopo();
 
 // Estrutura para controle de entadas e aplicação de DMEM em table de simbolos.
 typedef struct entrada_escopo_t{
-	int nivel_lexico;
-	int quantidade_vars;	// Armazena quantidae de variáveis por escopo.
-	int quantidade_subr;	// Armazena quantidade de procedimentos por escopo.
-	int quantidade_parametros;	// Armazena quantidade de parâmetros por escopo.
+	int 	nivel_lexico;
+	int 	quantidade_vars;		// Armazena quantidae de variáveis por escopo.
+	int 	quantidade_subr;		// Armazena quantidade de procedimentos por escopo.
+	int		quantidade_parametros;	// Armazena quantidade de parâmetros por escopo.
+	char 	identificador[128];		// Armazena o identificador do escopo (mesmo da tabela de simbolos no caso de subrotinas.)
 }EntradaEscopo;
 
 

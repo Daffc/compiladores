@@ -324,6 +324,9 @@ declaracao_de_procedimento:
 
                 /* Adicionando Novo Simbolo a Tabela de Simbolos */
                 insereTabelaSimbolos(nl, entrada_ts.identificador, entrada_ts.categoria, entrada_ts.nivel, &aproc);
+                
+                // Armazena em variavel de entrada de escopo o identificador do procedimento.
+                strcpy(entrada_escopo.identificador, token);
             }
         ABRE_PARENTESES 
             { 
@@ -359,6 +362,9 @@ declaracao_de_funcao:
 
                 //Imprime instrução MEPA de entrada para procedimento, indicando o nível lexico.
                 imprimeEntraProcedimento(aproc.rotulo, nivel_lexico);   
+
+                // Armazena em variavel de entrada de escopo o identificador do procedimento.
+                strcpy(entrada_escopo.identificador, token);
             }
         ABRE_PARENTESES 
             { 
