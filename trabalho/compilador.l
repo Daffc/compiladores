@@ -18,7 +18,7 @@ pulo_linha [\n]
 
 descarte [\t ]+
 
-ident [a-zAZ][a-zAZ1-9]*
+ident [a-zA-Z_][a-zA-Z0-9_]*
 
 numero [0-9]+
 
