@@ -267,6 +267,21 @@ void validaNivelLexico(int linha, int primeiro_nivel, int segundo_nivel);
 
 /* 
 		-----------------------------
+		|	  IMPRESSÃO DE ERROS	|
+		-----------------------------	
+*/
+
+// Indica ao usuário que o simbolo 'simbolo' não pode armazenar atribuições.
+void erroAtribuiSimbolo(int linha, char * simbolo);
+
+/* 
+		-----------------------------
+		|	FIM IMPRESSÃO DE ERROS	|
+		-----------------------------	
+*/
+
+/* 
+		-----------------------------
 		|		DEFINIÇÕES MEPA		|
 		-----------------------------	
 */

@@ -453,56 +453,56 @@ identificador_comando:
                 // Resgatando entrada de Tabela de Simbolos de IDENT em comando_sem_rotulo.
                 $$ = $<entrada_ts>-1;
                 
-                // Caso IDENT sejá uma 'VariavelSimples'
-                if ($$.categoria == VariavelSimples)
-                {
+                switch($$.categoria){
+                    // Caso IDENT sejá uma 'VariavelSimples'
+                    case VariavelSimples:
+                        /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
+                        avs = *( (Atributos_VS *) $$.ponteiro_atributos);
 
-                    /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
-                    avs = *( (Atributos_VS *) $$.ponteiro_atributos);
+                        /* Verificando se 'IDENT' e 'atribui' $1 possuem o mesmo tipo */
+                        validaTipos(nl, avs.tipo, $1);
 
-                    /* Verificando se 'IDENT' e 'atribui' $1 possuem o mesmo tipo */
-                    validaTipos(nl, avs.tipo, $1);
-
-                    /* Defindo instrução MEPA para armazenamento em 'variavel' */
-                    armazenaVariavelSimplesMEPA($$.nivel, avs.deslocamento);
-                }
-
-                // Caso IDENT sejá uma 'ParametroFormal'
-                if ($$.categoria == ParametroFormal)
-                {
-
-                    /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
-                    apf = *( (Atributos_PF *) $$.ponteiro_atributos);
-
-                    /* Verificando se 'IDENT' e 'atribui' $1 possuem o mesmo tipo */
-                    validaTipos(nl, apf.tipo, $1);
-
-
-                    if(apf.tipo_passagem == valor){
                         /* Defindo instrução MEPA para armazenamento em 'variavel' */
-                        armazenaVariavelSimplesMEPA($$.nivel, apf.deslocamento);
-                    }
-                    else{
-                        // Retorna Código MEPA de carregamento da variável.
-                        armazenaVariavelIndiretaMEPA(nivel_lexico, apf.deslocamento);
-                    }
+                        armazenaVariavelSimplesMEPA($$.nivel, avs.deslocamento);
+                    break;
 
-                }
+                    // Caso IDENT sejá uma 'ParametroFormal'
+                    case ParametroFormal:
+                        /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
+                        apf = *( (Atributos_PF *) $$.ponteiro_atributos);
 
-                // Caso IDENT sejá uma 'Funcao', definir o retorno.
-                if ($$.categoria == Funcao)
-                {       
-                    // Verifica valor esta sendo atribuido enquanto dentro de função (ou seja, nivel léxico de função == nivel léxico atual).
-                    validaNivelLexico(nl, $$.nivel, nivel_lexico);
+                        /* Verificando se 'IDENT' e 'atribui' $1 possuem o mesmo tipo */
+                        validaTipos(nl, apf.tipo, $1);
 
-                    /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
-                    aproc = *( (Atributos_SUBR *) $$.ponteiro_atributos);
 
-                    /* Verificando se 'IDENT' e 'atribui' $1 possuem o mesmo tipo */
-                    validaTipos(nl, aproc.tipo_retorno, $1);
+                        if(apf.tipo_passagem == valor){
+                            /* Defindo instrução MEPA para armazenamento em 'variavel' */
+                            armazenaVariavelSimplesMEPA($$.nivel, apf.deslocamento);
+                        }
+                        else{
+                            // Retorna Código MEPA de carregamento da variável.
+                            armazenaVariavelIndiretaMEPA(nivel_lexico, apf.deslocamento);
+                        }
+                    break;
 
-                    /* Defindo instrução MEPA para armazenamento em retorno de funcao. */
-                    armazenaVariavelSimplesMEPA($$.nivel, aproc.deslocamento);
+                    // Caso IDENT sejá uma 'Funcao', definir o retorno.
+                    case Funcao:
+                        // Verifica valor esta sendo atribuido enquanto dentro de função (ou seja, nivel léxico de função == nivel léxico atual).
+                        validaNivelLexico(nl, $$.nivel, nivel_lexico);
+
+                        /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
+                        aproc = *( (Atributos_SUBR *) $$.ponteiro_atributos);
+
+                        /* Verificando se 'IDENT' e 'atribui' $1 possuem o mesmo tipo */
+                        validaTipos(nl, aproc.tipo_retorno, $1);
+
+                        /* Defindo instrução MEPA para armazenamento em retorno de funcao. */
+                        armazenaVariavelSimplesMEPA($$.nivel, aproc.deslocamento);
+
+                    break;
+
+                    default:
+                        erroAtribuiSimbolo(nl, $$.identificador);
                 }
             }
     |   chamada_subrotina

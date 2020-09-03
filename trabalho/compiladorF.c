@@ -400,6 +400,12 @@ void validaNivelLexico(int linha, int primeiro_nivel, int segundo_nivel){
 	}
 }
 
+// Indica ao usuário que o simbolo 'simbolo' não pode armazenar atribuições.
+void erroAtribuiSimbolo(int linha, char * simbolo){
+	/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
+	fprintf (stderr,"ERRO LINHA %d: O simbolo '%s' não pode ser alvo de atribuições.\n",linha, simbolo);
+	exit(-1);
+}
 
 /* 
 	-----------------------------
