@@ -730,6 +730,9 @@ if_then     :
                 
                 /* Imprime comando para saida de if caso 'expressao' seja falso (DSVF).*/
                 imprimeDesviaSeFalsoMEPA(saida_rotulo);
+
+                /* Verifica se resultado de expressão é do tipo 'boolean'*/
+                validaExpressaoCondicional(nl, $2);
             }
         THEN comando_sem_rotulo
 ;
@@ -764,6 +767,9 @@ comando_repetitivo  :
             } 
         expressao DO
             { 
+                /* Verifica se resultado de expressão é do tipo 'boolean'*/
+                validaExpressaoCondicional(nl, $3);
+
                 /* Gerando os Rótulos de entrada e saida do WHILE*/
                 empilhaRotulo(saida_rotulo);
 
