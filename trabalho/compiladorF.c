@@ -553,7 +553,7 @@ void carregaValorMEPA(int nivel_lexico, int deslocamento){
 	char 	resultado[20];
 
 	/* Armazenando comando 'CRCT nivel_lexico,deslocamento' em buffer resltado */
-	sprintf(resultado, "CRVL %d,%d", nivel_lexico, deslocamento);
+	sprintf(resultado, "CRVL %d, %d", nivel_lexico, deslocamento);
 
 	/* Imprimindo resultado em MEPA */
 	geraCodigo(NULL,resultado);
@@ -565,7 +565,7 @@ void carregaVariavelIndiretoMEPA(int nivel_lexico,int deslocamento){
 	char 	resultado[20];
 
 	/* Armazenando comando 'CRCT nivel_lexico,deslocamento' em buffer resltado */
-	sprintf(resultado, "CRVI %d,%d", nivel_lexico, deslocamento);
+	sprintf(resultado, "CRVI %d, %d", nivel_lexico, deslocamento);
 
 	/* Imprimindo resultado em MEPA */
 	geraCodigo(NULL,resultado);
@@ -589,7 +589,7 @@ void armazenaVariavelSimplesMEPA(int nivel_lexico, int deslocamento){
 	char 	resultado[20];
 
 	/* Armazenando comando 'ARMZ nivel_lexico,deslocamento' em buffer resltado */
-	sprintf(resultado, "ARMZ %d,%d", nivel_lexico, deslocamento);
+	sprintf(resultado, "ARMZ %d, %d", nivel_lexico, deslocamento);
 
 	/* Imprimindo resultado em MEPA */
 	geraCodigo(NULL,resultado);
@@ -601,7 +601,7 @@ void armazenaVariavelIndiretaMEPA(int nivel_lexico, int deslocamento){
 	char 	resultado[20];
 
 	/* Armazenando comando 'ARMI nivel_lexico,deslocamento' em buffer resltado */
-	sprintf(resultado, "ARMI %d,%d", nivel_lexico, deslocamento);
+	sprintf(resultado, "ARMI %d, %d", nivel_lexico, deslocamento);
 
 	/* Imprimindo resultado em MEPA */
 	geraCodigo(NULL,resultado);
@@ -661,7 +661,7 @@ void imprimeRetornaProcedimento(int nivel_lexico, int quantidade_parametros){
 	char resultado[20];
 
 	/* Imnprimeindo comando 'RPTR nivel_lexico,quantidade_parametros' em buffer resltado */
-	sprintf(resultado, "RPTR %d,%d", nivel_lexico, quantidade_parametros);
+	sprintf(resultado, "RPTR %d, %d", nivel_lexico, quantidade_parametros);
 
 	/* Imprimindo resultado em MEPA */
 	geraCodigo(NULL,resultado);
@@ -673,7 +673,7 @@ void imprimeChamaProcedimento(char *rotulo,int nivel_lexico){
 	char resultado[20];
 
 	/* Imnprimeindo comando 'CHPR rotulo,nivel_lexico' em buffer resltado */
-	sprintf(resultado, "CHPR %s,%d", rotulo, nivel_lexico);
+	sprintf(resultado, "CHPR %s, %d", rotulo, nivel_lexico);
 
 	/* Imprimindo resultado em MEPA */
 	geraCodigo(NULL,resultado);
