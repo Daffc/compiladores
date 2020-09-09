@@ -502,7 +502,7 @@ lista_de_leitura:
                         }
                         else{
                             // Retorna Código MEPA de carregamento da variável.
-                            armazenaVariavelIndiretaMEPA(nivel_lexico, apf.deslocamento);
+                            armazenaVariavelIndiretaMEPA($3.nivel, apf.deslocamento);
                         }
                     break;
 
@@ -557,7 +557,7 @@ lista_de_leitura:
                         }
                         else{
                             // Retorna Código MEPA de carregamento da variável.
-                            armazenaVariavelIndiretaMEPA(nivel_lexico, apf.deslocamento);
+                            armazenaVariavelIndiretaMEPA($1.nivel, apf.deslocamento);
                         }
                     break;
 
@@ -643,7 +643,7 @@ identificador_comando:
                         }
                         else{
                             // Retorna Código MEPA de carregamento da variável.
-                            armazenaVariavelIndiretaMEPA(nivel_lexico, apf.deslocamento);
+                            armazenaVariavelIndiretaMEPA($$.nivel, apf.deslocamento);
                         }
                     break;
 
@@ -1067,7 +1067,7 @@ define_terminal:
                     // Verifica se encontra-se em avaliação de parâmetro por referência.
                     if(flag_PF_ref){
                         // Retorna Código MEPA de carregamento da variável.
-                        carregaReferenciaVariavelMEPA(nivel_lexico, avs.deslocamento);
+                        carregaReferenciaVariavelMEPA($<entrada_ts>-1.nivel, avs.deslocamento);
                     }
                     else{                        
                         // Retorna Código MEPA de carregamento da variável.
@@ -1090,7 +1090,7 @@ define_terminal:
 
                         if(apf.tipo_passagem == valor){
                             // Retorna Código MEPA de carregamento da variável.
-                            carregaReferenciaVariavelMEPA(nivel_lexico, avs.deslocamento);
+                            carregaReferenciaVariavelMEPA($<entrada_ts>-1.nivel, avs.deslocamento);
                         }
                         else{
                             // Retorna Código MEPA de carregamento da variável.
@@ -1104,7 +1104,7 @@ define_terminal:
                         }
                         else{
                             // Retorna Código MEPA de carregamento da variável.
-                            carregaVariavelIndiretoMEPA(nivel_lexico, apf.deslocamento);
+                            carregaVariavelIndiretoMEPA($<entrada_ts>-1.nivel, apf.deslocamento);
                         }
                     }                   
 
