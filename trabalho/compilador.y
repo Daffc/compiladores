@@ -837,7 +837,11 @@ expressao:
                 verificaProcedenciaReferencia(nl, flag_PF_ref);
                 
                 /* Verificando tipos de $1 e $3 e repassando para 'expressao' */
-                strcpy($$, validaTipos(nl,$1, $3));
+                validaTipos(nl,$1, $3);
+
+                // Subir em arvore tipo booleano (já que operações envolvendo 'relacao', independentemente dos operandos, sempre resultará em boolean.)
+                strcpy($$, "boolean");
+
                 /* Imprime comando MEPA de relação  obtido por 'relacao' */
                 geraCodigo(NULL, $2);
             }
