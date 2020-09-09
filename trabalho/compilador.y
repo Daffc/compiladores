@@ -373,22 +373,29 @@ declaracao_de_funcao:
 
                 // Armazena em variavel de entrada de escopo o identificador do procedimento.
                 strcpy(entrada_escopo.identificador, token);
+                num_vars = 0;                           // Zeranvo variável para início da contagem de parâmetros.        
             }
-        ABRE_PARENTESES 
-            { 
-                    categoria_entrada_TS = ParametroFormal; /* A partir deste momendo, serão declarados Parâmetros fomais.  */
-                    num_vars = 0;                           // Zeranvo variável para início da contagem de parâmetros.        
-            }
-        parametros_formais 
-            {
-                deslocaParametrosFormais(num_vars, Funcao);         // Redefine valor de deslocamento para parâmetros para condizer com edereço de execussão.
-            }
-        FECHA_PARENTESES DOIS_PONTOS IDENT 
+        declaracao_de_parametros_funcao 
+        DOIS_PONTOS IDENT 
             {
                 // Preenchendo sessão de parâmetros em entrada de procedimento e armazenando tipo de retorno da função.
                 preencheAtributosSubrotina(num_vars, token); 
             }
         PONTO_E_VIRGULA bloco
+;
+
+
+declaracao_de_parametros_funcao:
+        ABRE_PARENTESES 
+            { 
+                    categoria_entrada_TS = ParametroFormal; /* A partir deste momendo, serão declarados Parâmetros fomais.  */    
+            }
+        parametros_formais 
+            {
+                deslocaParametrosFormais(num_vars, Procedimento); // Redefine valor de deslocamento para parâmetros para condizer com edereço de execussão.    
+            }
+        FECHA_PARENTESES
+    |   /* VAZIO */
 ;
 
 // LINHA 14
