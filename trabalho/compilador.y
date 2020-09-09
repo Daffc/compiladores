@@ -676,8 +676,6 @@ identificador_comando:
                 /* Armazena em 'aproc' atributos de entrada de 'IDENT'*/
                 aproc = *( (Atributos_SUBR *) $$.ponteiro_atributos);
 
-                mostraTabelaSimbolos();
-
                 // Verifica se quantidade de parâmetros da chamada é compatível com cabeçalho.
                 validaNumParametros(nl, num_parametros, aproc.quantidade_parametros);
 
