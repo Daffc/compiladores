@@ -679,6 +679,8 @@ identificador_comando:
                 /* Armazena em 'aproc' atributos de entrada de 'IDENT'*/
                 aproc = *( (Atributos_SUBR *) $$.ponteiro_atributos);
 
+                mostraTabelaSimbolos();
+
                 // Verifica se quantidade de parâmetros da chamada é compatível com cabeçalho.
                 validaNumParametros(nl, num_parametros, aproc.quantidade_parametros);
 
@@ -709,7 +711,7 @@ chamada_subrotina:
             // [FAZER] Efetuar o mesmo processo para funções !!!.
             flag_PF_ref = 0;
         }
-    // | // VAZIO -> entra em conflito com definição de variavel. como concertar????
+    | /* VAZIO -> entra em conflito com definição de variavel. como concertar???? */
 ;
 
 // LINHA 22
@@ -1033,7 +1035,7 @@ fator:
 
 // LINHAS 30 e 31
 define_terminal:  
-        chamada_subrotina
+        chamada_funcao
             {
                 // Resgatando entrada de Tabela de Simbolos de IDENT em comando_sem_rotulo.
                 entrada_ts = $<entrada_ts>-1;
@@ -1110,6 +1112,20 @@ define_terminal:
                     strcpy($$, apf.tipo);
                 }
             }
+;
+
+chamada_funcao:
+    ABRE_PARENTESES 
+        {
+            // Zera contador de parâmetros.
+            num_parametros = 0;
+        }
+    lista_de_espressoes FECHA_PARENTESES
+        {
+            // Indica que não precisa se preocupar com referências
+            // [FAZER] Efetuar o mesmo processo para funções !!!.
+            flag_PF_ref = 0;
+        }
 ;
 
 
