@@ -577,7 +577,7 @@ void carregaReferenciaVariavelMEPA(int nivel_lexico,int deslocamento){
 	char 	resultado[20];
 
 	/* Armazenando comando 'CREN nivel_lexico,deslocamento' em buffer resltado */
-	sprintf(resultado, "CREN %d,%d", nivel_lexico, deslocamento);
+	sprintf(resultado, "CREN %d, %d", nivel_lexico, deslocamento);
 
 	/* Imprimindo resultado em MEPA */
 	geraCodigo(NULL,resultado);
@@ -661,7 +661,7 @@ void imprimeRetornaProcedimento(int nivel_lexico, int quantidade_parametros){
 	char resultado[20];
 
 	/* Imnprimeindo comando 'RPTR nivel_lexico,quantidade_parametros' em buffer resltado */
-	sprintf(resultado, "RPTR %d, %d", nivel_lexico, quantidade_parametros);
+	sprintf(resultado, "RTPR %d, %d", nivel_lexico, quantidade_parametros);
 
 	/* Imprimindo resultado em MEPA */
 	geraCodigo(NULL,resultado);
