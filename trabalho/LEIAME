@@ -1,0 +1,39 @@
+
+
+- Para compilar o código é necessário utilizar o MAkeFile local ao projeto.
+
+
+- Programas avaliadores:
+    
+    Devido a pequenas diferenças de implementação as seguintes diferenças se mostram ao executar o comando "diff" nos arquivos de saida:
+
+    - AMEM são feitos por completo (AMEM 5) e não por partes (AMEM 3  AMEM 2):
+        Difere em arquivos:
+            Exemplo5
+            Exemplo8.5
+
+    - Não é feito desvio ("DSVS R00" seguido imediatamente de "R00: NADA") em bloco de declaração de subrotinas caso não haja nenhuma declaração:
+        Difere em arquivos:
+            Exemplo5
+            Exemplo7.1
+            Exemplo7.2
+            Exemplo7.3
+            Exemplo7.4
+            Exemplo8.5
+            Exemplo8.6
+            Exemplo8.7
+            Exemplo8.8
+            Exemplo8.9
+            Exemplo8.10
+
+    - Apenas um rótulo é reservado na chamada de um "IF", sendo o segundo rótulo criado apenas na presença de um "ELSE". Alem disso comando "DSVS" ao final de um "IF" só é implementado na presença de um "ELSE":
+        Difere em arquivos:
+            Exemplo8.6
+            Exemplo8.7
+            Exemplo8.8
+            Exemplo8.9
+            Exemplo8.10
+
+    - Verificação de tipo de expressão em IF é feita após a escrita da operação de comparação em arquivo MEPA:
+        Difere em arquivos:
+            ExemploErro2
