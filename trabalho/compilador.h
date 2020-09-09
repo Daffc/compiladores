@@ -260,6 +260,9 @@ void verificaProcedenciaReferencia(int linha, int flag_PF_ref);
 
 // Compara valores de 'primeiro_nivel' e 'segundo_nivel', caso diferentes, retorna erro indicando linha 'linha'.
 void validaNivelLexico(int linha, int primeiro_nivel, int segundo_nivel);
+
+// Verifica se 'tipo_expressão' é do tipo 'boolean', necessário para if's e while's
+void validaExpressaoCondicional(int linha, char *tipo_exp);
 /* 
 		-----------------------------
 		|		FIM VALIDAÇÃO		|

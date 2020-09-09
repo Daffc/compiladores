@@ -407,6 +407,18 @@ void erroAtribuiSimbolo(int linha, char * simbolo){
 	exit(-1);
 }
 
+// Verifica se 'tipo_expressão' é do tipo 'boolean', necessário para if's e while's
+void validaExpressaoCondicional(int linha, char *tipo_exp){
+
+	// Verifica se "tipo_exp" é do tipo "boolean", informando erro caso verdadeiro.
+	if(strcmp("boolean", tipo_exp)){
+		/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
+		fprintf (stderr,"ERRO LINHA %d: Tipos incompatíveis: esperado 'boolean' recebido '%s'.\n", linha, tipo_exp);
+		exit(-1);
+	}
+}
+
+
 /* 
 	-----------------------------
 	|		FIM VALIDAÇÃO		|
