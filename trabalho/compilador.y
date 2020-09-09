@@ -330,7 +330,7 @@ declaracao_de_procedimento:
             declaracao_de_parametros_procedimento
             {
                 preencheAtributosSubrotina(num_vars, NULL);    // Preenchendo sessão de parâmetros em entrada de procedimento em TS.
-
+                deslocaParametrosFormais(num_vars, Procedimento);   // Redefine valor de deslocamento para parâmetros para condizer com edereço de execussão.
                 
             }
         PONTO_E_VIRGULA bloco
@@ -342,9 +342,6 @@ declaracao_de_parametros_procedimento:
                     categoria_entrada_TS = ParametroFormal; /* A partir deste momendo, serão declarados Parâmetros fomais.  */    
             }
         parametros_formais 
-            {
-                deslocaParametrosFormais(num_vars, Procedimento); // Redefine valor de deslocamento para parâmetros para condizer com edereço de execussão.    
-            }
         FECHA_PARENTESES
     |   /* VAZIO */
 ;
@@ -376,6 +373,9 @@ declaracao_de_funcao:
                 num_vars = 0;                           // Zeranvo variável para início da contagem de parâmetros.        
             }
         declaracao_de_parametros_funcao 
+            {
+                deslocaParametrosFormais(num_vars, Funcao); // Redefine valor de deslocamento para parâmetros para condizer com edereço de execussão.    
+            }
         DOIS_PONTOS IDENT 
             {
                 // Preenchendo sessão de parâmetros em entrada de procedimento e armazenando tipo de retorno da função.
@@ -391,9 +391,6 @@ declaracao_de_parametros_funcao:
                     categoria_entrada_TS = ParametroFormal; /* A partir deste momendo, serão declarados Parâmetros fomais.  */    
             }
         parametros_formais 
-            {
-                deslocaParametrosFormais(num_vars, Procedimento); // Redefine valor de deslocamento para parâmetros para condizer com edereço de execussão.    
-            }
         FECHA_PARENTESES
     |   /* VAZIO */
 ;
