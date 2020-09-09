@@ -324,18 +324,29 @@ declaracao_de_procedimento:
                 
                 // Armazena em variavel de entrada de escopo o identificador do procedimento.
                 strcpy(entrada_escopo.identificador, token);
+
+                num_vars = 0;                           // Zeranvo variável para início da contagem de parâmetros.    
             }
+            declaracao_de_parametros_procedimento
+            {
+                preencheAtributosSubrotina(num_vars, NULL);    // Preenchendo sessão de parâmetros em entrada de procedimento em TS.
+
+                
+            }
+        PONTO_E_VIRGULA bloco
+;
+
+declaracao_de_parametros_procedimento:
         ABRE_PARENTESES 
             { 
-                    categoria_entrada_TS = ParametroFormal; /* A partir deste momendo, serão declarados Parâmetros fomais.  */
-                    num_vars = 0;                           // Zeranvo variável para início da contagem de parâmetros.        
+                    categoria_entrada_TS = ParametroFormal; /* A partir deste momendo, serão declarados Parâmetros fomais.  */    
             }
         parametros_formais 
             {
-                deslocaParametrosFormais(num_vars, Procedimento); // Redefine valor de deslocamento para parâmetros para condizer com edereço de execussão.
-                preencheAtributosSubrotina(num_vars, NULL);    // Preenchendo sessão de parâmetros em entrada de procedimento em TS.
+                deslocaParametrosFormais(num_vars, Procedimento); // Redefine valor de deslocamento para parâmetros para condizer com edereço de execussão.    
             }
-        FECHA_PARENTESES PONTO_E_VIRGULA bloco
+        FECHA_PARENTESES
+    |   /* VAZIO */
 ;
 
 // LINHA 13
