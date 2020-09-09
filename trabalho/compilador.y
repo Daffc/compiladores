@@ -1071,7 +1071,7 @@ define_terminal:
                     }
                     else{                        
                         // Retorna Código MEPA de carregamento da variável.
-                        carregaValorMEPA(nivel_lexico, avs.deslocamento);
+                        carregaValorMEPA($<entrada_ts>-1.nivel, avs.deslocamento);
                     }
                     
                     // Retornando em 'variavel' o tipo de variável de 'token'.
@@ -1094,13 +1094,13 @@ define_terminal:
                         }
                         else{
                             // Retorna Código MEPA de carregamento da variável.
-                            carregaValorMEPA(nivel_lexico, apf.deslocamento);
+                            carregaValorMEPA($<entrada_ts>-1.nivel, apf.deslocamento);
                         }
                     }
                     else{                        
                         if(apf.tipo_passagem == valor){
                             // Retorna Código MEPA de carregamento da variável.
-                            carregaValorMEPA(nivel_lexico, apf.deslocamento);
+                            carregaValorMEPA($<entrada_ts>-1.nivel, apf.deslocamento);
                         }
                         else{
                             // Retorna Código MEPA de carregamento da variável.
