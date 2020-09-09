@@ -1,7 +1,4 @@
 
-// [FAZER] Receber entrada de dados (read -> LEIT). 
-// [FAZER] Imprimir dados em saida (ESCR). 
-
 %error-verbose          //Expressando melhor os Sytatic Errors.
 
 %{
@@ -454,7 +451,11 @@ comando_sem_rotulo:
     ---------------------------------
 */
 comando_leitura:
-        READ ABRE_PARENTESES IDENT 
+        READ ABRE_PARENTESES lista_de_leitura FECHA_PARENTESES
+;
+
+lista_de_leitura:
+        lista_de_leitura VIRGULA IDENT
             {
                 // Imprime comando MEPA para leitura.
                 geraCodigo(NULL, "LEIT");
@@ -509,7 +510,61 @@ comando_leitura:
                 }
 
             }
-        FECHA_PARENTESES
+    |   IDENT
+            {
+                // Imprime comando MEPA para leitura.
+                geraCodigo(NULL, "LEIT");
+
+                // Recupera entrada de Tabela de simbolos para IDENT;
+                $1 = *validaSimbolo(nl, token);
+
+                switch($1.categoria){
+                    // Caso IDENT sejá uma 'VariavelSimples'
+                    case VariavelSimples:
+                        /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
+                        avs = *( (Atributos_VS *) $1.ponteiro_atributos);
+
+                        /* Defindo instrução MEPA para armazenamento em 'variavel' */
+                        armazenaVariavelSimplesMEPA($1.nivel, avs.deslocamento);
+                    break;
+
+                    // Caso IDENT sejá uma 'ParametroFormal'
+                    case ParametroFormal:
+                        /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
+                        apf = *( (Atributos_PF *) $1.ponteiro_atributos);
+
+                        if(apf.tipo_passagem == valor){
+                            /* Defindo instrução MEPA para armazenamento em 'variavel' */
+                            armazenaVariavelSimplesMEPA($1.nivel, apf.deslocamento);
+                        }
+                        else{
+                            // Retorna Código MEPA de carregamento da variável.
+                            armazenaVariavelIndiretaMEPA(nivel_lexico, apf.deslocamento);
+                        }
+                    break;
+
+                    // Caso IDENT sejá uma 'Funcao', definir o retorno.
+                    case Funcao:
+                        
+                        // Verifica se o simbolo em questão NÃO PERTENCE é o mesmo da função atual.
+                        if(strcmp($1.identificador, entrada_escopo.identificador)){
+                            // Caso simbolo pertença a outra função, retornar erro.
+                            erroAtribuiSimbolo(nl, $1.identificador);
+                        }
+
+                        /* Armazena em 'avs' atributos de entrada de 'IDENT'*/
+                        aproc = *( (Atributos_SUBR *) $1.ponteiro_atributos);
+
+                        /* Defindo instrução MEPA para armazenamento em retorno de funcao. */
+                        armazenaVariavelSimplesMEPA($1.nivel, aproc.deslocamento);
+
+                    break;
+
+                    default:
+                        erroAtribuiSimbolo(nl, $1.identificador);
+                }
+
+            }
 ;
 
 comando_escrita:
@@ -1045,7 +1100,7 @@ define_terminal:
 int main (int argc, char** argv) {
 
     #ifdef YYDEBUG
-        yydebug = 1;
+        yydebug = 0;
     #endif
 
     FILE* fp;
