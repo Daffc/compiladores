@@ -147,10 +147,11 @@ void mostraPilhaControleEscopo();
 // Estrutura para controle de entadas e aplicação de DMEM em table de simbolos.
 typedef struct entrada_escopo_t{
 	int 	nivel_lexico;
-	int 	quantidade_vars;		// Armazena quantidae de variáveis por escopo.
-	int 	quantidade_subr;		// Armazena quantidade de procedimentos por escopo.
-	int		quantidade_parametros;	// Armazena quantidade de parâmetros por escopo.
-	char 	identificador[128];		// Armazena o identificador do escopo (mesmo da tabela de simbolos no caso de subrotinas.)
+	int 	quantidade_vars;			// Armazena quantidae de variáveis por escopo.
+	int 	quantidade_subr;			// Armazena quantidade de procedimentos por escopo.
+	int		quantidade_parametros;		// Armazena quantidade de parâmetros por escopo.
+	int		quantidade_tipos_definidos;	// Armazena a quantidade de tipos definidos em escopo (type).
+	char 	identificador[128];			// Armazena o identificador do escopo (mesmo da tabela de simbolos no caso de subrotinas.)
 }EntradaEscopo;
 
 
@@ -323,6 +324,9 @@ void validaInsercaoTipagem(int linha, char * tipo_novo, char * tipo_original);
 
 /* Busca se 'tipo' consta em alguma entrada de 'novo_tipo' ou seja, foi declarado. */
 int buscaTipagem( char *tipo);
+
+/*	Removendo "quantidade" elementos da Tabela de Tipagem. */
+void retiraEntradasTabelaTipagem(unsigned char quantidade);
 
 /* Libera Memória Alocada por Tablea de Tipagem*/
 void liberaTabelaTipagem();

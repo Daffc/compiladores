@@ -129,7 +129,7 @@ void mostraPilhaControleEscopo(){
 	printf("------------------------------\n");
 	for (int i = ce.topo; i >= 0; i--){
 		/*	Imprime elemento da tabela de simbolos	*/
-		printf("%d\t%d\t%d\t%d\t%s", i, ce.entradas_escopo[i]. quantidade_vars, ce.entradas_escopo[i].quantidade_subr, ce.entradas_escopo[i].quantidade_parametros, ce.entradas_escopo[i].identificador );
+		printf("%d\t%d\t%d\t%d\t%d\t%s", i, ce.entradas_escopo[i]. quantidade_vars, ce.entradas_escopo[i].quantidade_subr, ce.entradas_escopo[i].quantidade_parametros, ce.entradas_escopo[i].quantidade_tipos_definidos,ce.entradas_escopo[i].identificador );
 		printf("\n");
 	}
 	printf("------------------------------\n\n");
@@ -598,7 +598,6 @@ void insereTabelaTipagem(int linha, char * tipo_novo, char *tipo_original){
 	strcpy(tt.entrada[tt.topo].tipo_novo, tipo_novo);
 	strcpy(tt.entrada[tt.topo].tipo_original, tipo_original);
 
-	mostraTabelaTipagem();
 }
 
 /* Verifica se tipo "primeiro" pode ser operado com tipo "segundo" */
@@ -657,6 +656,13 @@ int buscaTipagem(char * tipo){
 
 	/* Retorna que 'tipo' não existe em Tabela de Tipagem. */
 	return 0;
+}
+
+/*	Removendo "quantidade" elementos da Tabela de Tipagem. */
+void retiraEntradasTabelaTipagem(unsigned char quantidade){
+
+	/*	Diminuindo pilha	*/
+	tt.topo -= quantidade;
 }
 
 /* Libera Memória Alocada por Tablea de Tipagem*/
