@@ -46,6 +46,9 @@ EntradaEscopo entrada_escopo;
 char    tipo_novo[20],
         tipo_original[20];
 
+/* Armazena a quantidade de tipos definidos por escopo. */
+int quantidade_tipos_definidos;
+
 %}
 
 %union{
@@ -95,9 +98,14 @@ programa:
         { geraCodigo (NULL, "INPP"); } PROGRAM IDENT ABRE_PARENTESES lista_idents FECHA_PARENTESES PONTO_E_VIRGULA bloco PONTO  {geraCodigo (NULL, "PARA"); }
 ;
 
-bloco:  
+bloco:      
+            {
+                // Zera o contador de quantidade de tipos definidos em escopo.
+                quantidade_tipos_definidos = 0;
+            }
         parte_declara_tipos
             {
+                entrada_escopo.quantidade_tipos_definidos = quantidade_tipos_definidos; //Armazena a quantidade de tipos definidos em escopo atual.
                 entrada_escopo.quantidade_parametros = num_vars;    // Armazena a quantidade de parâmetros pré calculada (antes da chamada de 'bloco').
                 entrada_escopo.nivel_lexico = nivel_lexico;         // Armazena o nível léxico do escopo atual. 
                 entrada_escopo.quantidade_subr = 0;                // Define a quantidade de funções/procedimentos do escopo atual como 0;
@@ -113,7 +121,7 @@ bloco:
             } 
         parte_de_declaracao_de_subrotinas 
             {
-                if($5){                                 // Verifica se algum procedimento foi definido.
+                if($6){                                 // Verifica se algum procedimento foi definido.
                     desempilhaRotulo(saida_rotulo);     // Desempilha rótulo para pular definição de procedimentos.
                     geraCodigo(saida_rotulo, "NADA");   // Imprime rótulo destino para pulo de procedimentos.
                 }
@@ -123,6 +131,7 @@ bloco:
         comando_composto
             {
                 entrada_escopo = desempilhaControleEscopo();                    // Desempilha entrada de controle escopo.
+                retiraEntradasTabelaTipagem(entrada_escopo.quantidade_tipos_definidos);  // Remove de Tabela de Tipagem os tipos definidos em escopo atual.
                 imprimeDesalocaMemoria(entrada_escopo.quantidade_vars);         // Imprime comando MEPA DMEM n
                 retiraEntradasTabelaSimbolos(entrada_escopo.quantidade_vars);   // Removendo Variáveis locais de TS.                                    
 
@@ -160,6 +169,9 @@ definicao_tipo:
 
             /* Inserindo tupla 'tipo_novo' e 'tipo_original' em Tabela de Tipagem */
             insereTabelaTipagem(nl, tipo_novo, tipo_original);
+
+            /* Conta novo tipo definido. */
+            quantidade_tipos_definidos ++;
         }        
 ;
 
@@ -1210,6 +1222,7 @@ int main (int argc, char** argv) {
     yyparse();
     
     liberaTabelaSimbolos();
+    liberaTabelaTipagem();
 
     return 0;
 }
