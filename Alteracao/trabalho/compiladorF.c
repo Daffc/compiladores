@@ -318,8 +318,8 @@ char * validaTipos(int linha, char *primeiro, char *segundo){
 		exit(-1);
 	}
 
-	/* Retorna ponteiro para string 'primeiro' */
-	return primeiro;
+	/* Retorna ponteiro para string 'segundo' */
+	return segundo;
 }
 
 
