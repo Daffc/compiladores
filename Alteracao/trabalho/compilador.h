@@ -316,16 +316,17 @@ void iniciaTabelaTipagem();
 void insereTabelaTipagem(int linha, char * tipo_novo, char *tipo_original);
 
 /* Verifica se tipo "primeiro" pode ser operado com tipo "segudo" */
-int verificaTabelaTipagem(char *primeiro, char *segundo);
-
-/* Libera Memória Alocada por Tablea de Tipagem*/
-void liberaTabelaTipagem();
+int verificaOperacaoTabelaTipagem(char *primeiro, char *segundo);
 
 /* Verifica se 'novo_tipo' já foi declarado. */
 void validaInsercaoTipagem(int linha, char * tipo_novo, char * tipo_original);
 
 /* Busca se 'tipo' consta em alguma entrada de 'novo_tipo' ou seja, foi declarado. */
 int buscaTipagem( char *tipo);
+
+/* Libera Memória Alocada por Tablea de Tipagem*/
+void liberaTabelaTipagem();
+
 
 /* 
 		---------------------------------

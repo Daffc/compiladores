@@ -311,8 +311,8 @@ void liberaTabelaSimbolos(){
 
 char * validaTipos(int linha, char *primeiro, char *segundo){
 
-	// Verifica se "primeiro" e "segundo" NÃO são do mesmo tipo, informando erro caso verdadeiro.
-	if(strcmp(primeiro, segundo)){
+	// Verifica se "primeiro" e "segundo" NÃO são do mesmo tipo E se NÂO existe herança entre eles (type), informando erro caso verdadeiro.
+	if( strcmp(primeiro, segundo) && !verificaOperacaoTabelaTipagem(primeiro, segundo)){
 		/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
 		fprintf (stderr,"ERRO LINHA %d: Operação entre '%s' e '%s' inválida.\n", linha, primeiro, segundo);
 		exit(-1);
@@ -602,7 +602,7 @@ void insereTabelaTipagem(int linha, char * tipo_novo, char *tipo_original){
 }
 
 /* Verifica se tipo "primeiro" pode ser operado com tipo "segundo" */
-int verificaTabelaTipagem(char *primeiro, char *segundo){
+int verificaOperacaoTabelaTipagem(char *primeiro, char *segundo){
 	
 	/* Passa por todas as entradas da Tabela de Tipagem.*/
 	for (int i = tt.topo; i >= 0; i--){
