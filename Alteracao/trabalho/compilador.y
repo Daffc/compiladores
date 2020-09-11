@@ -973,8 +973,11 @@ exp_simples:
                 /* Verificando se análise chamada de função com passagem por referência.*/
                 verificaProcedenciaReferencia(nl, flag_PF_ref);
 
-                /* Verificando tipos de $1 e $3 e repassando para 'exp_simples' */
-                strcpy($$, validaTipos(nl,$1, $3));
+                /* Verificando tipos de $1 e $3 */
+                validaTipos(nl,$1, $3);
+                
+                /* Repassando para  'termo' tipo 'boolean'*/
+                strcpy($$, "boolean");
 
                 /* Imprime comando MEPA de DISJUNÇÃO. */
                 geraCodigo(NULL, "DISJ");
@@ -1017,8 +1020,11 @@ termo   :
                 /* Verificando se análise chamada de função com passagem por referência.*/
                 verificaProcedenciaReferencia(nl, flag_PF_ref);
 
-                /* Verificando tipos de $1 e $3 e repassando para 'termo' */
-                strcpy($$, validaTipos(nl,$1, $3));
+                /* Verificando tipos de $1 e $3 */
+                validaTipos(nl,$1, $3);
+                
+                /* Repassando para  'termo' tipo 'boolean'*/
+                strcpy($$, "boolean");
 
                 /* Imprime comando MEPA de CONJUNÇÃO. */
                 geraCodigo(NULL, "CONJ");
