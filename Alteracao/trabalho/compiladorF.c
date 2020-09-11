@@ -25,6 +25,7 @@
 Tabela_Simbolos ts;
 Pilha_Rotulos pr;
 ControleEscopo ce;
+Tabela_Tipagem tt;
 
 
 FILE* fp=NULL;
@@ -129,6 +130,19 @@ void mostraPilhaControleEscopo(){
 	for (int i = ce.topo; i >= 0; i--){
 		/*	Imprime elemento da tabela de simbolos	*/
 		printf("%d\t%d\t%d\t%d\t%s", i, ce.entradas_escopo[i]. quantidade_vars, ce.entradas_escopo[i].quantidade_subr, ce.entradas_escopo[i].quantidade_parametros, ce.entradas_escopo[i].identificador );
+		printf("\n");
+	}
+	printf("------------------------------\n\n");
+}
+
+void mostraTabelaTipagem(){
+
+	printf("------------------------------\n");
+	printf("TOPO: %d\tTAMANHO: %d\n", tt.topo, tt.tamanho);
+	printf("------------------------------\n");
+	for (int i = 0; i <= tt.topo; i++){
+		/*	Imprime elemento da tabela de simbolos	*/
+		printf("%s\t%s", tt.entrada[i].tipo_novo, tt.entrada[i].tipo_original);
 		printf("\n");
 	}
 	printf("------------------------------\n\n");
@@ -527,6 +541,104 @@ void desempilhaRotulo(char *rotulo){
     ---------------------------------
     |   FIM --- PILHA DE ROTULOS    |
     ---------------------------------
+*/
+
+/* 
+		---------------------------------
+		|		DEFINIÇÕES TIPAGEM		|
+		---------------------------------	
+*/
+
+/* Define valores para Tabela de Tipagem vazia. */
+void iniciaTabelaTipagem(){
+	/*	Inicializando tabela de tipagem com uma entrada. */
+	tt.tamanho = 2;
+	tt.topo = 1;
+	tt.entrada = malloc(2 * sizeof(Entrada_Tipagem));
+
+	/* Adicionando tipo 'integer' */
+	strcpy(tt.entrada[0].tipo_novo, "integer");
+	strcpy(tt.entrada[0].tipo_original, "integer");
+
+	/* Adicionando tipo 'boolean' */
+	strcpy(tt.entrada[1].tipo_novo, "boolean");
+	strcpy(tt.entrada[1].tipo_original, "boolean");
+}
+
+
+
+/* Insere nova entrada em Tipagem */
+void insereTabelaTipagem(int linha, char * tipo_novo, char *tipo_original){
+
+	/* Verifica se 'novo_tipo' pode ser inserido. */
+	validaInsercaoTipagem(linha, tipo_novo, tipo_original);
+
+	/*	Caso não tenha espaço para entrada, duplicar tamanho de tabela.	*/
+	if (tt.tamanho <= (tt.topo + 1)){
+		tt.tamanho  = tt.tamanho * 2;
+		tt.entrada = realloc(tt.entrada, tt.tamanho * sizeof(Entrada_Tipagem));
+	}
+	
+	/*	Subindo topo da pilha e armazenando informações. */
+	tt.topo ++;
+
+	/* Inserindo Tupla [Tipo_novo, Tipo_original] */
+	strcpy(tt.entrada[tt.topo].tipo_novo, tipo_novo);
+	strcpy(tt.entrada[tt.topo].tipo_original, tipo_original);
+}
+
+/* Verifica se tipo "primeiro" pode ser operado com tipo "segundo" */
+int verificaTabelaTipagem(char *primeiro, char *segundo){
+	
+	/* Passa por todas as entradas da Tabela de Tipagem.*/
+	for (int i = tt.topo; i >= 0; i--){
+		/* Verifica se exite alguma entrada da Tabela de Tipagem que contenha ['primeiro', 'segundo']  ou ['segundo', 'primeiro']*/
+		if ( (!strcmp(tt.entrada[i].tipo_novo, primeiro) && !strcmp(tt.entrada[i].tipo_original, segundo)) || (!strcmp(tt.entrada[i].tipo_novo, segundo) && !strcmp(tt.entrada[i].tipo_original, primeiro)) )
+			return 1;
+	}
+
+	return 0;
+}
+
+/* Verifica se 'novo_tipo' já foi declarado. */
+void validaInsercaoTipagem(int linha, char * tipo_novo, char * tipo_original){
+
+	int tipo_original_declarado = 0;
+
+	/* Passa por todas as entradas da Tabela de Tipagem.*/
+	for (int i = tt.topo; i >= 0; i--){
+		/* Verifica se 'tipo_novo' já foi declarado, emitindo erro se verdadeiro */
+		if (!strcmp(tt.entrada[i].tipo_novo, tipo_novo)){
+			/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
+			fprintf (stderr,"ERRO LINHA %d: Tipo '%s' já foi declarado.\n", linha, tipo_novo);
+			exit(-1);
+		}
+
+		/* Verifica se 'tipo_original' já foi declarado*/
+		if (!strcmp(tt.entrada[i].tipo_novo, tipo_original)){
+			/* Anuncia que 'tipo_original' existe. */
+			tipo_original_declarado = 1;
+		}
+	}
+
+	/* Caso  'tipo_original' não exista, retornar erro. */
+	if(!tipo_original_declarado){
+		fprintf (stderr,"ERRO LINHA %d: Tipo '%s' não foi declarado.\n", linha, tipo_original);
+		exit(-1);
+	}
+}
+
+/* Libera Memória Alocada por Tablea de Tipagem*/
+void liberaTabelaTipagem(){
+	free(tt.entrada);
+}
+
+
+
+/* 
+		---------------------------------
+		|			FIM TIPAGEM			|
+		---------------------------------	
 */
 
 

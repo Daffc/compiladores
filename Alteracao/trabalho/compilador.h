@@ -101,6 +101,7 @@ typedef struct tabela_simbolos_t{
 	Declarando API de tabela de Simbolos.
 */
 
+
 /* Define valores para Tabela de Simbolos vazia. */
 void iniciaTabelaSimbolos();
 /* Empilha novo elemento na tabela de simbolos. */
@@ -285,6 +286,49 @@ void erroAtribuiSimbolo(int linha, char * simbolo);
 */
 
 /* 
+		---------------------------------
+		|		DEFINIÇÕES TIPAGEM		|
+		---------------------------------	
+*/
+
+/*	Definindo estrutura para Entrada de Tabela de tipos. */
+typedef struct entrada_tipagem_t{
+	char 					tipo_novo[20];
+	char 					tipo_original[20];
+} Entrada_Tipagem;
+
+/*	Definindo estrutura para Tabela de tipos. */
+typedef struct tabela_tipagem_t{
+	int 					topo;
+	int 					tamanho;
+	Entrada_Tipagem 	*entrada; 
+} Tabela_Tipagem;
+
+
+/* Define valores para Tabela de Tipagem vazia. */
+void iniciaTabelaTipagem();
+
+/* Insere nova entrada em Tipagem */
+void insereTabelaTipagem(int linha, char * tipo_novo, char *tipo_antigo);
+
+/* Verifica se tipo "primeiro" pode ser operado com tipo "segudo" */
+int verificaTabelaTipagem(char *primeiro, char *segundo);
+
+/* Libera Memória Alocada por Tablea de Tipagem*/
+void liberaTabelaTipagem();
+
+/* Verifica se 'novo_tipo' já foi declarado. */
+void validaInsercaoTipagem(int linha, char * tipo_novo, char * tipo_original);
+
+
+/* 
+		---------------------------------
+		|			FIM TIPAGEM			|
+		---------------------------------	
+*/
+
+
+/* 
 		-----------------------------
 		|		DEFINIÇÕES MEPA		|
 		-----------------------------	
@@ -332,4 +376,7 @@ void imprimeChamaProcedimento(char *rotulo,int nivel_lexico);
 		|		FIM DEFINIÇÕES MEPA		|
 		---------------------------------	
 */
+
+
+
 
