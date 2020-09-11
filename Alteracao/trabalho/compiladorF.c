@@ -148,6 +148,19 @@ void mostraTabelaTipagem(){
 	printf("------------------------------\n\n");
 }
 
+void mostraTabelaTipagem(){
+
+	printf("------------------------------\n");
+	printf("TOPO: %d\tTAMANHO: %d\n", tt.topo, tt.tamanho);
+	printf("------------------------------\n");
+	for (int i = 0; i <= tt.topo; i++){
+		/*	Imprime elemento da tabela de simbolos	*/
+		printf("%s\t%s", tt.entrada[i].tipo_novo, tt.entrada[i].tipo_original);
+		printf("\n");
+	}
+	printf("------------------------------\n\n");
+}
+
 
 /* 
 	-----------------------------
@@ -671,6 +684,10 @@ void liberaTabelaTipagem(){
 }
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> cf62b4f59d10e393a4b71615fc7ffdb245f48347
 /* 
 		---------------------------------
 		|			FIM TIPAGEM			|
