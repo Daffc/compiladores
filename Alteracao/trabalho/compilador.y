@@ -91,6 +91,7 @@ programa:
 ;
 
 bloco:  
+        parte_declara_tipos
             {
                 entrada_escopo.quantidade_parametros = num_vars;    // Armazena a quantidade de parâmetros pré calculada (antes da chamada de 'bloco').
                 entrada_escopo.nivel_lexico = nivel_lexico;         // Armazena o nível léxico do escopo atual. 
@@ -107,7 +108,7 @@ bloco:
             } 
         parte_de_declaracao_de_subrotinas 
             {
-                if($4){                                 // Verifica se algum procedimento foi definido.
+                if($5){                                 // Verifica se algum procedimento foi definido.
                     desempilhaRotulo(saida_rotulo);     // Desempilha rótulo para pular definição de procedimentos.
                     geraCodigo(saida_rotulo, "NADA");   // Imprime rótulo destino para pulo de procedimentos.
                 }
@@ -129,6 +130,22 @@ bloco:
                 retiraEntradasTabelaSimbolos(entrada_escopo.quantidade_subr);          // Remove da TS os procedimentos aninhados.
             }
 ;
+
+
+parte_declara_tipos:
+        TYPE inicia_define_tipo
+    |   /*VAZIO*/
+;
+
+inicia_define_tipo:
+        definicao_tipo  PONTO_E_VIRGULA
+    |   inicia_define_tipo definicao_tipo PONTO_E_VIRGULA
+;
+
+definicao_tipo:
+    IDENT IGUAL IDENT
+;
+
 
 
 /*
