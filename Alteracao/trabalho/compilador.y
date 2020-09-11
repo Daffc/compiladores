@@ -41,6 +41,11 @@ TipoPassagemParametro tipo_passagem;
 /* Auxilia no controle dos escopos. */
 EntradaEscopo entrada_escopo;
 
+
+/* Capitura os tipos para inserção dem Tabela de Tipagem.*/
+char    tipo_novo[20],
+        tipo_original[20];
+
 %}
 
 %union{
@@ -143,7 +148,19 @@ inicia_define_tipo:
 ;
 
 definicao_tipo:
-    IDENT IGUAL IDENT
+    IDENT 
+        {
+            /* Armazena em 'tipo_novo' o novo tipo declarado 'token' */
+            strcpy(tipo_novo, token);
+        }
+    IGUAL IDENT
+        {
+            /* Armazena em 'tipo_original' o novo tipo declarado 'token' */
+            strcpy(tipo_original, token);
+
+            /* Inserindo tupla 'tipo_novo' e 'tipo_original' em Tabela de Tipagem */
+            insereTabelaTipagem(nl, tipo_novo, tipo_original);
+        }        
 ;
 
 
@@ -180,6 +197,7 @@ declara_var:
 tipo: 
         IDENT
             {
+                validaDefinicaoVariavelTipo(nl, token);     /* Verificando se 'IDENT' esta declarado em Tabela de Tipagem. */
                 defineTipoVariavel(num_tipo_vars, token);    /* Definindo o tipo das "num_tipo_vars" variáveis para "token" */
             }
 
@@ -1180,6 +1198,7 @@ int main (int argc, char** argv) {
     iniciaTabelaSimbolos();
     iniciaPilhaRotulos();
     iniciaPilhaControleEscopo();
+    iniciaTabelaTipagem();
 
     yyin=fp;
     yyparse();

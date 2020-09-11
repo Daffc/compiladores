@@ -264,6 +264,10 @@ void validaNivelLexico(int linha, int primeiro_nivel, int segundo_nivel);
 
 // Verifica se 'tipo_expressão' é do tipo 'boolean', necessário para if's e while's
 void validaExpressaoCondicional(int linha, char *tipo_exp);
+
+/* Verifica se 'tipo' consta em Tabela de Tipagem, retornando erro caso contrário. */
+void validaDefinicaoVariavelTipo(int linha, char *tipo);
+
 /* 
 		-----------------------------
 		|		FIM VALIDAÇÃO		|
@@ -320,6 +324,8 @@ void liberaTabelaTipagem();
 /* Verifica se 'novo_tipo' já foi declarado. */
 void validaInsercaoTipagem(int linha, char * tipo_novo, char * tipo_original);
 
+/* Busca se 'tipo' consta em alguma entrada de 'novo_tipo' ou seja, foi declarado. */
+int buscaTipagem( char *tipo);
 
 /* 
 		---------------------------------

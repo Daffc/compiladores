@@ -432,6 +432,18 @@ void validaExpressaoCondicional(int linha, char *tipo_exp){
 	}
 }
 
+/* Verifica se 'tipo' consta em Tabela de Tipagem, retornando erro caso contrário. */
+void validaDefinicaoVariavelTipo(int linha, char *tipo){
+
+	/* Caso 'tipo' não conste em Tabela de Tipagem, gerar emitir erro.*/
+	if(!buscaTipagem(tipo)){
+
+		/* [MELHORAR] Descobrir melhor maneira de mostar erros e para execussão.*/
+		fprintf (stderr,"ERRO LINHA %d: Tipo '%s' não definido.\n", linha, tipo);
+
+		exit(-1);
+	}
+}
 
 /* 
 	-----------------------------
@@ -585,6 +597,8 @@ void insereTabelaTipagem(int linha, char * tipo_novo, char *tipo_original){
 	/* Inserindo Tupla [Tipo_novo, Tipo_original] */
 	strcpy(tt.entrada[tt.topo].tipo_novo, tipo_novo);
 	strcpy(tt.entrada[tt.topo].tipo_original, tipo_original);
+
+	mostraTabelaTipagem();
 }
 
 /* Verifica se tipo "primeiro" pode ser operado com tipo "segundo" */
@@ -628,11 +642,27 @@ void validaInsercaoTipagem(int linha, char * tipo_novo, char * tipo_original){
 	}
 }
 
+/* Busca se 'tipo' consta em alguma entrada de 'novo_tipo' ou seja, foi declarado. */
+int buscaTipagem(char * tipo){
+	
+	/* Passa por todas as entradas da Tabela de Tipagem.*/
+	for (int i = tt.topo; i >= 0; i--){
+
+		/* Verifica se 'tipo_original' já foi declarado*/
+		if (!strcmp(tt.entrada[i].tipo_novo, tipo)){
+			/* Anuncia que 'tipo_original' existe. */
+			return 1;
+		}
+	}
+
+	/* Retorna que 'tipo' não existe em Tabela de Tipagem. */
+	return 0;
+}
+
 /* Libera Memória Alocada por Tablea de Tipagem*/
 void liberaTabelaTipagem(){
 	free(tt.entrada);
 }
-
 
 
 /* 
